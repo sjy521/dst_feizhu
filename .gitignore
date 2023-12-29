@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+
+*.log
+.idea
+*.iml
+
+
+# Environments
+venv/

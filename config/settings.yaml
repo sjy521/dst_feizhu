@@ -1,0 +1,22 @@
+default:
+  is_debug: true
+#  mysql
+  mysql_host: 8.146.211.133
+  mysql_port: 3306
+  mysql_name: feizhu_devices_id
+  mysql_username: bystest
+  mysql_password: bystest
+#  log
+  logging: config/logging.yaml
+test:
+  is_debug: true
+#  mysql
+  mysql_host: 8.146.211.133
+  mysql_port: 3306
+  mysql_name: feizhu_devices_id
+  mysql_username: bystest
+  mysql_password: bystest
+#  log
+  logging: config/logging.yaml
+prod:
+  is_debug: false
