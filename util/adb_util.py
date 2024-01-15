@@ -55,7 +55,17 @@ class AdbModel:
         :return:
         """
         subprocess.run(["adb", "-s", self.device_id, "shell", "input", "tap", str(x), str(y)])
-        time.sleep(5)
+        time.sleep(2)
+
+    def click_back(self):
+        """
+        返回
+        :param
+        :return:
+        """
+        print("准备点击返回...")
+        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "keyevent", "BACK"])
+        time.sleep(1)
 
     def screenshot(self, path):
         """
@@ -105,7 +115,12 @@ class AdbModel:
         :return:
         """
         xml_dump_path = os.path.join(tempfile.gettempdir(), "ui_dump.xml")
+        print(xml_dump_path)
         subprocess.run(["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/ui_dump.xml"])
+        # diff_info = subprocess.check_output(
+        #     ["adb", "-s", self.device_id, "shell", "diff", "/sdcard/ui_dump.xml", "/sdcard/ui_dump_error.xml"]).decode(
+        #     "utf-8")
+        # print(diff_info)
         subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/ui_dump.xml", xml_dump_path])
         return xml_dump_path
 
@@ -116,7 +131,10 @@ class AdbModel:
         """
         window_info = subprocess.check_output(
             ["adb", "-s", self.device_id, "shell", "dumpsys", "window", "windows"]).decode("utf-8")
+        # window_info = subprocess.check_output(
+        #     ["adb", "-s", self.device_id, "shell", "dumpsys", "window", "|", "findstr" "mCurrentFocus"]).decode("utf-8")
         # 提取包名信息
+        print(window_info)
         match = re.search(r"mObscuringWindow=Window\{[^/]+/([^/\s]+)}", window_info)
         if match:
             current_package = match.group(1)
