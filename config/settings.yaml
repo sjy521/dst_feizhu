@@ -3,20 +3,24 @@ default:
 #  mysql
   mysql_host: 8.146.211.133
   mysql_port: 3306
-  mysql_name: feizhu_devices_id
+  mysql_db: hotel_base_info
+  mysql_name: devices_library
   mysql_username: bystest
   mysql_password: bystest
-#  log
-  logging: config/logging.yaml
+#  log_model
+  logging: /config/logging.yaml
+  path: http://192.168.52.111:8080
 test:
   is_debug: true
 #  mysql
   mysql_host: 8.146.211.133
   mysql_port: 3306
-  mysql_name: feizhu_devices_id
+  mysql_db: hotel_base_info
+  mysql_name: devices_library
   mysql_username: bystest
   mysql_password: bystest
-#  log
-  logging: config/logging.yaml
+#  log_model
+  logging: /config/logging.yaml
+  path: http://192.168.52.111:8080
 prod:
   is_debug: false

@@ -4,8 +4,6 @@ import tempfile
 import time
 import subprocess
 import traceback
-from lxml import html
-import xml.etree.ElementTree as ET
 
 
 class AdbModel:
@@ -46,7 +44,7 @@ class AdbModel:
         subprocess.run(["adb", "-s", self.device_id, "kill-server"])
         time.sleep(2)
 
-    def click_button(self, x, y):
+    def click_button(self, x, y, timesleep=2):
         """
         点击坐标位置
         :param device_id:
@@ -55,7 +53,7 @@ class AdbModel:
         :return:
         """
         subprocess.run(["adb", "-s", self.device_id, "shell", "input", "tap", str(x), str(y)])
-        time.sleep(2)
+        time.sleep(timesleep)
 
     def click_back(self):
         """
@@ -65,7 +63,6 @@ class AdbModel:
         """
         print("准备点击返回...")
         subprocess.run(["adb", "-s", self.device_id, "shell", "input", "keyevent", "BACK"])
-        time.sleep(1)
 
     def screenshot(self, path):
         """
