@@ -1,5 +1,5 @@
 import time
-
+from multiprocessing import Pool
 from dynaconf import settings
 
 from log_model.set_log import setup_logging
@@ -24,7 +24,6 @@ def run(device):
         # 定位当前页面为订单页
         fliggy_model.goto_target_page()
         # 支付订单
-        fliggy_model.refresh()
         pay_status = fliggy_model.pay_order(pay_password)
         if pay_status:
             pay_num += 1
@@ -34,6 +33,7 @@ def run(device):
         pay_num = 0
         fliggy_model.del_order()
         time.sleep(10)
+        fliggy_model.refresh()
 
         # input("点击回车继续")
 
@@ -41,8 +41,5 @@ def run(device):
 if __name__ == '__main__':
     setup_logging(default_path=settings.LOGGING)
     devices = select_device()
-    if len(devices) > 0:
-        for device in devices:
-            print(device)
-            if device['state'] == '1':
-                run(device)
+    pool = Pool(2)
+    pool.map(run, devices)
