@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # adbModel.is_wechat_open(app_name)
     print('==')
     # print(adbModel.is_wechat_open(app_name))
-    print(fliggy_model.adbModel.swipe(500, 1700, 500, 700))
+    print(fliggy_model.click_pay("和颐至尚-北京新街口店"))
     # xml_path = adbModel.convert_to_xml()
     # print(find_current_element_text(xml_path, "全部订单"))
     # click("酒店")

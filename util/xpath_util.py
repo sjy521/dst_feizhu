@@ -3,7 +3,7 @@ from lxml import html
 
 def find_element_coordinates(xml_path, text):
     """
-    从 XML 中根据文本查找元素的坐标
+    从 XML 中根据文本查找元素的坐标，没有就匹配后一个坐标
     :param xml_path: xml 地址
     :param text: 元素文本名称
     :return:
@@ -31,9 +31,30 @@ def find_element_coordinates(xml_path, text):
         return None
 
 
+def find_current_element_coordinates(xml_path, text):
+    """
+    从 XML 中根据文本查找元素的坐标，不会匹配后一个坐标
+    :param xml_path: xml 地址
+    :param text: 元素文本名称
+    :return:
+    """
+    tree = html.etree.parse(xml_path)
+    elements = tree.xpath("//node[@text='{}']/@bounds".format(text))
+    if elements:
+        # 假设只找到一个元素，获取其坐标
+        bounds = elements[0]
+        left, top, right, bottom = eval(bounds.replace('][', ","))
+        x = (left + right) // 2
+        y = (top + bottom) // 2
+        return [x, y]
+    else:
+        print("未发现element")
+        return None
+
+
 def find_element_text(xml_path, text):
     """
-    从 XML 中根据文本查找元素的文本
+    从 XML 中根据文本查找元素后面的文本，适用于查找订单号
     :param xml_path: xml 地址
     :param text: 元素文本名称
     :return:
@@ -61,7 +82,7 @@ def find_element_text(xml_path, text):
 
 def find_current_element_text(xml_path, text):
     """
-    从 XML 中根据文本查找元素的文本
+    从 XML 中根据文本查找当前元素的文本
     :param xml_path: xml 地址
     :param text: 元素文本名称
     :return:

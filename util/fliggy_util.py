@@ -7,7 +7,8 @@ from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.interface_util import cancelorder, payresult
-from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates
+from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
+    find_current_element_coordinates
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -35,6 +36,31 @@ class FliggyModel:
             logging.info("未发现[{}], 跳过点击...".format(click_text))
             if timesleep is not None:
                 time.sleep(timesleep)
+            return False
+
+    def click_pay(self, click_text, timesleep=0):
+        """
+        根据文本点击
+        :param click_text:
+        :return:
+        """
+        for _ in range(4):
+            xml_path = self.adbModel.convert_to_xml()
+            coordinate = find_current_element_coordinates(xml_path, click_text)
+            if coordinate:
+                x, y = coordinate
+                if x == y == 0:
+                    self.adbModel.swipe(500, 1700, 500, 600)
+                    continue
+                logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
+                self.adbModel.click_button(x, y, timesleep=timesleep)
+                return xml_path
+            else:
+                logging.info("未发现[{}], 跳过点击...".format(click_text))
+                if timesleep is not None:
+                    time.sleep(timesleep)
+                return False
+        else:
             return False
 
     def find_orderId(self, xml_path, click_text):
@@ -91,7 +117,7 @@ class FliggyModel:
         支付订单
         :return:
         """
-        if self.click("待付款", timesleep=5):
+        if self.click_pay("待付款", timesleep=5):
             self.check_error()
             # self.adbModel.click_back()
             xml_path = self.click("去付款", timesleep=5)
@@ -127,6 +153,7 @@ class FliggyModel:
                 payresult(orderId=order_id, status=status)
                 logging.info("order_id:[{}] 支付完成，已成功发送通知".format(order_id))
                 # input("支付完成，点击回车继续...")
+                self.click("忽略", timesleep=1)
                 self.adbModel.click_back()
                 self.adbModel.click_back()
                 return True
@@ -166,13 +193,18 @@ class FliggyModel:
         检查是否是异常页面
         :return:
         """
-        xml_path = self.adbModel.convert_to_xml()
-        if find_current_element_text(xml_path, "无法打开页面"):
-            self.adbModel.click_button(530, 900)
-            time.sleep(5)
-            self.adbModel.click_button(530, 900)
-        if find_current_element_text(xml_path, "长按识别二维码关注服务号"):
-            self.adbModel.click_button(1000, 1000)
+        for _ in range(2):
+            xml_path = self.adbModel.convert_to_xml()
+            if find_current_element_text(xml_path, "无法打开页面"):
+                self.adbModel.click_button(530, 900)
+                time.sleep(5)
+                self.adbModel.click_button(530, 900)
+                continue
+            if find_current_element_text(xml_path, "长按识别二维码关注服务号"):
+                self.adbModel.click_button(1000, 1000)
+                continue
+            return True
+        return True
 
     def goto_target_page(self):
         """
