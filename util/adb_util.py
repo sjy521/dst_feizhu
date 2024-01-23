@@ -112,7 +112,6 @@ class AdbModel:
         :return:
         """
         xml_dump_path = os.path.join(tempfile.gettempdir(), "ui_dump.xml")
-        print(xml_dump_path)
         subprocess.run(["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/ui_dump.xml"])
         # diff_info = subprocess.check_output(
         #     ["adb", "-s", self.device_id, "shell", "diff", "/sdcard/ui_dump.xml", "/sdcard/ui_dump_error.xml"]).decode(
