@@ -33,7 +33,7 @@ def run(device):
             continue
         pay_num = 0
         fliggy_model.del_order()
-        time.sleep(10)
+        time.sleep(1)
 
         # input("点击回车继续")
 

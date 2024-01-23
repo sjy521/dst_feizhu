@@ -17,6 +17,7 @@ class FliggyModel:
 
     def __init__(self, device_id):
         self.adbModel = AdbModel(device_id)
+        self.error_num = 0
 
     def click(self, click_text, xml_path=None, timesleep=0):
         """
@@ -126,9 +127,12 @@ class FliggyModel:
                 logging.info("当前订单号号是：{}".format(order_id))
                 xml_path = self.click(pay_password[0])
                 if xml_path is False:
+                    self.error_num += 1
                     send_abnormal_alarm_for_dingding("支付前异常，请及时查看")
                     self.adbModel.click_back()
                     self.adbModel.click_back()
+                    if self.error_num >= 6:
+                        payresult(orderId=order_id, status=0)
                     return False
                 self.click(pay_password[1], xml_path)
                 self.click(pay_password[2], xml_path)
@@ -144,7 +148,7 @@ class FliggyModel:
                     self.adbModel.click_back()
                     return True
                 self.click(pay_password[5], xml_path)
-                time.sleep(6)
+                time.sleep(3)
                 if self.pay_success("支付成功"):
                     status = 1
                 else:
@@ -153,8 +157,12 @@ class FliggyModel:
                 payresult(orderId=order_id, status=status)
                 logging.info("order_id:[{}] 支付完成，已成功发送通知".format(order_id))
                 # input("支付完成，点击回车继续...")
-                self.click("忽略", timesleep=1)
+                # self.click("忽略", timesleep=1)
                 self.adbModel.click_back()
+                # 280,1380
+                time.sleep(2)
+                self.adbModel.click_button(280,1380)
+                # self.click("忽略", timesleep=1)
                 self.adbModel.click_back()
                 return True
             else:
