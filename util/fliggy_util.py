@@ -6,7 +6,7 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
-from util.interface_util import cancelorder, payresult
+from util.interface_util import cancelorder, payresult, update_device
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates
 
@@ -113,15 +113,14 @@ class FliggyModel:
         logging.info("准备点击酒店")
         self.click("酒店")
 
-    def pay_order(self, pay_password):
+    def pay_order(self, pay_password, device_id):
         """
         支付订单
         :return:
         """
         if self.click_pay("待付款", timesleep=5):
             self.check_error()
-            # self.adbModel.click_back()
-            xml_path = self.click("去付款", timesleep=5)
+            xml_path = self.click("去付款", timesleep=3)
             if xml_path:
                 order_id = self.find_orderId(xml_path, "订单号")
                 logging.info("当前订单号号是：{}".format(order_id))
@@ -133,6 +132,7 @@ class FliggyModel:
                     self.adbModel.click_back()
                     if self.error_num >= 6:
                         payresult(orderId=order_id, status=0)
+                        update_device(device_id=device_id, state=0)
                     return False
                 self.click(pay_password[1], xml_path)
                 self.click(pay_password[2], xml_path)
@@ -155,6 +155,7 @@ class FliggyModel:
                     status = 0
                     send_abnormal_alarm_for_dingding("支付异常，请及时查看")
                 payresult(orderId=order_id, status=status)
+                update_device(device_id=device_id, state=0)
                 logging.info("order_id:[{}] 支付完成，已成功发送通知".format(order_id))
                 # input("支付完成，点击回车继续...")
                 # self.click("忽略", timesleep=1)

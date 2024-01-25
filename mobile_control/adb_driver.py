@@ -5,15 +5,9 @@ import traceback
 from dynaconf import settings
 
 from log_model.set_log import setup_logging
-from sql_tool.sql_model import SqlModel
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.fliggy_util import FliggyModel
-
-
-def select_device():
-    sql_model = SqlModel(host=settings.MYSQL_HOST, user=settings.MYSQL_USERNAME, port=settings.MYSQL_PORT,
-                         pd=settings.MYSQL_PASSWORD, db=settings.MYSQL_DB)
-    return sql_model.select_sql("select * from devices_library where state = 1")
+from util.interface_util import select_device
 
 
 def run(device):

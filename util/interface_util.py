@@ -1,3 +1,5 @@
+import json
+
 import requests
 import logging
 from dynaconf import settings
@@ -35,3 +37,25 @@ def payresult(orderId, status):
     return True
 
 
+def select_device():
+    url = "http://192.168.52.106:8083/library/all/libraries"
+    res = requests.get(url)
+    resjson = json.load(res.text)
+    if resjson['result']:
+        return resjson['result']
+    else:
+        return None
+
+
+def update_device(device_id, state):
+    url = "http://192.168.52.106:8083/library/update/library"
+    data = {
+        "deviceId": device_id,
+        "state": state
+    }
+    res = requests.post(url, json=data)
+    resjson = json.load(res.text)
+    if resjson['success']:
+        return resjson['success']
+    else:
+        return None
