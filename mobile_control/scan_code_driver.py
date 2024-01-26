@@ -30,7 +30,8 @@ def run(device):
     fliggy_model.click("发现")
     while True:
         try:
-            fliggy_model.adbModel.click_button(220, 346)
+            print("点击扫一扫")
+            fliggy_model.adbModel.click_button(220, 346, 0)
             if is_ok(fliggy_model):
                 fliggy_model.adbModel.click_back()
             else:
