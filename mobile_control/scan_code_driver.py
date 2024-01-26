@@ -28,6 +28,7 @@ def run(device):
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_wechat()
     fliggy_model.click("发现")
+    scan_error_num = 0
     while True:
         try:
             print("点击扫一扫")
@@ -35,10 +36,13 @@ def run(device):
             if is_ok(fliggy_model):
                 fliggy_model.adbModel.click_back()
                 time.sleep(0.5)
+                scan_error_num = 0
             else:
                 print("二维码扫码错误")
                 fliggy_model.adbModel.click_back()
-                break
+                scan_error_num += 1
+                if scan_error_num >= 5:
+                    break
         except Exception as f:
             logging.info("异常： [{}]， 准备跳过...".format(traceback.format_exc()))
             continue
