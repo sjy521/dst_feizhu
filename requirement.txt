@@ -27,7 +27,6 @@ cycler==0.11.0
 debugpy==1.5.1
 decorator==5.1.1
 defusedxml==0.7.1
-demjson==2.2.4
 Deprecated==1.2.14
 deprecation==2.1.0
 entrypoints==0.3
