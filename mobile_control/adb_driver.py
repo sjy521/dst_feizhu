@@ -3,6 +3,9 @@ import time
 import traceback
 import sys
 import os
+
+from sql_tool.sql_model import SqlModel
+
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
@@ -10,12 +13,18 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.fliggy_util import FliggyModel
-from util.interface_util import select_device
+# from util.interface_util import select_device
+
+
+def select_device():
+    sql_model = SqlModel(host=settings.MYSQL_HOST, user=settings.MYSQL_USERNAME, port=settings.MYSQL_PORT,
+                         pd=settings.MYSQL_PASSWORD, db=settings.MYSQL_DB)
+    return sql_model.select_sql("select * from devices_library where state = 1")
 
 
 def run(device):
-    device_id = device.get("deviceId")
-    pay_password = device.get("payPassword")
+    device_id = device.get("device_id")
+    pay_password = device.get("pay_password")
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_mini_feizhu()
     pay_num = 0
