@@ -13,7 +13,7 @@ from util.interface_util import select_device
 
 
 def run(device):
-    device_id = device.get("device_id")
+    device_id = device.get("deviceId")
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_wechat()
     while True:
