@@ -32,7 +32,7 @@ def run(device):
             fliggy_model.goto_target_page()
             # 支付订单
             fliggy_model.refresh()
-            pay_status = fliggy_model.pay_order(pay_password)
+            pay_status = fliggy_model.pay_order(pay_password, device_id)
             if pay_status:
                 pay_num += 1
                 if pay_num % 5 == 0:

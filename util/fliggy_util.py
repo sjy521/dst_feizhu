@@ -135,7 +135,7 @@ class FliggyModel:
                     self.adbModel.click_back()
                     if self.error_num >= 6:
                         payresult(orderId=order_id, status=0)
-                        update_device(device_id=device_id, state=0)
+                        # update_device(device_id=device_id, state=0)
                     return False
                 self.click(pay_password[1], xml_path)
                 self.click(pay_password[2], xml_path)
@@ -158,15 +158,11 @@ class FliggyModel:
                     status = 0
                     send_abnormal_alarm_for_dingding("支付异常，请及时查看")
                 payresult(orderId=order_id, status=status)
-                update_device(device_id=device_id, state=0)
+                # update_device(device_id=device_id, state=0)
                 logging.info("order_id:[{}] 支付完成，已成功发送通知".format(order_id))
-                # input("支付完成，点击回车继续...")
-                # self.click("忽略", timesleep=1)
                 self.adbModel.click_back()
-                # 280,1380
                 time.sleep(2)
-                self.adbModel.click_button(280,1380)
-                # self.click("忽略", timesleep=1)
+                self.adbModel.click_button(280, 1380)
                 self.adbModel.click_back()
                 return True
             else:
