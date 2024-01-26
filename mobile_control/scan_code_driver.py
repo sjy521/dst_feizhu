@@ -34,6 +34,7 @@ def run(device):
             fliggy_model.adbModel.click_button(220, 346, 0)
             if is_ok(fliggy_model):
                 fliggy_model.adbModel.click_back()
+                time.sleep(1)
             else:
                 print("二维码扫码错误")
                 fliggy_model.adbModel.click_back()
