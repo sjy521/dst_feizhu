@@ -78,15 +78,18 @@ class FliggyModel:
             logging.info("未发现[{}], 跳过点击...".format(click_text))
             return None
 
+    def open_wechat(self):
+        app_name = "com.tencent.mm/.ui.LauncherUI"
+        for i in range(5):
+            self.adbModel.click_back()
+        self.adbModel.open_app(app_name)
+
     def open_mini_feizhu(self):
         """
         开启飞猪小程序
         :return:
         """
-        app_name = "com.tencent.mm/.ui.LauncherUI"
-        for i in range(5):
-            self.adbModel.click_back()
-        self.adbModel.open_app(app_name)
+        self.open_wechat()
         # 发现
         logging.info("准备打开发现页...")
         self.click("发现", timesleep=1)
