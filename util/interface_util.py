@@ -40,7 +40,7 @@ def payresult(orderId, status):
 def select_device():
     url = "http://192.168.52.106:8083/library/all/libraries"
     res = requests.get(url)
-    resjson = json.load(res.text)
+    resjson = json.loads(res.text)
     if resjson['result']:
         return resjson['result']
     else:
