@@ -8,7 +8,7 @@ from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.interface_util import cancelorder, payresult
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
-    find_current_element_coordinates
+    find_current_element_coordinates, find_setting
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -28,6 +28,27 @@ class FliggyModel:
         if xml_path is None:
             xml_path = self.adbModel.convert_to_xml()
         coordinate = find_element_coordinates(xml_path, click_text)
+        if coordinate:
+            x, y = coordinate
+            logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
+            self.adbModel.click_button(x, y, timesleep=timesleep)
+            return xml_path
+        else:
+            logging.info("未发现[{}], 跳过点击...".format(click_text))
+            if timesleep is not None:
+                time.sleep(timesleep)
+            return False
+
+
+    def click_setting(self, click_text, xml_path=None, timesleep=0):
+        """
+        根据文本点击
+        :param click_text:
+        :return:
+        """
+        if xml_path is None:
+            xml_path = self.adbModel.convert_to_xml()
+        coordinate = find_setting(xml_path, click_text)
         if coordinate:
             x, y = coordinate
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
@@ -89,18 +110,21 @@ class FliggyModel:
         开启飞猪小程序
         :return:
         """
-        self.open_wechat()
-        # 发现
-        logging.info("准备打开发现页...")
-        self.click("发现", timesleep=1)
-        # 小程序
-        logging.info("准备点击小程序...")
-        self.click("小程序", timesleep=2)
-        # 我的小程序
-        logging.info("准备点击飞猪小程序...")
-        # click("飞猪")
-        self.adbModel.click_button(200, 1000)
-        time.sleep(2)
+        if self.click_setting("更多", timesleep=1):
+            self.click("重新进入 小程序", timesleep=1)
+        else:
+            self.open_wechat()
+            # 发现
+            logging.info("准备打开发现页...")
+            self.click("发现", timesleep=1)
+            # 小程序
+            logging.info("准备点击小程序...")
+            self.click("小程序", timesleep=2)
+            # 我的小程序
+            logging.info("准备点击飞猪小程序...")
+            # click("飞猪")
+            self.adbModel.click_button(200, 1000)
+            time.sleep(2)
         # 订单页
         logging.info("准备点击订单页")
         self.click("订单")

@@ -31,6 +31,36 @@ def find_element_coordinates(xml_path, text):
         return None
 
 
+def find_setting(xml_path, text):
+    """
+    匹配设置
+    :param xml_path: xml 地址
+    :param text: 元素文本名称
+    :return:
+    """
+    tree = html.etree.parse(xml_path)
+    elements = tree.xpath("//node[@content-desc='{}']/@bounds".format(text))
+    if elements:
+        # 假设只找到一个元素，获取其坐标
+        bounds = elements[0]
+        if bounds == "[0,0][0,0]":
+            elements = tree.xpath("//node[@content-desc='{}']/preceding-sibling::*[1]/@bounds".format(text))
+            if elements:
+                # 假设只找到一个元素，获取其坐标
+                bounds = elements[0]
+            else:
+                print("...")
+                return None
+        print(bounds)
+        left, top, right, bottom = eval(bounds.replace('][', ","))
+        x = (left + right) // 2
+        y = (top + bottom) // 2
+        return [x, y]
+    else:
+        print("未发现element")
+        return None
+
+
 def find_current_element_coordinates(xml_path, text):
     """
     从 XML 中根据文本查找元素的坐标，不会匹配后一个坐标
