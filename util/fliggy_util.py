@@ -6,7 +6,7 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
-from util.interface_util import cancelorder, payresult, update_device
+from util.interface_util import cancelorder, payresult
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates
 
@@ -116,7 +116,7 @@ class FliggyModel:
         logging.info("准备点击酒店")
         self.click("酒店")
 
-    def pay_order(self, pay_password, device_id):
+    def pay_order(self, pay_password):
         """
         支付订单
         :return:

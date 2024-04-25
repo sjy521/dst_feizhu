@@ -25,7 +25,7 @@ def run(device):
             # 定位当前页面为订单页
             fliggy_model.goto_target_page()
             # 支付订单
-            pay_status = fliggy_model.pay_order(pay_password, device_id)
+            pay_status = fliggy_model.pay_order(pay_password)
             if pay_status:
                 pay_num += 1
                 if pay_num % 5 == 0:
