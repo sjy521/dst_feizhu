@@ -38,7 +38,7 @@ def payresult(orderId, status):
 
 
 def select_device():
-    url = "http://192.168.52.106:8083/library/all/libraries"
+    url = settings.ADMIN_URL81 + "/library/all/libraries"
     res = requests.get(url)
     resjson = json.loads(res.text)
     if resjson['result']:
