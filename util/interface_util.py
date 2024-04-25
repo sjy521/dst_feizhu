@@ -51,7 +51,7 @@ def update_device(device_id, state):
     url = "http://192.168.52.106:8083/library/update/library"
     data = {
         "deviceId": device_id,
-        "state": state
+        "statue": state
     }
     res = requests.post(url, json=data)
     resjson = json.load(res.text)

@@ -24,7 +24,7 @@ def get_effective_device():
     if res_json.get("code") == 200:
         results = res_json.get("result")
         for result in results:
-            if result.get('state') == "1" and result.get('isBusy') == "0":
+            if result.get('isEnable') == "1" and result.get('isBusy') == "0":
                 device_id_list.append(result.get('deviceId'))
     if len(device_id_list) > 0:
         return random.choices(device_id_list)

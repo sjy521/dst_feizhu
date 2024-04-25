@@ -54,5 +54,5 @@ if __name__ == '__main__':
     if len(devices) > 0:
         for device in devices:
             print(device)
-            if device['state'] == '1':
+            if device['isEnable'] == '1':
                 run(device)
