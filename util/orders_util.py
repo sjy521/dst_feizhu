@@ -61,7 +61,7 @@ def get_effective_order(device_id):
 
 
 # 订单解锁
-def fail_order_unlock(device_id, bg_order_id, change_status, full_status):
+def fail_order_unlock(bg_order_id, change_status, full_status, device_id):
     """
     订单解锁，订单通知失败
     :param device_id:
@@ -70,13 +70,15 @@ def fail_order_unlock(device_id, bg_order_id, change_status, full_status):
     url = settings.ADMIN_URL + "/hotel/bgorder/editChangePrieOrFullBySystem"
     payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": bg_order_id}
     response = requests.request("POST", url, json=payload)
-
+    res_json = json.loads(response.text)
+    logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
     url = settings.ADMIN_URL + "/hotel/bgorder/unlockBySystem"
     querystring = {"orderId": bg_order_id, "userName": device_id}
     response = requests.request("GET", url, params=querystring)
     order_res_json = json.loads(response.text)
     if order_res_json['result'] is True:
-        logging.info("bgorderid: {}, 支付失败，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
+        logging.info("bgorderid: {}, 下单失败，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
+    logging.info("bgorderid: {}, 下单失败，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
 
 
 # 根据bgOrderId 获取供应商下单地址
@@ -143,23 +145,48 @@ def build_order(device_id, tar_json):
             return biz_order_id
         else:
             if "满房" in res_json['data']['message']:
-                return None
+                return "满房"
             elif "比价" in res_json['data']['message']:
-                return None
+                return "变价"
             return None
     else:
         return None
 
 
-def edit_change_full(change_status, full_status):
+def cancel_order(device_id, biz_order_id):
+    """
+    取消订单
+    :param device_id:
+    :return:  成功，变价，满房，失败
+    """
+    url = "http://192.168.52.112:8083/fliggy/cancelorder"
+    payload = {
+        "biz_order_id": biz_order_id,
+        "device_id": device_id,
+    }
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json['status'] is True:
+        status = res_json['data']['status']
+        if status is True:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def edit_change_full(change_status, full_status, bg_order_id):
     """
     更新变价满房状态
     :return:
     """
     url = settings.ADMIN_URL + "/hotel/bgorder/editChangePrieOrFullBySystem"
-    payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": "240320596452"}
+    payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": bg_order_id}
     response = requests.request("POST", url, data=payload)
     res_json = json.loads(response.text)
+    logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
+    return res_json
 
 
 # order创建订单

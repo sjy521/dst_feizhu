@@ -111,7 +111,7 @@ class FliggyModel:
         :return:
         """
         if self.click_setting("更多", timesleep=1):
-            self.click("重新进入 小程序", timesleep=1)
+            self.click("重新进入\n小程序", timesleep=1)
         else:
             self.open_wechat()
             # 发现
@@ -165,24 +165,24 @@ class FliggyModel:
                 self.click(pay_password[2], xml_path)
                 self.click(pay_password[3], xml_path)
                 self.click(pay_password[4], xml_path)
-                if cancelorder(order_id):
-                    logging.info("验证成功")
-                    # input("验证成功，点击回车继续付款...")
-                else:
-                    logging.info("验证失败, 准备返回")
-                    # input("验证失败，点击回车继续付款...")
-                    self.adbModel.click_back()
-                    self.adbModel.click_back()
-                    return True
+                # if cancelorder(order_id):
+                #     logging.info("验证成功")
+                #     # input("验证成功，点击回车继续付款...")
+                # else:
+                #     logging.info("验证失败, 准备返回")
+                #     # input("验证失败，点击回车继续付款...")
+                #     self.adbModel.click_back()
+                #     self.adbModel.click_back()
+                #     return True
                 self.click(pay_password[5], xml_path)
                 time.sleep(3)
                 if self.pay_success("支付成功"):
+                    self.error_num = 1
                     status = 1
                 else:
                     status = 0
                     send_abnormal_alarm_for_dingding("支付异常，请及时查看")
                 payresult(orderId=order_id, status=status)
-                # update_device(device_id=device_id, state=0)
                 logging.info("order_id:[{}] 支付完成，已成功发送通知".format(order_id))
                 self.adbModel.click_back()
                 time.sleep(2)
