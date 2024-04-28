@@ -157,7 +157,7 @@ def cancel_order(device_id, biz_order_id):
     """
     取消订单
     :param device_id:
-    :return:  成功，变价，满房，失败
+    :return:
     """
     url = "http://192.168.52.112:8083/fliggy/cancelorder"
     payload = {
