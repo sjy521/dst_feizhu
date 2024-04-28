@@ -39,7 +39,6 @@ def set_not_effective_device(device_id, is_enable, is_busy):
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
     """
-    device_id_list = []
     url = settings.ADMIN_URL81 + "/library/update/library"
     payload = {"deviceId": device_id,
                "isEnable": str(is_enable),
@@ -83,9 +82,12 @@ def get_effective_order(device_id):
 
 
 # 订单备注更新并解锁
-def fail_order_unlock(bg_order_id, change_status, full_status, device_id):
+def fail_order_unlock(change_status, full_status, bg_order_id, device_id):
     """
     订单解锁，订单通知失败
+    :param change_status:
+    :param bg_order_id:
+    :param full_status:
     :param device_id:
     :return: true，false
     """

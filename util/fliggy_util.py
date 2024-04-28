@@ -6,7 +6,6 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
-from util.interface_util import cancelorder, payresult
 from util.orders_util import cancel_order, set_not_effective_device
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting
@@ -161,8 +160,7 @@ class FliggyModel:
                     self.adbModel.click_back()
                     self.adbModel.click_back()
                     if self.error_num >= 6:
-                        payresult(orderId=order_id, status=0)
-                        # update_device(device_id=device_id, state=0)
+                        set_not_effective_device(self.device_id, 0, 0)
                     return False
                 self.click(pay_password[1], xml_path)
                 self.click(pay_password[2], xml_path)
@@ -187,7 +185,6 @@ class FliggyModel:
                     send_abnormal_alarm_for_dingding("支付异常，已取消订单，请及时查看")
                     cancel_order(self.device_id, order_id)
                     set_not_effective_device(self.device_id, 0, 0)
-                # payresult(orderId=order_id, status=status)
                 logging.info("order_id:[{}] 支付完成, 状态：[{}]".format(order_id, status))
                 self.adbModel.click_back()
                 time.sleep(2)

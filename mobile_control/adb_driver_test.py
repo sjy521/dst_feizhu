@@ -5,6 +5,7 @@ from dynaconf import settings
 from sql_tool.sql_model import SqlModel
 from util.adb_util import AdbModel
 from util.fliggy_util import FliggyModel
+from util.orders_util import fail_order_unlock
 from util.xpath_util import find_element_coordinates, find_element_text, find_current_element_text
 
 if __name__ == '__main__':
@@ -17,14 +18,15 @@ if __name__ == '__main__':
     # mini_program_app_id = 'wx6a96c49f29850eb5'
     # "gh_e4c5d4d5bc2f"
     device_id = "ORHQN799EI8TUWN7"
+    fail_order_unlock(0, 1, "240312462395", device_id)
     # app_name = "com.tencent.mm/.ui.LauncherUI"
-    fliggy_model = FliggyModel(device_id)
+    # fliggy_model = FliggyModel(device_id)
     # adbModel.is_wechat_open(app_name)
-    print('==')
+    # print('==')
     # print(adbModel.is_wechat_open(app_name))
-    xml_path = fliggy_model.adbModel.convert_to_xml()
-    print(xml_path)
-    print(fliggy_model.click("重新进入\n小程序", xml_path))
+    # xml_path = fliggy_model.adbModel.convert_to_xml()
+    # print(xml_path)
+    # print(fliggy_model.click("重新进入\n小程序", xml_path))
     # xml_path = adbModel.convert_to_xml()
     # print(find_current_element_text(xml_path, "全部订单"))
     # click("酒店")
