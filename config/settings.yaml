@@ -1,4 +1,5 @@
-default:
+#default:
+prod:
   is_debug: true
 #  mysql
   mysql_host: 8.146.211.133
@@ -17,9 +18,20 @@ default:
   spa_url: http://spa.bingotravel.com.cn
 
 
-prod:
+#prod:
+default:
   is_debug: false
+  mysql_host: 8.146.211.133
+  mysql_port: 3306
+  mysql_db: hotel_base_info
+  mysql_name: devices_library
+  mysql_username: bystest
+  mysql_password: bystest
   logging: /config/logging.yaml
 
+  path: http://api.bingotravel.com.cn
+
   admin_url: http://admin.bingotravel.com.cn
+  admin_url81: http://10.18.50.2:8080
+
   spa_url: http://spa.bingotravel.com.cn

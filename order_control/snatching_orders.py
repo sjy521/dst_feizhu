@@ -2,6 +2,7 @@ import logging
 import time
 import traceback
 
+import dynaconf
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
