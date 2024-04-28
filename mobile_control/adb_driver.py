@@ -4,12 +4,11 @@ import traceback
 import sys
 import os
 
-from util.orders_util import set_not_effective_device
-
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
 from sql_tool.sql_model import SqlModel
+from util.orders_util import set_not_effective_device
 from log_model.set_log import setup_logging
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.fliggy_util import FliggyModel
