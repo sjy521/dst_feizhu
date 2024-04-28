@@ -4,6 +4,8 @@ import traceback
 import sys
 import os
 
+from util.orders_util import set_not_effective_device
+
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
@@ -23,6 +25,8 @@ from util.interface_util import select_device
 def run(device):
     device_id = device.get("deviceId")
     pay_password = device.get("payPassword")
+    is_busy = device.get("isBusy")
+    is_enable = device.get("isEnable")
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_mini_feizhu()
     pay_num = 0
@@ -35,6 +39,9 @@ def run(device):
             pay_status = fliggy_model.pay_order(pay_password)
             if pay_status:
                 pay_num += 1
+                if is_busy != 0:
+                    is_busy -= 1
+                set_not_effective_device(device_id, is_enable, is_busy)
                 if pay_num % 5 == 0:
                     send_abnormal_alarm_for_dingding("已经连续支付成功{}单".format(pay_num))
                 continue

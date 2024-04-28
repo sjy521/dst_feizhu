@@ -7,7 +7,7 @@ from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.interface_util import cancelorder, payresult
-from util.orders_util import cancel_order
+from util.orders_util import cancel_order, set_not_effective_device
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting
 
@@ -32,6 +32,8 @@ class FliggyModel:
         coordinate = find_element_coordinates(xml_path, click_text)
         if coordinate:
             x, y = coordinate
+            if y > 2110:
+                return False
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
             self.adbModel.click_button(x, y, timesleep=timesleep)
             return xml_path
@@ -40,7 +42,6 @@ class FliggyModel:
             if timesleep is not None:
                 time.sleep(timesleep)
             return False
-
 
     def click_setting(self, click_text, xml_path=None, timesleep=0):
         """
@@ -183,8 +184,9 @@ class FliggyModel:
                     status = 1
                 else:
                     status = 0
-                    send_abnormal_alarm_for_dingding("支付异常，请及时查看")
+                    send_abnormal_alarm_for_dingding("支付异常，已取消订单，请及时查看")
                     cancel_order(self.device_id, order_id)
+                    set_not_effective_device(self.device_id, 0, 0)
                 # payresult(orderId=order_id, status=status)
                 logging.info("order_id:[{}] 支付完成, 状态：[{}]".format(order_id, status))
                 self.adbModel.click_back()

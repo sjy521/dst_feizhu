@@ -21,15 +21,37 @@ def get_effective_device():
     url = settings.ADMIN_URL81 + "/library/all/libraries"
     response = requests.request("GET", url)
     res_json = json.loads(response.text)
+    print(res_json)
     if res_json.get("code") == 200:
         results = res_json.get("result")
         for result in results:
-            if result.get('isEnable') == "1" and result.get('isBusy') == "0":
-                device_id_list.append(result.get('deviceId'))
+            if result.get('isEnable') == "1" and result.get('isBusy') <= 1:
+                device_id_list.append(result)
     if len(device_id_list) > 0:
         return random.choices(device_id_list)
     else:
         return None
+
+
+# 设置不可用的设备
+def set_not_effective_device(device_id, is_enable, is_busy):
+    """
+    从数据库更新的device_id为不可用或不空闲
+    :return: device_id
+    """
+    device_id_list = []
+    url = settings.ADMIN_URL81 + "/library/update/library"
+    payload = {"deviceId": device_id,
+               "isEnable": str(is_enable),
+               "isBusy": is_busy
+               }
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        logging.info("数据库更新成功, result: {}".format(str(res_json)))
+        return True
+    logging.info("数据库更新失败, result: {}".format(str(res_json)))
+    return False
 
 
 # 查询有效订单，并锁单
@@ -60,7 +82,7 @@ def get_effective_order(device_id):
     return None
 
 
-# 订单解锁
+# 订单备注更新并解锁
 def fail_order_unlock(bg_order_id, change_status, full_status, device_id):
     """
     订单解锁，订单通知失败
@@ -72,13 +94,18 @@ def fail_order_unlock(bg_order_id, change_status, full_status, device_id):
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
+    unlock(bg_order_id, device_id)
+
+
+# 订单解锁
+def unlock(bg_order_id, device_id):
     url = settings.ADMIN_URL + "/hotel/bgorder/unlockBySystem"
     querystring = {"orderId": bg_order_id, "userName": device_id}
     response = requests.request("GET", url, params=querystring)
     order_res_json = json.loads(response.text)
     if order_res_json['result'] is True:
-        logging.info("bgorderid: {}, 下单失败，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
-    logging.info("bgorderid: {}, 下单失败，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
+        logging.info("bgorderid: {}，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
+    logging.info("bgorderid: {}，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
 
 
 # 根据bgOrderId 获取供应商下单地址
