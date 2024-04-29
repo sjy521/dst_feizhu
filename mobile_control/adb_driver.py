@@ -24,7 +24,7 @@ from util.interface_util import select_device
 def run(device):
     device_id = device.get("deviceId")
     pay_password = device.get("payPassword")
-    is_busy = device.get("isBusy")
+    is_busy = int(device.get("isBusy"))
     is_enable = device.get("isEnable")
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_mini_feizhu()

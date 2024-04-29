@@ -6,7 +6,7 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding
-from util.orders_util import cancel_order, set_not_effective_device
+from util.orders_util import cancel_order, set_not_effective_device, unlock
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting
 
@@ -31,8 +31,6 @@ class FliggyModel:
         coordinate = find_element_coordinates(xml_path, click_text)
         if coordinate:
             x, y = coordinate
-            if y > 2110:
-                return False
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
             self.adbModel.click_button(x, y, timesleep=timesleep)
             return xml_path
@@ -73,7 +71,7 @@ class FliggyModel:
             coordinate = find_current_element_coordinates(xml_path, click_text)
             if coordinate:
                 x, y = coordinate
-                if x == y == 0:
+                if x == y == 0 or y > 2110:
                     self.adbModel.swipe(500, 1700, 500, 600)
                     continue
                 logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
@@ -113,7 +111,7 @@ class FliggyModel:
         :return:
         """
         if self.click_setting("更多", timesleep=1):
-            self.click("重新进入\n小程序", timesleep=1)
+            self.click("重新进入\n小程序", timesleep=5)
         else:
             self.open_wechat()
             # 发现
@@ -185,6 +183,7 @@ class FliggyModel:
                     send_abnormal_alarm_for_dingding("支付异常，已取消订单，请及时查看")
                     cancel_order(self.device_id, order_id)
                     set_not_effective_device(self.device_id, 0, 0)
+                    # unlock(bg_order_id, self.device_id)
                 logging.info("order_id:[{}] 支付完成, 状态：[{}]".format(order_id, status))
                 self.adbModel.click_back()
                 time.sleep(2)
