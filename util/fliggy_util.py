@@ -151,9 +151,9 @@ class FliggyModel:
         支付订单
         :return:
         """
-        if self.click_pay("待付款", timesleep=3):
+        if self.click_pay("待付款", timesleep=5):
             self.check_error()
-            xml_path = self.click("去付款", timesleep=2)
+            xml_path = self.click("去付款", timesleep=4)
             if xml_path:
                 order_id = self.find_orderId(xml_path, "订单号")
                 logging.info("当前订单号号是：{}".format(order_id))
