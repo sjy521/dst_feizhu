@@ -60,7 +60,7 @@ def get_effective_order(device_id):
     :return: bgorderid
     """
     url = settings.ADMIN_URL + "/hotel/bgorder/getNoReadyOrderByPage"
-    payload = {"pageNum": 1, "pageSize": 10, "param": {}}
+    payload = {"pageNum": 1, "pageSize": 30, "param": {}}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:

@@ -41,7 +41,7 @@ def run(device):
                 busy_devices = select_device()
                 if len(busy_devices) > 0:
                     for busy_device in busy_devices:
-                        if busy_device['deviceId'] == 'device_id':
+                        if busy_device['deviceId'] == device_id:
                             is_busy = int(busy_device.get("isBusy"))
                 if is_busy != 0:
                     is_busy -= 1
