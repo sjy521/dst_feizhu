@@ -22,12 +22,44 @@ def get_ding_url():
     return url
 
 
+def get_ding_pay_url():
+    timestamp = str(round(time.time() * 1000))
+    secret = "SEC26b241f0640272d1d31dbcdff40fef0432a3be08606396230fb78dcc3794788b"
+    access_token = "7369d4bbe26545da0c96ce4102c7b0101c7b9e316da46e22e747eb9e568df12f"
+    secret_enc = secret.encode("utf-8")
+    string_to_sign = "{}\n{}".format(timestamp, secret)
+    string_to_sign_enc = string_to_sign.encode("utf-8")
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+    url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
+                                                                                             sign)
+    return url
+
+
 def send_abnormal_alarm_for_dingding(text):
     url = get_ding_url()
     data = {
         "at": {
             "atMobiles": [
                 "18518020709"
+            ],
+            "isAtAll": False
+        },
+        "text": {
+            "content": text
+        },
+        "msgtype": "text"
+    }
+    res = requests.post(url, json=data)
+    res_json = json.loads(res.text)
+    return res_json.get("errmsg")
+
+
+def send_pay_order_for_dingding(text):
+    url = get_ding_pay_url()
+    data = {
+        "at": {
+            "atMobiles": [
             ],
             "isAtAll": False
         },

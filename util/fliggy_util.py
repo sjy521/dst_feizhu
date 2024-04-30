@@ -5,7 +5,7 @@ from dynaconf import settings
 
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
-from util.ding_util import send_abnormal_alarm_for_dingding
+from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 from util.orders_util import cancel_order, set_not_effective_device, unlock
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting
@@ -125,36 +125,42 @@ class FliggyModel:
             # click("飞猪")
             self.adbModel.click_button(200, 1000)
             time.sleep(2)
+            if self.click_setting("更多", timesleep=1):
+                self.click("重新进入\n小程序", timesleep=5)
         # 订单页
         logging.info("准备点击订单页")
         self.click("订单")
 
-    def refresh(self):
+    def refresh(self, click_type):
         """
         刷新订单
         :return:
         """
-        logging.info("准备点击全部订单")
-        self.click("全部订单")
+        if click_type == 1:
+            logging.info("准备点击全部订单")
+            self.click("全部订单")
+            return 0
         # 订单页
-        logging.info("准备点击酒店")
-        self.click("酒店")
+        if click_type == 0:
+            logging.info("准备点击酒店")
+            self.click("酒店")
+            return 1
 
     def pay_order(self, pay_password):
         """
         支付订单
         :return:
         """
-        if self.click_pay("待付款", timesleep=5):
+        if self.click_pay("待付款", timesleep=3):
             self.check_error()
-            xml_path = self.click("去付款", timesleep=3)
+            xml_path = self.click("去付款", timesleep=2)
             if xml_path:
                 order_id = self.find_orderId(xml_path, "订单号")
                 logging.info("当前订单号号是：{}".format(order_id))
                 xml_path = self.click(pay_password[0])
                 if xml_path is False:
                     self.error_num += 1
-                    send_abnormal_alarm_for_dingding("支付前异常，请及时查看")
+                    send_pay_order_for_dingding("支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(order_id))
                     self.adbModel.click_back()
                     self.adbModel.click_back()
                     if self.error_num >= 6:
@@ -180,8 +186,8 @@ class FliggyModel:
                     status = 1
                 else:
                     status = 0
-                    send_abnormal_alarm_for_dingding("支付异常，已取消订单，请及时查看")
-                    cancel_order(self.device_id, order_id)
+                    send_pay_order_for_dingding("支付异常, 飞猪订单号: {}".format(order_id))
+                    # cancel_order(self.device_id, order_id)
                     set_not_effective_device(self.device_id, 0, 0)
                     # unlock(bg_order_id, self.device_id)
                 logging.info("order_id:[{}] 支付完成, 状态：[{}]".format(order_id, status))
@@ -244,7 +250,7 @@ class FliggyModel:
         跳转到目标页面
         :return:
         """
-        for _ in range(3):
+        for _ in range(10):
             for __ in range(3):
                 xml_path = self.adbModel.convert_to_xml()
                 if find_current_element_text(xml_path, "全部订单"):
@@ -254,4 +260,4 @@ class FliggyModel:
             logging.info("定位订单页失败，准备重启飞猪小程序...")
             self.open_mini_feizhu()
 
-        send_abnormal_alarm_for_dingding("定位飞猪小程序订单页失败超三次")
+        send_abnormal_alarm_for_dingding("定位飞猪小程序订单页失败超10次")

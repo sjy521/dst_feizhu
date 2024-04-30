@@ -7,7 +7,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
-from sql_tool.sql_model import SqlModel
 from util.orders_util import set_not_effective_device
 from log_model.set_log import setup_logging
 from util.ding_util import send_abnormal_alarm_for_dingding
@@ -29,12 +28,13 @@ def run(device):
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_mini_feizhu()
     pay_num = 0
+    click_type = 0
     while True:
         try:
             # 定位当前页面为订单页
             fliggy_model.goto_target_page()
             # 支付订单
-            fliggy_model.refresh()
+            click_type = fliggy_model.refresh(click_type)
             pay_status = fliggy_model.pay_order(pay_password)
             if pay_status:
                 pay_num += 1

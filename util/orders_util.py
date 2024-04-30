@@ -25,10 +25,10 @@ def get_effective_device():
     if res_json.get("code") == 200:
         results = res_json.get("result")
         for result in results:
-            if result.get('isEnable') == "1" and result.get('isBusy') <= 1:
+            if result.get('isEnable') == "1" and int(result.get('isBusy')) < 2:
                 device_id_list.append(result)
     if len(device_id_list) > 0:
-        return random.choices(device_id_list)
+        return random.choices(device_id_list)[0]
     else:
         return None
 
@@ -66,7 +66,9 @@ def get_effective_order(device_id):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
-            for result in results.get("rows"):
+            # for result in results.get("rows"):
+            for i in range(5):
+                result = random.choices(results.get("rows"))[0]
                 bg_order_id = result.get("bgOrderId")
                 d_ordr_id = result.get("dorderId")
                 # 加锁
@@ -107,7 +109,8 @@ def unlock(bg_order_id, device_id):
     order_res_json = json.loads(response.text)
     if order_res_json['result'] is True:
         logging.info("bgorderid: {}，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
-    logging.info("bgorderid: {}，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
+    else:
+        logging.info("bgorderid: {}，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
 
 
 # 根据bgOrderId 获取供应商下单地址
@@ -170,8 +173,9 @@ def build_order(device_id, tar_json):
     if res_json['status'] is True:
         status = res_json['data']['status']
         if status is True:
-            biz_order_id = res_json['data']['bizOrderId']
-            return biz_order_id
+            biz_order_id = res_json['data']['biz_order_id']
+            price = res_json['data']['price']
+            return [biz_order_id, price]
         else:
             if "满房" in res_json['data']['message']:
                 return "满房"
@@ -219,7 +223,7 @@ def edit_change_full(change_status, full_status, bg_order_id):
 
 
 # order创建订单
-def order_create_order(bg_order_id, sorder_id, device_id):
+def order_create_order(bg_order_id, sorder_id, price, device_id):
     """
     order 补录订单
     :return: 成功，失败
@@ -232,6 +236,7 @@ def order_create_order(bg_order_id, sorder_id, device_id):
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         payload = res_json['result']
+        order_item = payload['orderItemVO']
         url = settings.ADMIN_URL + "/hotel/sorder/createSOrderBySystem"
         payload["sOrderId"] = sorder_id
         payload["bgOrderId"] = bg_order_id
@@ -241,6 +246,12 @@ def order_create_order(bg_order_id, sorder_id, device_id):
         payload["productItem"] = "机器补录"
         payload["payType"] = 1
         payload["brokerage"] = 0
+        payload["price"] = price
+        payload["productName"] = order_item.get("productName")
+        payload["consumerName"] = order_item.get("consumerName")
+        payload["consumerPhone"] = order_item.get("consumerPhone")
+        payload["contact"] = order_item.get("contact")
+        payload["refundRule"] = order_item.get("refundRule")
         payload["paymentTransactionVO"] = {
             "sOrderId": sorder_id,
             "bgOrderId": bg_order_id,
@@ -248,8 +259,10 @@ def order_create_order(bg_order_id, sorder_id, device_id):
             "payType": 1,
             "payTime": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         }
+        payload["id"] = None
         response = requests.request("POST", url, json=payload)
         res_json = json.loads(response.text)
+        logging.info("[{}]补录: [{}]".format(bg_order_id, str(res_json)))
         if res_json.get("code") == 200:
             if res_json['success'] is True:
                 return True
