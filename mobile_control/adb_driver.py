@@ -38,6 +38,11 @@ def run(device):
             pay_status = fliggy_model.pay_order(pay_password)
             if pay_status:
                 pay_num += 1
+                busy_devices = select_device()
+                if len(busy_devices) > 0:
+                    for busy_device in busy_devices:
+                        if busy_device['deviceId'] == 'device_id':
+                            is_busy = int(busy_device.get("isBusy"))
                 if is_busy != 0:
                     is_busy -= 1
                 set_not_effective_device(device_id, is_enable, is_busy)
