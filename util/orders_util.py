@@ -25,7 +25,7 @@ def get_effective_device():
     if res_json.get("code") == 200:
         results = res_json.get("result")
         for result in results:
-            if result.get('isEnable') == "1" and int(result.get('isBusy')) < 2:
+            if result.get('isEnable') == "1" and int(result.get('isBusy')) < 1:
                 device_id_list.append(result)
     if len(device_id_list) > 0:
         return random.choices(device_id_list)[0]
@@ -40,7 +40,12 @@ def set_not_effective_device(device_id, is_enable, is_busy):
     :return: device_id
     """
     url = settings.ADMIN_URL81 + "/library/update/library"
-    payload = {"deviceId": device_id,
+    if is_enable == "":
+        payload = {"deviceId": device_id,
+                   "isBusy": is_busy
+                   }
+    else:
+        payload = {"deviceId": device_id,
                "isEnable": str(is_enable),
                "isBusy": is_busy
                }

@@ -43,9 +43,9 @@ def run(device):
                     for busy_device in busy_devices:
                         if busy_device['deviceId'] == device_id:
                             is_busy = int(busy_device.get("isBusy"))
-                if is_busy != 0:
+                if is_busy > 0:
                     is_busy -= 1
-                set_not_effective_device(device_id, is_enable, is_busy)
+                set_not_effective_device(device_id, "", is_busy)
                 if pay_num % 5 == 0:
                     send_abnormal_alarm_for_dingding("已经连续支付成功{}单".format(pay_num))
                 continue

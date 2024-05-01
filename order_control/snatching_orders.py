@@ -44,15 +44,15 @@ if __name__ == '__main__':
                             else:
                                 logging.info("[{}]下单失败".format(bg_order_id))
                                 unlock(bg_order_id, device_id)
-                                time.sleep(5)
+                                time.sleep(1)
                                 continue
                         except Exception as f:
                             logging.error("异常：{}".format(str(traceback.format_exc())))
                             unlock(bg_order_id, device_id)
-                            time.sleep(2)
+                            time.sleep(1)
                     else:
                         logging.info("当前无待处理订单")
-                        time.sleep(2)
+                        time.sleep(1)
             else:
                 logging.info("当前无可用的设备")
                 time.sleep(10)
@@ -64,4 +64,5 @@ if __name__ == '__main__':
     # get_url_by_bgorderid("11111118", "240320690295")
 
     # order_create_order("240320001163", "12345678", "手机")
+
 

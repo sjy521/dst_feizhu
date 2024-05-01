@@ -21,6 +21,7 @@ def run(device):
         fliggy_model = FliggyModel(device_id)
         fliggy_model.open_mini_feizhu()
         pay_num = 0
+        click_type = 0
         while True:
             try:
                 # 定位当前页面为订单页
@@ -35,7 +36,7 @@ def run(device):
                 pay_num = 0
                 fliggy_model.del_order()
                 time.sleep(0.1)
-                fliggy_model.refresh()
+                click_type = fliggy_model.refresh(click_type)
             except Exception as f:
                 logging.info("异常： [{}]， 准备跳过...".format(traceback.format_exc()))
                 continue
