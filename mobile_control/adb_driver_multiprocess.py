@@ -3,11 +3,12 @@ import time
 import traceback
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from multiprocessing import Pool
 from dynaconf import settings
-
+from util.orders_util import set_not_effective_device
 from log_model.set_log import setup_logging
 from util.ding_util import send_abnormal_alarm_for_dingding
 from util.fliggy_util import FliggyModel
