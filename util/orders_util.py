@@ -162,7 +162,8 @@ def build_order(device_id, tar_json):
     :param device_id:
     :return:  成功，变价，满房，失败
     """
-    url = "http://192.168.52.112:8083/fliggy/buildorder"
+    # url = "http://192.168.52.112:8083/fliggy/buildorder"
+    url = "http://build-order.bingotravel.com.cn/fliggy/buildorder"
     payload = {
         "wx_link": tar_json['wx_link'],
         "sr_name": tar_json['sr_name'],
