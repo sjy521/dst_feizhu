@@ -50,7 +50,8 @@ def run(device):
                     send_abnormal_alarm_for_dingding("已经连续支付成功{}单".format(pay_num))
                 continue
             busy_id = fliggy_model.get_pay_num()
-            set_not_effective_device(device_id, "", busy_id)
+            if busy_id is not False:
+                set_not_effective_device(device_id, "", busy_id)
             pay_num = 0
             # fliggy_model.del_order()
             time.sleep(1)
