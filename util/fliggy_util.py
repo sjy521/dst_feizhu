@@ -27,7 +27,7 @@ class FliggyModel:
         :return:
         """
         if xml_path is None:
-            xml_path = self.adbModel.convert_to_xml()
+            xml_path = self.adbModel.convert_to_xml(self.device_id)
         coordinate = find_element_coordinates(xml_path, click_text)
         if coordinate:
             x, y = coordinate
@@ -47,7 +47,7 @@ class FliggyModel:
         :return:
         """
         if xml_path is None:
-            xml_path = self.adbModel.convert_to_xml()
+            xml_path = self.adbModel.convert_to_xml(self.device_id)
         coordinate = find_setting(xml_path, click_text)
         if coordinate:
             x, y = coordinate
@@ -67,7 +67,7 @@ class FliggyModel:
         :return:
         """
         for _ in range(4):
-            xml_path = self.adbModel.convert_to_xml()
+            xml_path = self.adbModel.convert_to_xml(self.device_id)
             coordinate = find_current_element_coordinates(xml_path, click_text)
             if coordinate:
                 x, y = coordinate
@@ -209,7 +209,7 @@ class FliggyModel:
         :return:
         """
         logging.info("准备查找[{}]...".format(click_text))
-        xml_path = self.adbModel.convert_to_xml()
+        xml_path = self.adbModel.convert_to_xml(self.device_id)
         res = find_current_element_text(xml_path, click_text)
         if res:
             return res
@@ -233,7 +233,7 @@ class FliggyModel:
         :return:
         """
         for _ in range(2):
-            xml_path = self.adbModel.convert_to_xml()
+            xml_path = self.adbModel.convert_to_xml(self.device_id)
             if find_current_element_text(xml_path, "无法打开页面"):
                 self.adbModel.click_button(530, 900)
                 time.sleep(5)
@@ -252,7 +252,7 @@ class FliggyModel:
         """
         for _ in range(10):
             for __ in range(3):
-                xml_path = self.adbModel.convert_to_xml()
+                xml_path = self.adbModel.convert_to_xml(self.device_id)
                 if find_current_element_text(xml_path, "全部订单"):
                     return True
                 else:

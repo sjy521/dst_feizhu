@@ -14,9 +14,9 @@ from util.fliggy_util import FliggyModel
 from util.interface_util import select_device
 
 
-def is_ok(fliggy_model):
+def is_ok(fliggy_model, device_id):
     for _ in range(20):
-        xml_path = fliggy_model.adbModel.convert_to_xml()
+        xml_path = fliggy_model.adbModel.convert_to_xml(device_id)
         if find_current_element_text(xml_path, "酒店详情"):
             return True
     else:
@@ -33,7 +33,7 @@ def run(device):
         try:
             print("点击扫一扫")
             fliggy_model.adbModel.click_button(220, 346, 0)
-            if is_ok(fliggy_model):
+            if is_ok(fliggy_model, device_id):
                 fliggy_model.adbModel.click_back()
                 time.sleep(0.5)
                 scan_error_num = 0

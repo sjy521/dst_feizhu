@@ -24,7 +24,6 @@ if __name__ == '__main__':
     # adbModel.is_wechat_open(app_name)
     # print('==')
     # print(adbModel.is_wechat_open(app_name))
-    # xml_path = fliggy_model.adbModel.convert_to_xml()
     # print(xml_path)
     # print(fliggy_model.click("重新进入\n小程序", xml_path))
     # xml_path = adbModel.convert_to_xml()

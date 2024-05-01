@@ -105,19 +105,19 @@ class AdbModel:
             print(traceback.format_exc())
         # subprocess.run(['adb', 'shell', 'am', 'broadcast', '-a', 'com.tencent.mm.plugin.openapi.Intent.ACTION_HANDLE_APP_REGISTER', '--es', 'appId', app_id])
 
-    def convert_to_xml(self):
+    def convert_to_xml(self, device_id):
         """
         使用 adb 截取当前界面的 XML
         :param :
         :return:
         """
-        xml_dump_path = os.path.join(tempfile.gettempdir(), "ui_dump.xml")
-        subprocess.run(["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/ui_dump.xml"])
+        xml_dump_path = os.path.join(tempfile.gettempdir(), "{}.xml".format(device_id))
+        subprocess.run(["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/{}.xml".format(device_id)])
         # diff_info = subprocess.check_output(
         #     ["adb", "-s", self.device_id, "shell", "diff", "/sdcard/ui_dump.xml", "/sdcard/ui_dump_error.xml"]).decode(
         #     "utf-8")
         # print(diff_info)
-        subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/ui_dump.xml", xml_dump_path])
+        subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/{}.xml".format(device_id), xml_dump_path])
         return xml_dump_path
 
     def is_wechat_open(self, wechat_name):
