@@ -6,9 +6,9 @@ from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
-from util.orders_util import cancel_order, set_not_effective_device, unlock
+from util.orders_util import set_not_effective_device
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
-    find_current_element_coordinates, find_setting
+    find_current_element_coordinates, find_setting, find_current_element_num
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -82,6 +82,19 @@ class FliggyModel:
                 if timesleep is not None:
                     time.sleep(timesleep)
                 return False
+        else:
+            return False
+
+    def get_pay_num(self):
+        """
+        获取待支付订单数量
+        :param click_text:
+        :return:
+        """
+        xml_path = self.adbModel.convert_to_xml(self.device_id)
+        coordinate = find_current_element_num(xml_path, "待支付")
+        if coordinate:
+            return coordinate
         else:
             return False
 

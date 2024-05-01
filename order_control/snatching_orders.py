@@ -1,12 +1,15 @@
 import logging
 import time
 import traceback
+import sys
+import os
 
-import dynaconf
+sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
+
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
-    build_order, edit_change_full, fail_order_unlock, unlock, set_not_effective_device
+    build_order, fail_order_unlock, unlock, set_not_effective_device
 
 setup_logging(default_path=settings.LOGGING)
 
