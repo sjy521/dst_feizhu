@@ -255,11 +255,19 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
         payload["price"] = price
         payload["orderItemVO"] = {
             "hotelName": order_item.get("hotelName"),
+            "productId": 0,
+            "orderId": None,
+            "source": None,
+            "roomCount": order_item.get("roomCount"),
             "productName": order_item.get("productName"),
             "consumerName": order_item.get("consumerName"),
             "consumerPhone": order_item.get("consumerPhone"),
+            "idCard": None,
             "contact": order_item.get("contact"),
-            "refundRule": order_item.get("refundRule")
+            "refundRule": order_item.get("refundRule"),
+            "operator": None,
+            "createTime": None,
+            "updateTime": None
         }
         payload["paymentTransactionVO"] = {
             "sOrderId": sorder_id,
