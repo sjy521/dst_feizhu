@@ -64,9 +64,11 @@ def run(device):
 
 if __name__ == '__main__':
     setup_logging(default_path=settings.LOGGING)
-    devices = select_device()
-    if len(devices) > 0:
-        for device in devices:
-            print(device)
-            if device['isEnable'] == '1':
-                run(device)
+    while True:
+        devices = select_device()
+        if len(devices) > 0:
+            for device in devices:
+                print(device)
+                if device['isEnable'] == '1':
+                    run(device)
+            time.sleep(10)
