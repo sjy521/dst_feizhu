@@ -46,9 +46,9 @@ def set_not_effective_device(device_id, is_enable, is_busy):
                    }
     else:
         payload = {"deviceId": device_id,
-               "isEnable": str(is_enable),
-               "isBusy": is_busy
-               }
+                   "isEnable": str(is_enable),
+                   "isBusy": is_busy
+                   }
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -253,12 +253,14 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
         payload["payType"] = 1
         payload["brokerage"] = 0
         payload["price"] = price
-        payload["hotelName"] = order_item.get("hotelName")
-        payload["productName"] = order_item.get("productName")
-        payload["consumerName"] = order_item.get("consumerName")
-        payload["consumerPhone"] = order_item.get("consumerPhone")
-        payload["contact"] = order_item.get("contact")
-        payload["refundRule"] = order_item.get("refundRule")
+        payload["orderItemVO"] = {
+            "hotelName": order_item.get("hotelName"),
+            "productName": order_item.get("productName"),
+            "consumerName": order_item.get("consumerName"),
+            "consumerPhone": order_item.get("consumerPhone"),
+            "contact": order_item.get("contact"),
+            "refundRule": order_item.get("refundRule")
+        }
         payload["paymentTransactionVO"] = {
             "sOrderId": sorder_id,
             "bgOrderId": bg_order_id,
