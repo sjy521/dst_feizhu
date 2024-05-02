@@ -69,6 +69,8 @@ if __name__ == '__main__':
         if len(devices) > 0:
             for device in devices:
                 print(device)
+                time.sleep(10)
                 if device['isEnable'] == '1':
                     run(device)
             time.sleep(10)
+        time.sleep(10)
