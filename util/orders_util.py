@@ -253,6 +253,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
         payload["payType"] = 1
         payload["brokerage"] = 0
         payload["price"] = price
+        payload["hotelName"] = order_item.get("hotelName")
         payload["productName"] = order_item.get("productName")
         payload["consumerName"] = order_item.get("consumerName")
         payload["consumerPhone"] = order_item.get("consumerPhone")
