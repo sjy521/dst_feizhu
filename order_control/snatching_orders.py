@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
-    build_order, fail_order_unlock, unlock, set_not_effective_device
+    build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -42,8 +42,12 @@ if __name__ == '__main__':
                                     biz_order_id, price = build_res
                                     is_busy += 1
                                     set_not_effective_device(device_id, 1, is_busy)
-                                    order_create_order(bg_order_id, biz_order_id, price, device_id)
-                                    logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
+                                    create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
+                                    if create_order_res is False:
+                                        cancel_order(device_id, biz_order_id)
+                                        logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+                                    else:
+                                        logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
                                 break
                             else:
                                 logging.info("[{}]下单失败".format(bg_order_id))

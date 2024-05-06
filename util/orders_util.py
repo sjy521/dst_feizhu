@@ -197,7 +197,8 @@ def cancel_order(device_id, biz_order_id):
     :param device_id:
     :return:
     """
-    url = "http://192.168.52.112:8083/fliggy/cancelorder"
+    # url = "http://192.168.52.112:8083/fliggy/cancelorder"
+    url = "http://build-order.bingotravel.com.cn/fliggy/cancelorder"
     payload = {
         "biz_order_id": biz_order_id,
         "device_id": device_id,
