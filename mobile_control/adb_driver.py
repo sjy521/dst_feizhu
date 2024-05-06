@@ -31,6 +31,8 @@ def run(device):
     click_type = 0
     while True:
         try:
+            # 判断手机是否连接
+            fliggy_model.is_targat_device()
             # 定位当前页面为订单页
             fliggy_model.goto_target_page()
             # 支付订单

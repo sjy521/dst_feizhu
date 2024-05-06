@@ -22,6 +22,7 @@ if __name__ == '__main__':
             if device_info is not None:
                 device_id = device_info.get('deviceId')
                 is_busy = int(device_info.get('isBusy'))
+                phone = device_info.get('accountNo')
                 for i in range(20):
                     # 查询待处理订单并锁单
                     res = get_effective_order(device_id)
@@ -29,7 +30,7 @@ if __name__ == '__main__':
                         d_ordr_id, bg_order_id = res
                         try:
                             tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
-                            build_res = build_order(device_id, tar_json)
+                            build_res = build_order(device_id, tar_json, phone)
                             if build_res is not None:
                                 if build_res == "满房":
                                     fail_order_unlock(0, 1, bg_order_id, device_id)

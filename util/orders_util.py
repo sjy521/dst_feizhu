@@ -134,8 +134,7 @@ def get_url_by_bgorderid(d_order_id, bg_order_id):
         d_order = results['dOrder']
         tar_json = {
             "contact_phone": order_item.get("consumerPhone"),
-            "guest_list": [order_item.get("consumerName"), order_item['contact'] if order_item.get("contact") else [
-                order_item.get("consumerName")]],
+            "guest_list": [order_item.get("consumerName")],
             "check_in": d_order.get("checkInTime").split(" ")[0],
             "check_out": d_order.get("checkOutTime").split(" ")[0],
             "sr_name": order_item.get("productName"),
@@ -156,7 +155,7 @@ def get_url_by_bgorderid(d_order_id, bg_order_id):
 
 
 # 下单
-def build_order(device_id, tar_json):
+def build_order(device_id, tar_json, phone):
     """
     创建订单
     :param device_id:
@@ -167,7 +166,7 @@ def build_order(device_id, tar_json):
     payload = {
         "wx_link": tar_json['wx_link'],
         "sr_name": tar_json['sr_name'],
-        "contact_phone": tar_json['contact_phone'],
+        "contact_phone": phone,
         "guest_list": tar_json['guest_list'],
         "check_in": tar_json['check_in'],
         "check_out": tar_json['check_out'],

@@ -19,6 +19,7 @@ class FliggyModel:
         self.adbModel = AdbModel(device_id)
         self.error_num = 0
         self.device_id = device_id
+        self.adbshakedown = None
 
     def click(self, click_text, xml_path=None, timesleep=0):
         """
@@ -274,3 +275,19 @@ class FliggyModel:
             self.open_mini_feizhu()
 
         send_abnormal_alarm_for_dingding("定位飞猪小程序订单页失败超10次")
+
+    def is_targat_device(self):
+        if self.adbshakedown is None:
+            self.adbshakedown = 0
+        if self.adbModel.library():
+            if self.adbshakedown == 1:
+                # 钉钉通知
+                send_pay_order_for_dingding("adb调试已经打开，程序恢复正常")
+                self.adbshakedown = 0
+            return True
+        else:
+            if self.adbshakedown == 0:
+                # 钉钉通知
+                send_pay_order_for_dingding("当前程序异常：请查看手机是否连接 或者 adb调试是否开启")
+                self.adbshakedown = 1
+            return False

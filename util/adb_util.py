@@ -112,7 +112,8 @@ class AdbModel:
         :return:
         """
         xml_dump_path = os.path.join(tempfile.gettempdir(), "{}.xml".format(device_id))
-        subprocess.run(["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/{}.xml".format(device_id)])
+        subprocess.run(
+            ["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/{}.xml".format(device_id)])
         # diff_info = subprocess.check_output(
         #     ["adb", "-s", self.device_id, "shell", "diff", "/sdcard/ui_dump.xml", "/sdcard/ui_dump_error.xml"]).decode(
         #     "utf-8")
@@ -135,5 +136,12 @@ class AdbModel:
         if match:
             current_package = match.group(1)
             return current_package == wechat_name
+        else:
+            return False
+
+    def library(self):
+        res = subprocess.run(["adb", "devices"], capture_output=True, text=True)
+        if self.device_id in res.stdout:
+            return True
         else:
             return False
