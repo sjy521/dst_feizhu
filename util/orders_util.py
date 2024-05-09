@@ -59,7 +59,7 @@ def set_not_effective_device(device_id, is_enable, is_busy):
 
 
 # 查询有效订单，并锁单
-def get_effective_order(device_id):
+def get_effective_order(device_id, error_list):
     """
     查询有效订单，并锁单
     :return: bgorderid
@@ -75,6 +75,8 @@ def get_effective_order(device_id):
             for i in range(5):
                 result = random.choices(results.get("rows"))[0]
                 bg_order_id = result.get("bgOrderId")
+                if bg_order_id in error_list:
+                    continue
                 d_ordr_id = result.get("dorderId")
                 # 加锁
                 url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"

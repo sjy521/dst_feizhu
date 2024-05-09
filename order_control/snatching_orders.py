@@ -3,7 +3,7 @@ import time
 import traceback
 import sys
 import os
-
+from collections import deque
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
@@ -15,6 +15,7 @@ setup_logging(default_path=settings.LOGGING)
 
 
 if __name__ == '__main__':
+    error_list = deque(maxlen=20)
     # 获取空闲可用的设备
     while True:
         try:
@@ -25,7 +26,7 @@ if __name__ == '__main__':
                 phone = device_info.get('accountNo')
                 for i in range(20):
                     # 查询待处理订单并锁单
-                    res = get_effective_order(device_id)
+                    res = get_effective_order(device_id, error_list)
                     if res is not None:
                         d_ordr_id, bg_order_id = res
                         try:
@@ -51,11 +52,13 @@ if __name__ == '__main__':
                                 break
                             else:
                                 logging.info("[{}]下单失败".format(bg_order_id))
+                                error_list.append(bg_order_id)
                                 unlock(bg_order_id, device_id)
                                 time.sleep(1)
                                 continue
                         except Exception as f:
                             logging.error("异常：{}".format(str(traceback.format_exc())))
+                            error_list.append(bg_order_id)
                             unlock(bg_order_id, device_id)
                             time.sleep(1)
                     else:
