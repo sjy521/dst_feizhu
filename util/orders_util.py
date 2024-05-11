@@ -34,7 +34,7 @@ def get_effective_device():
 
 
 # 设置不可用的设备
-def set_not_effective_device(device_id, is_enable, is_busy):
+def set_not_effective_device(device_id, is_enable, is_busy, cookie=None):
     """
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
@@ -49,6 +49,11 @@ def set_not_effective_device(device_id, is_enable, is_busy):
                    "isEnable": str(is_enable),
                    "isBusy": is_busy
                    }
+    if cookie is not None:
+        payload = {"deviceId": device_id,
+                   "cookie2": cookie,
+                   "getCookie": 0
+                   }
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -59,7 +64,7 @@ def set_not_effective_device(device_id, is_enable, is_busy):
 
 
 # 查询有效订单，并锁单
-def get_effective_order(device_id, error_list):
+def get_effective_order(device_id, error_list, device_name):
     """
     查询有效订单，并锁单
     :return: bgorderid
@@ -80,7 +85,7 @@ def get_effective_order(device_id, error_list):
                 d_ordr_id = result.get("dorderId")
                 # 加锁
                 url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
-                querystring = {"orderId": bg_order_id, "userName": device_id}
+                querystring = {"orderId": bg_order_id, "userName": device_name}
                 order_response = requests.request("GET", url, params=querystring)
                 order_res_json = json.loads(order_response.text)
                 if order_res_json['result']['islock'] is True:

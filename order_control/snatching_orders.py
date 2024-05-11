@@ -22,11 +22,12 @@ if __name__ == '__main__':
             device_info = get_effective_device()
             if device_info is not None:
                 device_id = device_info.get('deviceId')
+                device_name = device_info.get('deviceName')
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
                 for i in range(20):
                     # 查询待处理订单并锁单
-                    res = get_effective_order(device_id, error_list)
+                    res = get_effective_order(device_id, error_list, device_name)
                     if res is not None:
                         d_ordr_id, bg_order_id = res
                         try:
