@@ -16,11 +16,11 @@ from util.interface_util import select_device
 
 
 def run(device):
+    device_id = device.get("deviceId")
+    pay_password = device.get("payPassword")
+    is_busy = int(device.get("isBusy"))
+    is_enable = device.get("isEnable")
     while True:
-        device_id = device.get("deviceId")
-        pay_password = device.get("payPassword")
-        is_busy = int(device.get("isBusy"))
-        is_enable = device.get("isEnable")
         fliggy_model = FliggyModel(device_id)
         fliggy_model.open_mini_feizhu()
         pay_num = 0
@@ -58,6 +58,12 @@ def run(device):
                     logging.info("异常： [{}]， 准备跳过...".format(traceback.format_exc()))
                     continue
         else:
+            busy_devices = select_device()
+            if len(busy_devices) > 0:
+                for busy_device in busy_devices:
+                    if busy_device['deviceId'] == device_id:
+                        is_busy = int(busy_device.get("isBusy"))
+                        is_enable = busy_device.get("isEnable")
             time.sleep(10)
 
 
