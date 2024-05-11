@@ -48,7 +48,7 @@ if __name__ == '__main__':
                                     logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
                                 else:
                                     logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
-                            break
+                            continue
                         else:
                             logging.info("[{}]下单失败".format(bg_order_id))
                             error_list.append(bg_order_id)
