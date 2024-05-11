@@ -160,7 +160,7 @@ class FliggyModel:
             self.click("酒店")
             return 1
 
-    def pay_order(self, pay_password):
+    def pay_order(self, pay_password, device_name):
         """
         支付订单
         :return:
@@ -170,11 +170,11 @@ class FliggyModel:
             xml_path = self.click("去付款", timesleep=4)
             if xml_path:
                 order_id = self.find_orderId(xml_path, "订单号")
-                logging.info("当前订单号号是：{}".format(order_id))
+                logging.info("{}: 当前订单号号是：{}".format(device_name, order_id))
                 xml_path = self.click(pay_password[0])
                 if xml_path is False:
                     self.error_num += 1
-                    send_pay_order_for_dingding("支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(order_id))
+                    send_pay_order_for_dingding("{}: 支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(device_name, order_id))
                     self.adbModel.click_back()
                     self.adbModel.click_back()
                     if self.error_num >= 6:
@@ -200,11 +200,11 @@ class FliggyModel:
                     status = 1
                 else:
                     status = 0
-                    send_pay_order_for_dingding("支付异常, 飞猪订单号: {}".format(order_id))
+                    send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
                     # cancel_order(self.device_id, order_id)
                     set_not_effective_device(self.device_id, 0, 0)
                     # unlock(bg_order_id, self.device_id)
-                logging.info("order_id:[{}] 支付完成, 状态：[{}]".format(order_id, status))
+                logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
                 self.adbModel.click_back()
                 time.sleep(2)
                 self.adbModel.click_button(280, 1380)
@@ -276,18 +276,18 @@ class FliggyModel:
 
         send_abnormal_alarm_for_dingding("定位飞猪小程序订单页失败超10次")
 
-    def is_targat_device(self):
+    def is_targat_device(self, device_name):
         if self.adbshakedown is None:
             self.adbshakedown = 0
         if self.adbModel.library():
             if self.adbshakedown == 1:
                 # 钉钉通知
-                send_pay_order_for_dingding("adb调试已经打开，程序恢复正常")
+                send_pay_order_for_dingding("{}: adb调试已经打开，程序恢复正常".format(device_name))
                 self.adbshakedown = 0
             return True
         else:
             if self.adbshakedown == 0:
                 # 钉钉通知
-                send_pay_order_for_dingding("当前程序异常：请查看手机是否连接 或者 adb调试是否开启")
+                send_pay_order_for_dingding("{}: 当前程序异常：请查看手机是否连接 或者 adb调试是否开启".format(device_name))
                 self.adbshakedown = 1
             return False

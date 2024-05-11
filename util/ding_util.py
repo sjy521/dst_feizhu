@@ -40,9 +40,6 @@ def send_abnormal_alarm_for_dingding(text):
     url = get_ding_url()
     data = {
         "at": {
-            "atMobiles": [
-                "18518020709"
-            ],
             "isAtAll": False
         },
         "text": {
