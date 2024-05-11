@@ -33,10 +33,10 @@ if __name__ == '__main__':
                         build_res = build_order(device_id, tar_json, phone)
                         if build_res is not None:
                             if build_res == "满房":
-                                fail_order_unlock(0, 1, bg_order_id, device_id)
+                                fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
                                 logging.info("[{}]下单完成, 满房".format(bg_order_id))
                             elif build_res == "变价":
-                                fail_order_unlock(1, 0, bg_order_id, device_id)
+                                fail_order_unlock(1, 0, bg_order_id, device_id, device_name)
                                 logging.info("[{}]下单完成, 变价".format(bg_order_id))
                             else:
                                 biz_order_id, price = build_res
@@ -52,13 +52,13 @@ if __name__ == '__main__':
                         else:
                             logging.info("[{}]下单失败".format(bg_order_id))
                             error_list.append(bg_order_id)
-                            unlock(bg_order_id, device_id)
+                            unlock(bg_order_id, device_name)
                             time.sleep(1)
                             continue
                     except Exception as f:
                         logging.error("异常：{}".format(str(traceback.format_exc())))
                         error_list.append(bg_order_id)
-                        unlock(bg_order_id, device_id)
+                        unlock(bg_order_id, device_name)
                         time.sleep(1)
                 else:
                     logging.info("当前无待处理订单")

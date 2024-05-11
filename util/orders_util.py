@@ -96,7 +96,7 @@ def get_effective_order(device_id, error_list, device_name):
 
 
 # 订单备注更新并解锁
-def fail_order_unlock(change_status, full_status, bg_order_id, device_id):
+def fail_order_unlock(change_status, full_status, bg_order_id, device_id, device_name):
     """
     订单解锁，订单通知失败
     :param change_status:
@@ -110,13 +110,13 @@ def fail_order_unlock(change_status, full_status, bg_order_id, device_id):
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
-    unlock(bg_order_id, device_id)
+    unlock(bg_order_id, device_name)
 
 
 # 订单解锁
-def unlock(bg_order_id, device_id):
+def unlock(bg_order_id, device_name):
     url = settings.ADMIN_URL + "/hotel/bgorder/unlockBySystem"
-    querystring = {"orderId": bg_order_id, "userName": device_id}
+    querystring = {"orderId": bg_order_id, "userName": device_name}
     response = requests.request("GET", url, params=querystring)
     order_res_json = json.loads(response.text)
     if order_res_json['result'] is True:
