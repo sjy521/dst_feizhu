@@ -9,13 +9,14 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
-    build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order
+    build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn
 
 setup_logging(default_path=settings.LOGGING)
 
 
 if __name__ == '__main__':
     error_list = deque(maxlen=20)
+    devices_error_count = {}
     # 获取空闲可用的设备
     while True:
         try:
@@ -23,6 +24,8 @@ if __name__ == '__main__':
             if device_info is not None:
                 device_id = device_info.get('deviceId')
                 device_name = device_info.get('deviceName')
+                if not devices_error_count.get(device_name):
+                    devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
                 res = get_effective_order(device_id, error_list, device_name)
@@ -48,11 +51,13 @@ if __name__ == '__main__':
                                     logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
                                 else:
                                     logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
+                            devices_error_count[device_name] = 0
                             continue
                         else:
                             logging.info("[{}]下单失败".format(bg_order_id))
                             error_list.append(bg_order_id)
                             unlock(bg_order_id, device_name)
+                            build_error_warn(devices_error_count, device_name, device_id)
                             time.sleep(1)
                             continue
                     except Exception as f:

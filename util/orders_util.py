@@ -7,6 +7,7 @@ import random
 
 from dynaconf import settings
 from log_model.set_log import setup_logging
+from util.ding_util import send_pay_order_for_dingding
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -294,3 +295,11 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
                 return False
         else:
             return False
+
+
+def build_error_warn(devices_error_count, device_name, device_id):
+    if devices_error_count[device_name] >= 3:
+        set_not_effective_device(device_id, 0, 0)
+        send_pay_order_for_dingding("{}: 连续下单失败超三次，已停止抢单".format(device_name))
+        return True
+    devices_error_count[device_name] += 1
