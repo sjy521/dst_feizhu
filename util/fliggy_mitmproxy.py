@@ -2,8 +2,6 @@ import sys
 import os
 import mitmproxy.http
 
-from util.ding_util import send_pay_order_for_dingding
-
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from util.orders_util import get_all_device, set_get_cookie_device
 
