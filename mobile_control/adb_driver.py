@@ -25,6 +25,7 @@ def run(device):
     pay_password = device.get("payPassword")
     is_busy = int(device.get("isBusy"))
     is_enable = device.get("isEnable")
+    device_name = device.get("deviceName")
     fliggy_model = FliggyModel(device_id)
     fliggy_model.open_mini_feizhu()
     pay_num = 0
@@ -32,12 +33,12 @@ def run(device):
     while True:
         try:
             # 判断手机是否连接
-            fliggy_model.is_targat_device()
+            fliggy_model.is_targat_device(device_name)
             # 定位当前页面为订单页
             fliggy_model.goto_target_page()
             # 支付订单
             click_type = fliggy_model.refresh(click_type)
-            pay_status = fliggy_model.pay_order(pay_password)
+            pay_status = fliggy_model.pay_order(pay_password, device_name)
             if pay_status:
                 pay_num += 1
                 busy_devices = select_device()

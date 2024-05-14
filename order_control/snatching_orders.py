@@ -43,14 +43,18 @@ if __name__ == '__main__':
                                 logging.info("[{}]下单完成, 变价".format(bg_order_id))
                             else:
                                 biz_order_id, price = build_res
-                                is_busy += 1
-                                set_not_effective_device(device_id, 1, is_busy)
-                                create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
-                                if create_order_res is False:
+                                try:
+                                    is_busy += 1
+                                    set_not_effective_device(device_id, 1, is_busy)
+                                    create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
+                                    if create_order_res is False:
+                                        cancel_order(device_id, biz_order_id)
+                                        logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+                                    else:
+                                        logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
+                                except Exception as f:
                                     cancel_order(device_id, biz_order_id)
                                     logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
-                                else:
-                                    logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
                             devices_error_count[device_name] = 0
                             continue
                         else:

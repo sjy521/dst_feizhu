@@ -1,6 +1,8 @@
 import logging
 import time
-
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 
 from log_model.set_log import setup_logging

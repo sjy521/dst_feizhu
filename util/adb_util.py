@@ -35,6 +35,58 @@ class AdbModel:
         subprocess.run(["adb", "-s", self.device_id, "start-server"])
         time.sleep(2)
 
+    def open_mitmproxy(self):
+        """
+        打开代理监听
+        :param device_id:
+        :return:
+        """
+        cwd = os.getcwd()
+        log_file = cwd + '/mitmproxy.log'
+        with open(log_file, "w") as out:
+            process = subprocess.Popen(["mitmdump", "-p", "8892", "-s", "../util/fliggy_mitmproxy.py"], stdout=out, stderr=out)
+        return process.pid
+
+    def get_proxy_ip(self):
+        """
+        获取当前电脑IP
+        :return:
+        """
+        # 服务器
+        # command = "ip addr show enp2s0 | awk '/inet /{print $2}' | cut -d / -f1"
+
+        # 本地
+        command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        output, error = process.communicate()
+        if output:
+            ip_address = output.decode('utf-8').strip()
+            return ip_address
+        else:
+            return None
+
+    def open_proxy(self, proxy):
+        """
+        打开代理服务
+        :param device_id:
+        :return:
+        """
+        subprocess.run(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", proxy])
+        time.sleep(2)
+
+    def kill_pid(self, pid):
+        subprocess.run(["kill", "-9", str(pid)])
+        time.sleep(2)
+
+    def close_proxy(self):
+        """
+        关闭代理服务
+        :param device_id:
+        :return:
+        """
+        subprocess.run(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", ":0"])
+        time.sleep(2)
+
     def kill_server(self):
         """
         关闭服务

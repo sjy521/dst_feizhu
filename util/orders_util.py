@@ -1,11 +1,12 @@
 import datetime
-
+import os
 import requests
 import json
 import logging
 import random
-
+import sys
 from dynaconf import settings
+sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from log_model.set_log import setup_logging
 from util.ding_util import send_pay_order_for_dingding
 
@@ -22,7 +23,6 @@ def get_effective_device():
     url = settings.ADMIN_URL81 + "/library/all/libraries"
     response = requests.request("GET", url)
     res_json = json.loads(response.text)
-    print(res_json)
     if res_json.get("code") == 200:
         results = res_json.get("result")
         for result in results:
@@ -34,8 +34,49 @@ def get_effective_device():
         return None
 
 
+def get_all_device():
+    """
+    从数据库查询所有
+    :return: device_id
+    """
+    url = settings.ADMIN_URL81 + "/library/all/libraries"
+    response = requests.request("GET", url)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        results = res_json.get("result")
+        return results
+    else:
+        return None
+
+
+# 设置正在抓取的cookie的设备
+def set_get_cookie_device(device_id, cookie=None):
+    """
+    从数据库更新的device_id为不可用或不空闲
+    :return: device_id
+    """
+    url = settings.ADMIN_URL81 + "/library/update/library"
+    if cookie is not None:
+        payload = {"deviceId": device_id,
+                   "cookie2": cookie,
+                   "getCookie": "0",
+                   "isMyCookie": "0"
+                   }
+    else:
+        payload = {"deviceId": device_id,
+                   "isMyCookie": "1",
+                   }
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        logging.info("数据库更新成功, result: {}".format(str(res_json)))
+        return True
+    logging.info("数据库更新失败, result: {}".format(str(res_json)))
+    return False
+
+
 # 设置不可用的设备
-def set_not_effective_device(device_id, is_enable, is_busy, cookie=None):
+def set_not_effective_device(device_id, is_enable, is_busy):
     """
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
@@ -49,11 +90,6 @@ def set_not_effective_device(device_id, is_enable, is_busy, cookie=None):
         payload = {"deviceId": device_id,
                    "isEnable": str(is_enable),
                    "isBusy": is_busy
-                   }
-    if cookie is not None:
-        payload = {"deviceId": device_id,
-                   "cookie2": cookie,
-                   "getCookie": 0
                    }
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
