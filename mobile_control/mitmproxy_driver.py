@@ -24,6 +24,7 @@ def mitmproxy_run(result, fliggy_model):
         adb_model.close_proxy()
         adb_model.kill_pid(pid)
         all_devies = get_all_device()
+        time.sleep(3)
         if all_devies is not None:
             for result1 in all_devies:
                 if result1.get("deviceId") == device_id:

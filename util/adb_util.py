@@ -44,7 +44,7 @@ class AdbModel:
         cwd = os.getcwd()
         log_file = cwd + '/mitmproxy.log'
         with open(log_file, "w") as out:
-            process = subprocess.Popen(["mitmdump", "-p", "8892", "-s", "../util/fliggy_mitmproxy.py"], stdout=out, stderr=out)
+            process = subprocess.Popen(["mitmdump", "-p", "8892", "-s", "./util/fliggy_mitmproxy.py"], stdout=out, stderr=out)
         return process.pid
 
     def get_proxy_ip(self):
