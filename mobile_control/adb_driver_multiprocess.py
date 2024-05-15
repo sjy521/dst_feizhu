@@ -64,6 +64,7 @@ def run(device):
                     if busy_device['deviceId'] == device_id:
                         is_busy = int(busy_device.get("isBusy"))
                         is_enable = busy_device.get("isEnable")
+            print("{}: 当前未启动".format(device_name))
             time.sleep(10)
 
 
