@@ -74,7 +74,7 @@ if __name__ == '__main__':
     tar_devices = []
     for ii in devices:
         device_id = ii.get("deviceId")
-        if device_id in ['ORHQN799EI8TUWN7', 'DYKV7LOV8HV855JR', 'EMWGCACYINKVR8KB']:
+        if device_id in ['ORHQN799EI8TUWN7', 'DYKV7LOV8HV855JR', 'HYT4897HSSAUZLNZ']:
             tar_devices.append(ii)
     pool = Pool(3)
     pool.map(run, tar_devices)
