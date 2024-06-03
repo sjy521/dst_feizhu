@@ -17,8 +17,10 @@ if __name__ == '__main__':
 
     # mini_program_app_id = 'wx6a96c49f29850eb5'
     # "gh_e4c5d4d5bc2f"
-    device_id = "ORHQN799EI8TUWN7"
-    fail_order_unlock(0, 1, "240312462395", device_id)
+    fliggy_model = FliggyModel("ORHQN799EI8TUWN7")
+    print(fliggy_model.adbModel.library())
+    # device_id = "ORHQN799EI8TUWN7"
+    # fail_order_unlock(0, 1, "240312462395", device_id)
     # app_name = "com.tencent.mm/.ui.LauncherUI"
     # fliggy_model = FliggyModel(device_id)
     # adbModel.is_wechat_open(app_name)
