@@ -115,7 +115,8 @@ def get_effective_order(device_id, error_list, device_name):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
-            for result in results.get("rows")[-1]:
+            for i in range(5):
+                result = random.choices(results.get("rows"))[0]
                 bg_order_id = result.get("bgOrderId")
                 if bg_order_id in error_list:
                     continue
