@@ -101,6 +101,7 @@ if __name__ == '__main__':
     args = sys.argv
     print(args[0])
     print("===")
+    print(args)
     aa = [{"a": "a"}, {"b": "b"}]
     pandas.DataFrame(aa).to_csv("./测试.csv")
 
