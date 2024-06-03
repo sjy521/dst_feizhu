@@ -27,6 +27,8 @@ def get_effective_device():
         results = res_json.get("result")
         for result in results:
             if result.get('isEnable') == "1" and int(result.get('isBusy')) < 1:
+                # if result.get(""):
+                #     return result
                 device_id_list.append(result)
     if len(device_id_list) > 0:
         return random.choices(device_id_list)[0]
@@ -113,9 +115,7 @@ def get_effective_order(device_id, error_list, device_name):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
-            # for result in results.get("rows"):
-            for i in range(5):
-                result = random.choices(results.get("rows"))[0]
+            for result in results.get("rows")[-1]:
                 bg_order_id = result.get("bgOrderId")
                 if bg_order_id in error_list:
                     continue

@@ -3,6 +3,8 @@ import json
 import pandas
 import sys
 import datetime
+import os
+sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from util.orders_util import get_all_device
 
