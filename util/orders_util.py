@@ -118,8 +118,8 @@ def get_effective_order(device_id, error_list, device_name):
             for i in range(5):
                 result = random.choices(results.get("rows"))[0]
                 bg_order_id = result.get("bgOrderId")
-                if bg_order_id in error_list:
-                    continue
+                # if bg_order_id in error_list:
+                #     continue
                 d_ordr_id = result.get("dorderId")
                 # 加锁
                 url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
@@ -336,7 +336,8 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
 
 def build_error_warn(devices_error_count, device_name, device_id):
     if devices_error_count[device_name] >= 3:
-        set_not_effective_device(device_id, 0, 0)
-        send_pay_order_for_dingding("{}: 连续下单失败超三次，已停止抢单".format(device_name))
+        # set_not_effective_device(device_id, 0, 0)
+        send_pay_order_for_dingding("{}: 连续下单失败超三次，及时查看".format(device_name))
+        devices_error_count[device_name] = 0
         return True
     devices_error_count[device_name] += 1

@@ -58,9 +58,11 @@ if __name__ == '__main__':
                             devices_error_count[device_name] = 0
                             continue
                         else:
-                            fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
                             logging.info("[{}]下单失败".format(bg_order_id))
-                            error_list.append(bg_order_id)
+                            if bg_order_id in error_list:
+                                fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
+                            else:
+                                error_list.append(bg_order_id)
                             unlock(bg_order_id, device_name)
                             build_error_warn(devices_error_count, device_name, device_id)
                             time.sleep(1)
