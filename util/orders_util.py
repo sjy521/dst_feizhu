@@ -8,7 +8,7 @@ import sys
 from dynaconf import settings
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from log_model.set_log import setup_logging
-from util.ding_util import send_pay_order_for_dingding
+from util.ding_util import send_pay_order_for_dingding, send_abnormal_alarm_for_dingding
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -335,9 +335,9 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
 
 
 def build_error_warn(devices_error_count, device_name, device_id):
-    if devices_error_count[device_name] >= 3:
+    if devices_error_count[device_name] >= 5:
         # set_not_effective_device(device_id, 0, 0)
-        send_pay_order_for_dingding("{}: 连续下单失败超三次，及时查看".format(device_name))
+        send_abnormal_alarm_for_dingding("{}: 连续下单失败超五次，及时查看".format(device_name))
         devices_error_count[device_name] = 0
         return True
     devices_error_count[device_name] += 1
