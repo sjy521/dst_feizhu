@@ -17,7 +17,7 @@ def ok():
 
 @app.route('/download/<file_name>', methods=['get', 'post'])
 def download(file_name):
-    res = flask.send_file("./invoice_control/{}.csv".format(file_name), as_attachment=True)
+    res = flask.send_file("/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name), as_attachment=True)
     return res
 
 
