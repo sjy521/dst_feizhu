@@ -14,6 +14,7 @@ from util.ding_util import send_abnormal_alarm_for_dingding
 def get_all_order_info(device_id):
     global all_order
     page = 1
+    exceed_time_num = 10
     while page < 1000:
         try:
             url = "http://build-order.bingotravel.com.cn/fliggy/orderlist?device_id={}&page={}".format(device_id, page)
@@ -26,15 +27,17 @@ def get_all_order_info(device_id):
             res_json = json.loads(response.text)
             for res_data in res_json['data']['order_list']:
                 if res_data['order_time'] is not None:
-                    if res_json['data']['order_list'][0]["order_time"] < "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d')):
-                        print('到达指定时间')
-                        return True
-                    elif res_json['data']['order_list'][0]["order_time"] > "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d')):
+                    if res_data['order_time'] < "{} 00:00:00".format(
+                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                        exceed_time_num -= 1
+                        if exceed_time_num <= 0:
+                            print('到达指定时间')
+                            return True
+                    elif res_data['order_time'] > "{} 00:00:00".format(
+                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
                         continue
                     else:
-                        all_order += res_json['data']['order_list']
+                        all_order.append(res_data)
             print(page, len(all_order))
             page += 1
         except Exception as f:
@@ -95,7 +98,7 @@ if __name__ == '__main__':
     for res in all_device:
         if res.get("deviceId") == device_id:
             device_name = res.get("deviceName")
-            file_name = "{}{}发票记录".format(datetime.datetime.now().date().strftime('%Y-%m-%d'), device_name)
+            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d'), device_name)
             get_all_order_info(device_id)
             getapplyinvoice(device_id)
             invoice(device_id)
