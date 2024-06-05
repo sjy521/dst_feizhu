@@ -31,9 +31,12 @@ if __name__ == '__main__':
                 res = get_effective_order(device_id, error_list, device_name)
                 if res is not None:
                     d_ordr_id, bg_order_id = res
+                    start_time = 0
                     try:
                         tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
+                        start_time = time.time()
                         build_res = build_order(device_id, tar_json, phone)
+                        stop_time = time.time()
                         if build_res is not None:
                             if build_res == "满房":
                                 fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
@@ -58,6 +61,8 @@ if __name__ == '__main__':
                             devices_error_count[device_name] = 0
                             continue
                         else:
+                            if time.time() - start_time > 30:
+                                fail_order_unlock(0, 2, bg_order_id, device_id, device_name)
                             logging.info("[{}]下单失败".format(bg_order_id))
                             if bg_order_id in error_list:
                                 fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
@@ -68,6 +73,9 @@ if __name__ == '__main__':
                             time.sleep(1)
                             continue
                     except Exception as f:
+                        if start_time != 0:
+                            if time.time() - start_time > 30:
+                                fail_order_unlock(0, 2, bg_order_id, device_id, device_name)
                         logging.error("异常：{}".format(str(traceback.format_exc())))
                         if bg_order_id in error_list:
                             fail_order_unlock(0, 1, bg_order_id, device_id, device_name)

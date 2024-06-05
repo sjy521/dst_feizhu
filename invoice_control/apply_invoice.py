@@ -13,6 +13,7 @@ from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_
 
 def get_all_order_info(device_id):
     global all_order
+    errorpage = 0
     page = 1
     exceed_time_num = 20
     while page < 1000:
@@ -27,20 +28,23 @@ def get_all_order_info(device_id):
             res_json = json.loads(response.text)
             for res_data in res_json['data']['order_list']:
                 if res_data['order_time'] is not None:
-                    if res_data['order_time'] < "{} 00:00:00".format("2024-05-27"):
-                            # (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                    if res_data['order_time'] < "{} 00:00:00".format(
+                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
                         exceed_time_num -= 1
                         if exceed_time_num <= 0:
                             print('到达指定时间')
                             return True
-                    elif res_data['order_time'] > "{} 00:00:00".format("2024-06-02"):
-                            # (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                    elif res_data['order_time'] > "{} 00:00:00".format(
+                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
                         continue
                     else:
                         all_order.append(res_data)
             print(page, len(all_order))
             page += 1
         except Exception as f:
+            errorpage += 1
+            if errorpage >=10:
+                break
             continue
 
 
@@ -98,17 +102,18 @@ if __name__ == '__main__':
     for res in all_device:
         if res.get("deviceId") == device_id:
             device_name = res.get("deviceName")
-            # file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d'), device_name)
-            file_name = "{}{}发票记录".format("2024-05-27-2024-06-02", device_name)
+            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d'), device_name)
+            # file_name = "{}{}发票记录".format("2024-05-27-2024-06-02", device_name)
             get_all_order_info(device_id)
             getapplyinvoice(device_id)
             invoice(device_id)
-            for i in all_order:
-                i['biz_order_id'] = "'" + i['biz_order_id']
-            pandas.DataFrame(all_order).to_csv(
-                "/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name))
-            send_pay_order_for_dingding(
-                "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)), ["18501953880", "13520735673", "13474763052", "18911131911"])
+            if len(all_order) != 0:
+                for i in all_order:
+                    i['biz_order_id'] = "'" + i['biz_order_id']
+                pandas.DataFrame(all_order).to_csv(
+                    "/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name))
+                send_pay_order_for_dingding(
+                    "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)), ["18501953880", "13520735673", "13474763052", "18911131911"])
     # args = sys.argv
     # print(args[0])
     # print("===")

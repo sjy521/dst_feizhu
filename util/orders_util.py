@@ -143,8 +143,12 @@ def fail_order_unlock(change_status, full_status, bg_order_id, device_id, device
     :param device_id:
     :return: true，false
     """
-    url = settings.ADMIN_URL + "/hotel/bgorder/editChangePrieOrFullBySystem"
-    payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": bg_order_id}
+    if full_status == 2:
+        url = settings.ADMIN_URL + "/hotel/bgorder/editTimeOutBySystem"
+        payload = {"timeOutStatus": 1, "bgOrderId": bg_order_id}
+    else:
+        url = settings.ADMIN_URL + "/hotel/bgorder/editChangePrieOrFullBySystem"
+        payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": bg_order_id}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
@@ -335,9 +339,9 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
 
 
 def build_error_warn(devices_error_count, device_name, device_id):
-    if devices_error_count[device_name] >= 5:
-        # set_not_effective_device(device_id, 0, 0)
-        send_abnormal_alarm_for_dingding("{}: 连续下单失败超五次，及时查看".format(device_name))
+    if devices_error_count[device_name] >= 6:
+        set_not_effective_device(device_id, 0, 0)
+        send_abnormal_alarm_for_dingding("{}: 连续下单失败超六次，及时查看".format(device_name))
         devices_error_count[device_name] = 0
         return True
     devices_error_count[device_name] += 1
