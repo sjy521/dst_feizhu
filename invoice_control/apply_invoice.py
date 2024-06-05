@@ -8,13 +8,13 @@ import os
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from util.orders_util import get_all_device
-from util.ding_util import send_abnormal_alarm_for_dingding
+from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 
 
 def get_all_order_info(device_id):
     global all_order
     page = 1
-    exceed_time_num = 10
+    exceed_time_num = 20
     while page < 1000:
         try:
             url = "http://build-order.bingotravel.com.cn/fliggy/orderlist?device_id={}&page={}".format(device_id, page)
@@ -27,14 +27,14 @@ def get_all_order_info(device_id):
             res_json = json.loads(response.text)
             for res_data in res_json['data']['order_list']:
                 if res_data['order_time'] is not None:
-                    if res_data['order_time'] < "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                    if res_data['order_time'] < "{} 00:00:00".format("2024-05-27"):
+                            # (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
                         exceed_time_num -= 1
                         if exceed_time_num <= 0:
                             print('到达指定时间')
                             return True
-                    elif res_data['order_time'] > "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                    elif res_data['order_time'] > "{} 00:00:00".format("2024-06-02"):
+                            # (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
                         continue
                     else:
                         all_order.append(res_data)
@@ -62,6 +62,7 @@ def getapplyinvoice(device_id):
             res_json = json.loads(response.text)
             try:
                 order["是否可以开发票"] = res_json['data']
+                order["已开发票"] = False
             except:
                 continue
 
@@ -70,7 +71,7 @@ def invoice(device_id):
     for i in range(len(all_order)):
         try:
             if all_order[i]['status_value'] == '已完成':
-                if all_order[i]['invoice']:
+                if all_order[i]['是否可以开发票']:
                     url = "http://build-order.bingotravel.com.cn/fliggy/invoice?orderId={}&device_id={}".format(
                         all_order[i]['biz_order_id'], device_id)
                     print(url)
@@ -79,7 +80,6 @@ def invoice(device_id):
                         'Postman-Token': "9fd8ea5a-bd43-4cbb-b3cb-097a7a143c53"
                     }
                     response = requests.request("GET", url, headers=headers)
-                    print(response.text)
                     res1_json = json.loads(response.text)
                     if res1_json['data'] != "false":
                         all_order[i]['已开发票'] = True
@@ -98,17 +98,17 @@ if __name__ == '__main__':
     for res in all_device:
         if res.get("deviceId") == device_id:
             device_name = res.get("deviceName")
-            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d'), device_name)
+            # file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d'), device_name)
+            file_name = "{}{}发票记录".format("2024-05-27-2024-06-02", device_name)
             get_all_order_info(device_id)
             getapplyinvoice(device_id)
             invoice(device_id)
             for i in all_order:
-                print(i)
                 i['biz_order_id'] = "'" + i['biz_order_id']
             pandas.DataFrame(all_order).to_csv(
                 "/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name))
-            send_abnormal_alarm_for_dingding(
-                "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)))
+            send_pay_order_for_dingding(
+                "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)), ["18501953880", "13520735673", "13474763052", "18911131911"])
     # args = sys.argv
     # print(args[0])
     # print("===")

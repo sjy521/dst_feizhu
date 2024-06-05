@@ -52,12 +52,15 @@ def send_abnormal_alarm_for_dingding(text):
     return res_json.get("errmsg")
 
 
-def send_pay_order_for_dingding(text):
+def send_pay_order_for_dingding(text, atphone=None):
+    if atphone is not None:
+        atMobiles = atphone
+    else:
+        atMobiles = []
     url = get_ding_pay_url()
     data = {
         "at": {
-            "atMobiles": [
-            ],
+            "atMobiles": atMobiles,
             "isAtAll": False
         },
         "text": {
