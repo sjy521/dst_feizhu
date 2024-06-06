@@ -109,7 +109,7 @@ if __name__ == '__main__':
                     time.sleep(1)
             else:
                 logging.info("当前无可用的设备")
-                time.sleep(10)
+                time.sleep(5)
         except Exception as f:
             logging.error("异常：{}".format(str(traceback.format_exc())))
             time.sleep(5)
