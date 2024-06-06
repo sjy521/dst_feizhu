@@ -48,7 +48,7 @@ def except_main():
         fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
     else:
         error_list.append(bg_order_id)
-    unlock(bg_order_id, device_name)
+        unlock(bg_order_id, device_name)
     time.sleep(1)
 
 
