@@ -4,14 +4,52 @@ import traceback
 import sys
 import os
 from collections import deque
+
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
 from log_model.set_log import setup_logging
+from util.order_list_util import check_order
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
     build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn
 
 setup_logging(default_path=settings.LOGGING)
+
+
+def bulu(is_busy):
+    try:
+        is_busy += 1
+        set_not_effective_device(device_id, 1, is_busy)
+        create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
+        if create_order_res is False:
+            cancel_order(device_id, biz_order_id)
+            logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+        else:
+            logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
+    except Exception as f:
+        cancel_order(device_id, biz_order_id)
+        logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+
+
+def timeout_main():
+    if time.time() - start_time > 30:
+        order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
+        if order_res:
+            bulu(is_busy)
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def except_main():
+    if bg_order_id in error_list:
+        fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
+    else:
+        error_list.append(bg_order_id)
+    unlock(bg_order_id, device_name)
+    time.sleep(1)
 
 
 if __name__ == '__main__':
@@ -34,6 +72,11 @@ if __name__ == '__main__':
                     start_time = 0
                     try:
                         tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
+                    except Exception as f:
+                        logging.error("获取地址异常：{}".format(str(traceback.format_exc())))
+                        except_main()
+                        continue
+                    try:
                         start_time = time.time()
                         build_res = build_order(device_id, tar_json, phone)
                         stop_time = time.time()
@@ -46,43 +89,21 @@ if __name__ == '__main__':
                                 logging.info("[{}]下单完成, 变价".format(bg_order_id))
                             else:
                                 biz_order_id, price = build_res
-                                try:
-                                    is_busy += 1
-                                    set_not_effective_device(device_id, 1, is_busy)
-                                    create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
-                                    if create_order_res is False:
-                                        cancel_order(device_id, biz_order_id)
-                                        logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
-                                    else:
-                                        logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
-                                except Exception as f:
-                                    cancel_order(device_id, biz_order_id)
-                                    logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+                                bulu(is_busy)
                             devices_error_count[device_name] = 0
                             continue
                         else:
-                            if time.time() - start_time > 30:
-                                fail_order_unlock(0, 2, bg_order_id, device_id, device_name)
+                            if timeout_main():
+                                continue
+                            except_main()
                             logging.info("[{}]下单失败".format(bg_order_id))
-                            if bg_order_id in error_list:
-                                fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
-                            else:
-                                error_list.append(bg_order_id)
-                            unlock(bg_order_id, device_name)
                             build_error_warn(devices_error_count, device_name, device_id)
-                            time.sleep(1)
                             continue
                     except Exception as f:
-                        if start_time != 0:
-                            if time.time() - start_time > 30:
-                                fail_order_unlock(0, 2, bg_order_id, device_id, device_name)
+                        if timeout_main():
+                            continue
+                        except_main()
                         logging.error("异常：{}".format(str(traceback.format_exc())))
-                        if bg_order_id in error_list:
-                            fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
-                        else:
-                            error_list.append(bg_order_id)
-                        unlock(bg_order_id, device_name)
-                        time.sleep(1)
                 else:
                     logging.info("当前无待处理订单")
                     time.sleep(1)

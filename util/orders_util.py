@@ -6,9 +6,10 @@ import logging
 import random
 import sys
 from dynaconf import settings
+
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from log_model.set_log import setup_logging
-from util.ding_util import send_pay_order_for_dingding, send_abnormal_alarm_for_dingding
+from util.ding_util import send_abnormal_alarm_for_dingding
 
 setup_logging(default_path=settings.LOGGING)
 

@@ -25,7 +25,7 @@ def run(device):
         fliggy_model = FliggyModel(device_id)
         fliggy_model.open_mini_feizhu()
         click_type = 0
-        if is_enable == '1':
+        if is_enable == '1' or is_enable == '2':
             while True:
                 try:
                     # 判断手机是否连接
