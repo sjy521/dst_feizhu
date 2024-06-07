@@ -35,7 +35,7 @@ def get_all_order_info(device_id):
                             print('到达指定时间')
                             return True
                     elif res_data['order_time'] > "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                            (datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d')):
                         continue
                     else:
                         all_order.append(res_data)
