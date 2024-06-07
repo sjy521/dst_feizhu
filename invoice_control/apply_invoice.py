@@ -29,13 +29,13 @@ def get_all_order_info(device_id):
             for res_data in res_json['data']['order_list']:
                 if res_data['order_time'] is not None:
                     if res_data['order_time'] < "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d')):
+                            (datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d')):
                         exceed_time_num -= 1
                         if exceed_time_num <= 0:
                             print('到达指定时间')
                             return True
                     elif res_data['order_time'] > "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=3)).date().strftime('%Y-%m-%d')):
+                            (datetime.datetime.now() - datetime.timedelta(days=6)).date().strftime('%Y-%m-%d')):
                         continue
                     else:
                         all_order.append(res_data)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     for res in all_device:
         if res.get("deviceId") == device_id:
             device_name = res.get("deviceName")
-            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=4)).date().strftime('%Y-%m-%d'), device_name)
+            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d'), device_name)
             # file_name = "{}{}发票记录".format("2024-05-27-2024-06-02", device_name)
             get_all_order_info(device_id)
             getapplyinvoice(device_id)
