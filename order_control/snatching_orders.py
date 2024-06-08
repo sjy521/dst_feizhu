@@ -16,7 +16,7 @@ from util.orders_util import get_effective_device, get_effective_order, get_url_
 setup_logging(default_path=settings.LOGGING)
 
 
-def bulu(is_busy):
+def bulu(is_busy, device_id, bg_order_id, biz_order_id, price):
     try:
         is_busy += 1
         set_not_effective_device(device_id, 1, is_busy)
@@ -31,11 +31,13 @@ def bulu(is_busy):
         logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
 
 
-def timeout_main():
+def timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id):
     if time.time() - start_time > 30:
         order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
         if order_res:
-            bulu(is_busy)
+            biz_order_id = order_res['biz_order_id']
+            price = order_res['price']
+            bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
             return True
         else:
             return False
@@ -43,7 +45,7 @@ def timeout_main():
         return False
 
 
-def except_main():
+def except_main(bg_order_id, error_list, device_id, device_name):
     if bg_order_id in error_list:
         fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
     else:
@@ -52,7 +54,7 @@ def except_main():
     time.sleep(1)
 
 
-if __name__ == '__main__':
+def run():
     error_list = deque(maxlen=20)
     devices_error_count = {}
     # 获取空闲可用的设备
@@ -74,12 +76,11 @@ if __name__ == '__main__':
                         tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
                     except Exception as f:
                         logging.error("获取地址异常：{}".format(str(traceback.format_exc())))
-                        except_main()
+                        except_main(bg_order_id, error_list, device_id, device_name)
                         continue
                     try:
                         start_time = time.time()
                         build_res = build_order(device_id, tar_json, phone)
-                        stop_time = time.time()
                         if build_res is not None:
                             if build_res == "满房":
                                 fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
@@ -89,20 +90,20 @@ if __name__ == '__main__':
                                 logging.info("[{}]下单完成, 变价".format(bg_order_id))
                             else:
                                 biz_order_id, price = build_res
-                                bulu(is_busy)
+                                bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
                             devices_error_count[device_name] = 0
                             continue
                         else:
-                            if timeout_main():
+                            if timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id):
                                 continue
-                            except_main()
+                            except_main(bg_order_id, error_list, device_id, device_name)
                             logging.info("[{}]下单失败".format(bg_order_id))
                             build_error_warn(devices_error_count, device_name, device_id)
                             continue
                     except Exception as f:
-                        if timeout_main():
+                        if timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id):
                             continue
-                        except_main()
+                        except_main(bg_order_id, error_list, device_id, device_name)
                         logging.error("异常：{}".format(str(traceback.format_exc())))
                 else:
                     logging.info("当前无待处理订单")
@@ -115,8 +116,7 @@ if __name__ == '__main__':
             time.sleep(5)
 
 
-    # get_url_by_bgorderid("11111118", "240320690295")
-
-    # order_create_order("240320001163", "12345678", "手机")
+if __name__ == '__main__':
+    run()
 
 
