@@ -10,6 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.order_list_util import check_order
+from util.ding_util import send_pay_order_for_dingding
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
     build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn
 
@@ -32,7 +33,8 @@ def bulu(is_busy, device_id, bg_order_id, biz_order_id, price):
 
 
 def timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id):
-    if time.time() - start_time > 30:
+    if time.time() - start_time > 15:
+        time.sleep(5)
         order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
         if order_res:
             biz_order_id = order_res['biz_order_id']
@@ -88,6 +90,16 @@ def run():
                             elif build_res == "变价":
                                 fail_order_unlock(1, 0, bg_order_id, device_id, device_name)
                                 logging.info("[{}]下单完成, 变价".format(bg_order_id))
+                            elif build_res == "下单重复":
+                                order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
+                                if order_res:
+                                    biz_order_id = order_res['biz_order_id']
+                                    price = order_res['price']
+                                    bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
+                                    logging.info("[{}]下单完成, 重复找单".format(bg_order_id))
+                                else:
+                                    send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
+                                    unlock(bg_order_id, device_name)
                             else:
                                 biz_order_id, price = build_res
                                 bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
