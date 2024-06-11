@@ -7,8 +7,9 @@ from dynaconf import settings
 
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
+from util.order_list_util import get_bongo_order
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
-from util.orders_util import set_not_effective_device
+from util.orders_util import set_not_effective_device, cancel_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting, find_current_element_num
 
@@ -173,6 +174,13 @@ class FliggyModel:
             if xml_path:
                 order_id = self.find_orderId(xml_path, "订单号")
                 logging.info("{}: 当前订单号号是：{}".format(device_name, order_id))
+                bgorder = get_bongo_order(order_id)
+                if bgorder is False:
+                    cancel_order(self.device_id, order_id)
+                    send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
+                    self.adbModel.click_back()
+                    self.adbModel.click_back()
+                    return False
                 xml_path = self.click(pay_password[0])
                 if xml_path is False:
                     self.error_num += 1
