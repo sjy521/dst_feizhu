@@ -17,7 +17,7 @@ from util.orders_util import get_effective_device, get_effective_order, get_url_
 setup_logging(default_path=settings.LOGGING)
 
 
-def bulu(is_busy, device_id, bg_order_id, biz_order_id, price):
+def bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name):
     try:
         is_busy += 1
         set_not_effective_device(device_id, 1, is_busy)
@@ -30,6 +30,7 @@ def bulu(is_busy, device_id, bg_order_id, biz_order_id, price):
     except Exception as f:
         cancel_order(device_id, biz_order_id)
         logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
+        unlock(bg_order_id, device_name)
 
 
 def timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id):
@@ -78,7 +79,7 @@ def run():
                         tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
                     except Exception as f:
                         logging.error("获取地址异常：{}".format(str(traceback.format_exc())))
-                        except_main(bg_order_id, error_list, device_id, device_name)
+                        fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
                         continue
                     try:
                         start_time = time.time()
@@ -95,14 +96,14 @@ def run():
                                 if order_res:
                                     biz_order_id = order_res['biz_order_id']
                                     price = order_res['price']
-                                    bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
+                                    bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
                                     logging.info("[{}]下单完成, 重复找单".format(bg_order_id))
                                 else:
                                     send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
                                     unlock(bg_order_id, device_name)
                             else:
                                 biz_order_id, price = build_res
-                                bulu(is_busy, device_id, bg_order_id, biz_order_id, price)
+                                bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
                             devices_error_count[device_name] = 0
                             continue
                         else:
