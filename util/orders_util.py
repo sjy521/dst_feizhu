@@ -124,21 +124,20 @@ def get_effective_order(device_id, error_list, device_name):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
-            for i in range(5):
-                result = random.choices(results.get("rows"))[0]
-                bg_order_id = result.get("bgOrderId")
-                # if bg_order_id in error_list:
-                #     continue
-                d_ordr_id = result.get("dorderId")
-                # 加锁
-                url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
-                querystring = {"orderId": bg_order_id, "userName": device_name}
-                order_response = requests.request("GET", url, params=querystring)
-                order_res_json = json.loads(order_response.text)
-                if order_res_json['result']['islock'] is True:
-                    return [d_ordr_id, bg_order_id]
-                else:
-                    logging.info("bgorderid: {}, result: {}".format(bg_order_id, str(order_res_json)))
+            result = random.choices(results.get("rows"))[0]
+            bg_order_id = result.get("bgOrderId")
+            # if bg_order_id in error_list:
+            #     continue
+            d_ordr_id = result.get("dorderId")
+            # 加锁
+            url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
+            querystring = {"orderId": bg_order_id, "userName": device_name}
+            order_response = requests.request("GET", url, params=querystring)
+            order_res_json = json.loads(order_response.text)
+            if order_res_json['result']['islock'] is True:
+                return [d_ordr_id, bg_order_id]
+            else:
+                logging.info("bgorderid: {}, result: {}".format(bg_order_id, str(order_res_json)))
     return None
 
 
