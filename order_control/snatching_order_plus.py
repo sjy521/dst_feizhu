@@ -56,13 +56,13 @@ def except_main(bg_order_id, error_list, device_id, device_name):
     time.sleep(1)
 
 
-def run():
+def run(tar_device_id):
     error_list = deque(maxlen=20)
     devices_error_count = {}
     # 获取空闲可用的设备
     while True:
         try:
-            device_info = get_effective_device()
+            device_info = get_effective_device(tar_device_id)
             if device_info is not None:
                 device_id = device_info.get('deviceId')
                 device_name = device_info.get('deviceName')
@@ -129,6 +129,8 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    args = sys.argv
+    device_id = args[1]
+    run(device_id)
 
 

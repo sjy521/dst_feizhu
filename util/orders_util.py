@@ -15,7 +15,7 @@ setup_logging(default_path=settings.LOGGING)
 
 
 # 查询可用的设备
-def get_effective_device():
+def get_effective_device(tar_device_id=None):
     """
     从数据库查询可用且空闲的device_id
     :return: device_id
@@ -26,11 +26,19 @@ def get_effective_device():
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         results = res_json.get("result")
-        for result in results:
-            if result.get('isEnable') == "1" and int(result.get('isBusy')) < 1:
-                # if result.get(""):
-                #     return result
-                device_id_list.append(result)
+        if tar_device_id is not None:
+            for result in results:
+                if result.get("deviceId") == tar_device_id:
+                    if result.get('isEnable') == "1" and int(result.get('isBusy')) < 1:
+                        # if result.get(""):
+                        #     return result
+                        device_id_list.append(result)
+        else:
+            for result in results:
+                if result.get('isEnable') == "1" and int(result.get('isBusy')) < 1:
+                    # if result.get(""):
+                    #     return result
+                    device_id_list.append(result)
     if len(device_id_list) > 0:
         return random.choices(device_id_list)[0]
     else:
