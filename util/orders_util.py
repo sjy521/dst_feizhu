@@ -141,6 +141,36 @@ def get_effective_order(device_id, error_list, device_name):
     return None
 
 
+# 查询变价满房有效订单，并锁单
+def get_abnormal_effective_order(device_id, error_list, device_name):
+    """
+    查询有效订单，并锁单
+    :return: bgorderid
+    """
+    url = settings.ADMIN_URL + "/hotel/bgorder/getChangeOrderByPage"
+    payload = {"pageNum": 1, "pageSize": 20, "param": {}}
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        results = res_json.get("result")
+        if len(results.get("rows")) > 0:
+            result = random.choices(results.get("rows"))[0]
+            bg_order_id = result.get("bgOrderId")
+            if bg_order_id in error_list:
+                return None
+            d_ordr_id = result.get("dorderId")
+            # 加锁
+            url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
+            querystring = {"orderId": bg_order_id, "userName": device_name}
+            order_response = requests.request("GET", url, params=querystring)
+            order_res_json = json.loads(order_response.text)
+            if order_res_json['result']['islock'] is True:
+                return [d_ordr_id, bg_order_id]
+            else:
+                logging.info("bgorderid: {}, result: {}".format(bg_order_id, str(order_res_json)))
+    return None
+
+
 # 订单备注更新并解锁
 def fail_order_unlock(change_status, full_status, bg_order_id, device_id, device_name):
     """
@@ -349,7 +379,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
 
 
 def build_error_warn(devices_error_count, device_name, device_id):
-    if devices_error_count[device_name] >= 6:
+    if devices_error_count[device_name] >= 10:
         set_not_effective_device(device_id, 0, 0)
         send_pay_order_for_dingding("{}: 连续下单失败超六次，及时查看".format(device_name))
         devices_error_count[device_name] = 0

@@ -17,6 +17,10 @@ from util.orders_util import get_effective_device, get_effective_order, get_url_
 setup_logging(default_path=settings.LOGGING)
 
 
+"""
+未处理订单列表下单，单线程处理
+"""
+
 def bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name):
     try:
         is_busy += 1
