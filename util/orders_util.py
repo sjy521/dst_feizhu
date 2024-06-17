@@ -331,7 +331,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
         payload["paymentTransactionVO"] = {
             "sOrderId": sorder_id,
             "bgOrderId": bg_order_id,
-            "orderStatus": payload['orderStatus'],
+            "orderStatus": 10,
             "payType": 1,
             "payTime": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         }

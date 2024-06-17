@@ -35,13 +35,16 @@ def bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name):
 
 def timeout_main(start_time, device_id, tar_json, is_busy, bg_order_id, device_name):
     if time.time() - start_time > 15:
-        order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
-        if order_res:
-            biz_order_id = order_res['biz_order_id']
-            price = order_res['price']
-            bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
-            return True
-        else:
+        try:
+            order_res = check_order(device_id, tar_json['sr_name'], tar_json['price'])
+            if order_res:
+                biz_order_id = order_res['biz_order_id']
+                price = order_res['price']
+                bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
+                return True
+            else:
+                return False
+        except Exception as f:
             return False
     else:
         return False
