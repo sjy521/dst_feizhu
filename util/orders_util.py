@@ -336,6 +336,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
         payload["sOrderId"] = sorder_id
         payload["bgOrderId"] = bg_order_id
         payload["supplierId"] = 10002
+        payload["orderStatus"] = 10
         payload["remark"] = "机器下单"
         payload["operator"] = device_id
         payload["productItem"] = "机器补录"
