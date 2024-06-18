@@ -327,7 +327,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
     payload = {
         "bgOrderId": bg_order_id,
     }
-    response = requests.request("GET", url, params=payload)
+    response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         pass
