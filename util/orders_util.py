@@ -9,7 +9,7 @@ from dynaconf import settings
 
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from log_model.set_log import setup_logging
-from util.ding_util import send_pay_order_for_dingding
+from util.ding_util import send_pay_order_for_dingding, send_abnormal_alarm_for_dingding
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -323,6 +323,16 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
     order 补录订单
     :return: 成功，失败
     """
+    url = settings.ADMIN_URL + "/hotel/bgorder/deleteFlagBySystem"
+    payload = {
+        "bgOrderId": bg_order_id,
+    }
+    response = requests.request("GET", url, params=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        pass
+    else:
+        send_abnormal_alarm_for_dingding("状态更新失败：{}".format(sorder_id))
     url = settings.ADMIN_URL + "/hotel/bgorder/getOrderItemAndSnapshoot"
     payload = {
         "bgOrderId": bg_order_id,
