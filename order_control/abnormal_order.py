@@ -62,7 +62,7 @@ def except_main(bg_order_id, error_list, device_id, device_name):
 
 
 def run(tar_device_id):
-    error_list = deque(maxlen=20)
+    error_list = deque(maxlen=50)
     devices_error_count = {}
     # 获取空闲可用的设备
     while True:
