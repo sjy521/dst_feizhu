@@ -113,7 +113,7 @@ if __name__ == '__main__':
                 pandas.DataFrame(all_order).to_csv(
                     "/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name))
                 send_pay_order_for_dingding(
-                    "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)), ["18501953880", "13520735673", "13474763052", "18911131911"])
+                    "{}:开发票任务结束，下载链接: {}".format(device_name, "http://192.168.1.116:8084/download/{}".format(file_name)), ["18501953880", "13520735673", "13474763052", "18911137911"])
     # args = sys.argv
     # print(args[0])
     # print("===")
