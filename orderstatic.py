@@ -133,7 +133,7 @@ def orderstatic():
                             (Decimal(value * Decimal(0.045)) / 100).quantize(Decimal('0.01'))) + "\n\n"
 
             cursor.execute(
-                "SELECT count(*) as hourOrder from db_bg_order where create_time>CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')and create_time<CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59');")
+                "SELECT count(*) as hourOrder from db_bg_order where create_time>CONCAT(DATE_FORMAT(NOW()- INTERVAL 1 HOUR, '%Y-%m-%d %H:'), '00')and create_time<CONCAT(DATE_FORMAT(NOW()- INTERVAL 1 HOUR, '%Y-%m-%d %H:'), '59')")
             record = cursor.fetchall()
             for row in record:
                 for column, value in row.items():
