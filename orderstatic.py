@@ -155,8 +155,10 @@ def job():
 
 
 # 每小时执行一次任务
-scheduler.every().hour.do(job)
+# scheduler.every().hour.do(job)
 
-while True:
-    scheduler.run_pending()
-    time.sleep(1)
+# while True:
+    # scheduler.run_pending()
+    # time.sleep(1)
+if __name__ == '__main__':
+    job()
