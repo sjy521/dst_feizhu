@@ -69,6 +69,8 @@ def orderstatic():
             for row in record:
                 for column, value in row.items():
                     if (column == 'distributor_id'):
+                        if (value == '20001'):
+                            message += "去哪儿阿信："
                         if (value == '20002'):
                             message += "美团："
                         if (value == '20003'):
@@ -87,12 +89,14 @@ def orderstatic():
             for row in record:
                 for column, value in row.items():
                     if (column == 'distributor_id'):
+                        if (value == '20001'):
+                            message += "去哪儿阿信确认订单："
                         if (value == '20002'):
                             message += "美团确认订单："
                         if (value == '20003'):
                             message += "飞猪确认订单："
                         if (value == '20004'):
-                            message += "去哪儿确认订单："
+                            message += "去哪儿四海通确认订单："
                         if (value == '20005'):
                             message += "携程确认订单："
                     if (column == 'count(*)'):
@@ -106,12 +110,14 @@ def orderstatic():
             for row in record:
                 for column, value in row.items():
                     if (column == 'distributor_id'):
+                        if (value == '20001'):
+                            message += "去哪儿阿信售前利润："
                         if (value == '20002'):
                             message += "美团售前利润："
                         if (value == '20003'):
                             message += "飞猪售前利润："
                         if (value == '20004'):
-                            message += "去哪儿售前利润："
+                            message += "去哪儿四海通售前利润："
                         if (value == '20005'):
                             message += "携程售前利润："
                     if (column == 'profit'):
@@ -126,10 +132,10 @@ def orderstatic():
                 for column, value in row.items():
                     if (column == 'supplier_id'):
                         if (value == '10002'):
-                            message += "飞猪销售额："
+                            message += "飞猪四海通销售额："
                     if (column == 'price'):
                         message += str("%.2f" % (float(value) / 100)) + "\n"
-                        message += "飞猪佣金：" + str(
+                        message += "飞猪四海通佣金：" + str(
                             (Decimal(value * Decimal(0.045)) / 100).quantize(Decimal('0.01'))) + "\n\n"
 
             cursor.execute(
@@ -158,7 +164,7 @@ def job():
 # scheduler.every().hour.do(job)
 
 # while True:
-    # scheduler.run_pending()
-    # time.sleep(1)
+# scheduler.run_pending()
+# time.sleep(1)
 if __name__ == '__main__':
     job()
