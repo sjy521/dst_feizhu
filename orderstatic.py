@@ -150,6 +150,8 @@ def orderstatic():
 
 def job():
     print("任务执行中...")
+    orderstatic()
+    print("任务执行完成")
 
 
 # 每小时执行一次任务
