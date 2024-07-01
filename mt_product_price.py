@@ -29,7 +29,7 @@ async def fetch_and_save_data(session, pool, url, data, sem):
                 for result in results['result'][0]['productRespDTOList']:
                     formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos']['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
             except Exception as f:
-                #                 print(f)
+                print(f)
                 return None
 
             async with pool.acquire() as conn:
