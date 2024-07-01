@@ -124,6 +124,7 @@ async def main():
                         }
                     ]
                 }
+                print(data)
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
 
