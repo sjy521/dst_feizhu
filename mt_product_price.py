@@ -108,58 +108,7 @@ async def main():
                 print(data)
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
-                if len(tasks) >= 200:
-                    await asyncio.gather(*tasks)
-                tasks.clear()
-
-        await asyncio.gather(*tasks)
-
-
-    async with ClientSession() as session:
-        tasks = []
-        for dat in [2, 3, 4]:
-            for i in range(0, len(ids['supplier_hotel_id']), 10):
-                data = {
-                    "checkIn": "2024-07-0{}".format(dat),
-                    "checkout": "2024-07-0{}".format(dat + 1),
-                    "roomNum": 1,
-                    "adultNum": 2,
-                    "childNum": 0,
-                    "childAges": [],
-                    "guestType": 0,
-                    "totalPrice": 1000,
-                    "suppliers": [
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 5])
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 6])
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 7])
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 8])
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 9])
-
-                        }
-                    ]
-                }
-                print(data)
-                task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
-                tasks.append(task)
-                if len(tasks) >= 200:
+                if len(tasks) >= 40:
                     await asyncio.gather(*tasks)
                 tasks.clear()
 
