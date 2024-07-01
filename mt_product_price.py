@@ -97,7 +97,7 @@ async def main():
                             "supplierId": 10001,
                             "shotelId": str(ids['supplier_hotel_id'][i + 3])
 
-                        },
+                        }
                     ]
                 }
                 print(data)
