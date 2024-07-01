@@ -52,7 +52,7 @@ async def main():
     url = "http://10.18.99.1:8081/client/spa/batchQueryPrice"
     ids = pandas.read_csv("./9999999999999999.csv")
 
-    sem = Semaphore(40)  # 限制并发数量为200
+    sem = Semaphore(20)  # 限制并发数量为200
 
     # 创建 MySQL 连接池
     pool = await aiomysql.create_pool(
@@ -97,15 +97,65 @@ async def main():
                             "supplierId": 10001,
                             "shotelId": str(ids['supplier_hotel_id'][i + 3])
 
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 4])
+
                         }
                     ]
                 }
                 print(data)
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
-                if len(tasks) >= 40:
-                    await asyncio.gather(*tasks)
-                tasks.clear()
+
+        await asyncio.gather(*tasks)
+
+
+    async with ClientSession() as session:
+        tasks = []
+        for dat in [2, 3, 4]:
+            for i in range(0, len(ids['supplier_hotel_id']), 10):
+                data = {
+                    "checkIn": "2024-07-0{}".format(dat),
+                    "checkout": "2024-07-0{}".format(dat + 1),
+                    "roomNum": 1,
+                    "adultNum": 2,
+                    "childNum": 0,
+                    "childAges": [],
+                    "guestType": 0,
+                    "totalPrice": 1000,
+                    "suppliers": [
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 5])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 6])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 7])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 8])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 9])
+
+                        }
+                    ]
+                }
+                print(data)
+                task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
+                tasks.append(task)
 
         await asyncio.gather(*tasks)
 
