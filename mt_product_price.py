@@ -67,7 +67,7 @@ async def main():
     async with ClientSession() as session:
         tasks = []
         for dat in [2, 3, 4]:
-            for i in range(0, len(ids['supplier_hotel_id']), 5):
+            for i in range(0, len(ids['supplier_hotel_id']), 4):
                 data = {
                     "checkIn": "2024-07-0{}".format(dat),
                     "checkout": "2024-07-0{}".format(dat + 1),
@@ -96,11 +96,6 @@ async def main():
                         {
                             "supplierId": 10001,
                             "shotelId": str(ids['supplier_hotel_id'][i + 3])
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 4])
 
                         }
                     ]
