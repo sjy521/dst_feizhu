@@ -52,7 +52,7 @@ async def main():
     url = "http://10.18.99.1:8081/client/spa/batchQueryPrice"
     ids = pandas.read_csv("./9999999999999999.csv")
 
-    sem = Semaphore(10)  # 限制并发数量为200
+    sem = Semaphore(40)  # 限制并发数量为200
 
     # 创建 MySQL 连接池
     pool = await aiomysql.create_pool(
@@ -108,6 +108,9 @@ async def main():
                 print(data)
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
+                if len(tasks) >= 200:
+                    await asyncio.gather(*tasks)
+                tasks.clear()
 
         await asyncio.gather(*tasks)
 
@@ -156,6 +159,9 @@ async def main():
                 print(data)
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
+                if len(tasks) >= 200:
+                    await asyncio.gather(*tasks)
+                tasks.clear()
 
         await asyncio.gather(*tasks)
 
