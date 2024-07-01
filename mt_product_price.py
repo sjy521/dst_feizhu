@@ -98,11 +98,6 @@ async def main():
                             "shotelId": str(ids['supplier_hotel_id'][i + 3])
 
                         },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": str(ids['supplier_hotel_id'][i + 4])
-
-                        }
                     ]
                 }
                 print(data)
