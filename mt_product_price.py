@@ -20,6 +20,7 @@ async def fetch_and_save_data(session, pool, url, data, sem):
     async with sem:
         async with session.post(url, json=data) as response:
             results = await response.json()
+            print(results)
             async with lock:
                 completed_requests += 1
                 print(f'Progress: {completed_requests}/{total_requests} completed')
