@@ -80,12 +80,7 @@ async def main():
                     "suppliers": [
                         {
                             "supplierId": 10001,
-                            "shotelId": ids['supplier_hotel_id'][i]
-
-                        },
-                        {
-                            "supplierId": 10001,
-                            "shotelId": ids['supplier_hotel_id'][i + 1]
+                            "shotelId": str(ids['supplier_hotel_id'][i])
 
                         }
                     ]
