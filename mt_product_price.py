@@ -20,18 +20,14 @@ async def fetch_and_save_data(session, pool, url, data, sem):
     async with sem:
         async with session.post(url, json=data) as response:
             results = await response.json()
-            print(results)
             async with lock:
                 completed_requests += 1
                 print(f'Progress: {completed_requests}/{total_requests} completed')
 
             formatted_data = []
             try:
-                for res in results['result']:
-                    for result in res['productRespDTOList']:
-                        if result['productId'] is None:
-                            continue
-                        formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos'][0]['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+                for result in results['result'][0]['productRespDTOList']:
+                    formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos'][0]['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
             except Exception as f:
                 return None
             print('通过')
@@ -62,7 +58,7 @@ async def main():
     async with ClientSession() as session:
         tasks = []
         for dat in [2, 3, 4]:
-            for i in range(0, len(ids['supplier_hotel_id']), 10):
+            for i in ids['supplier_hotel_id']:
                 data = {
                     "checkIn": "2024-07-0{}".format(dat),
                     "checkout": "2024-07-0{}".format(dat + 1),
@@ -76,13 +72,14 @@ async def main():
                     "suppliers": [
                         {
                             "supplierId": 10001,
-                            "shotelId": ids['supplier_hotel_id'][i]
+                            "shotelId": i
 
                         }
                     ]
                 }
                 task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
                 tasks.append(task)
+
 
         await asyncio.gather(*tasks)
 
