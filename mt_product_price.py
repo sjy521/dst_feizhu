@@ -103,6 +103,30 @@ async def main():
                             "shotelId": str(ids['supplier_hotel_id'][i + 4])
 
                         },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 5])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 6])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 7])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 8])
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": str(ids['supplier_hotel_id'][i + 9])
+                        },
                     ]
                 }
                 print(data)
