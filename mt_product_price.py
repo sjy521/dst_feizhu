@@ -27,6 +27,7 @@ async def fetch_and_save_data(session, pool, url, data, sem):
             formatted_data = []
             try:
                 for result in results['result'][0]['productRespDTOList']:
+                    print(result)
                     formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos']['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
             except Exception as f:
                 print(f)
@@ -34,7 +35,7 @@ async def fetch_and_save_data(session, pool, url, data, sem):
 
             async with pool.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, createTime) VALUES (%s, %s, %s, %s, %s, %s)"
+                    sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, date, createTime) VALUES (%s, %s, %s, %s, %s, %s)"
                     await cursor.executemany(sql, formatted_data)
                     await conn.commit()
 
