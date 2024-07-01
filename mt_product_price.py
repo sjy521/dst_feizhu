@@ -26,8 +26,11 @@ async def fetch_and_save_data(session, pool, url, data, sem):
 
             formatted_data = []
             try:
-                for result in results['result'][0]['productRespDTOList']:
-                    formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos'][0]['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+                for res in results['result']:
+                    for result in res['productRespDTOList']:
+                        if result['productId'] is None:
+                            continue
+                        formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos'][0]['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
             except Exception as f:
                 return None
             print('通过')
@@ -58,7 +61,7 @@ async def main():
     async with ClientSession() as session:
         tasks = []
         for dat in [2, 3, 4]:
-            for i in ids['supplier_hotel_id']:
+            for i in range(0, len(ids['supplier_hotel_id']), 10):
                 data = {
                     "checkIn": "2024-07-0{}".format(dat),
                     "checkout": "2024-07-0{}".format(dat + 1),
@@ -72,7 +75,52 @@ async def main():
                     "suppliers": [
                         {
                             "supplierId": 10001,
-                            "shotelId": i
+                            "shotelId": ids['supplier_hotel_id'][i]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+1]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+2]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+3]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+4]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+5]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+6]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+7]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+8]
+
+                        },
+                        {
+                            "supplierId": 10001,
+                            "shotelId": ids['supplier_hotel_id'][i+9]
 
                         }
                     ]
