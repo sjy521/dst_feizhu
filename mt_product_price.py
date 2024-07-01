@@ -52,7 +52,7 @@ async def main():
     url = "http://10.18.99.1:8081/client/spa/batchQueryPrice"
     ids = pandas.read_csv("./9999999999999999.csv")
 
-    sem = Semaphore(20)  # 限制并发数量为200
+    sem = Semaphore(10)  # 限制并发数量为200
 
     # 创建 MySQL 连接池
     pool = await aiomysql.create_pool(
