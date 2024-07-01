@@ -27,14 +27,14 @@ async def fetch_and_save_data(session, pool, url, data, sem):
             formatted_data = []
             try:
                 for result in results['result'][0]['productRespDTOList']:
-                    formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+                    formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'], result['productInfo']['productLimitRule'], result['priceInfos']['date'], time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
             except Exception as f:
                 #                 print(f)
                 return None
 
             async with pool.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, createTime) VALUES (%s, %s, %s, %s, %s)"
+                    sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, createTime) VALUES (%s, %s, %s, %s, %s, %s)"
                     await cursor.executemany(sql, formatted_data)
                     await conn.commit()
 
@@ -58,27 +58,29 @@ async def main():
 
     async with ClientSession() as session:
         tasks = []
-        for i in ids['supplier_hotel_id']:
-            data = {
-                "checkIn": "2024-07-02",
-                "checkout": "2024-07-03",
-                "roomNum": 1,
-                "adultNum": 2,
-                "childNum": 0,
-                "childAges": [],
-                "guestType": 0,
-                "totalPrice":1000,
+        for dat in [2, 3, 4]:
+            for i in ids['supplier_hotel_id']:
+                data = {
+                    "checkIn": "2024-07-0{}".format(dat),
+                    "checkout": "2024-07-0{}".format(dat + 1),
+                    "roomNum": 1,
+                    "adultNum": 2,
+                    "childNum": 0,
+                    "childAges": [],
+                    "guestType": 0,
+                    "totalPrice":1000,
 
-                "suppliers": [
-                    {
-                        "supplierId": 10001,
-                        "shotelId": i
+                    "suppliers": [
+                        {
+                            "supplierId": 10001,
+                            "shotelId": i
 
-                    }
-                ]
-            }
-            task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
-            tasks.append(task)
+                        }
+                    ]
+                }
+                task = asyncio.ensure_future(fetch_and_save_data(session, pool, url, data, sem))
+                tasks.append(task)
+
 
         await asyncio.gather(*tasks)
 
