@@ -98,7 +98,7 @@ async def parser(html, hotel_id):
 
 def run_windows_detail(res_data):
     new_loop = asyncio.new_event_loop()
-    semaphore = asyncio.Semaphore(20, loop=new_loop)
+    semaphore = asyncio.Semaphore(20)
     loop_thread = Thread(target=start_thread_loop, args=(new_loop,))
     # loop_thread.setDaemon(True)
     loop_thread.start()
