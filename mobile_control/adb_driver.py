@@ -36,6 +36,7 @@ def run(device):
                     # 支付订单
                     click_type = fliggy_model.refresh(click_type)
                     busy_devices = select_device()
+                    print("设备信息", busy_devices)
                     if len(busy_devices) > 0:
                         for busy_device in busy_devices:
                             if busy_device['deviceId'] == device_id:
