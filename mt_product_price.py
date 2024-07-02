@@ -12,6 +12,9 @@ from threading import Thread
 import urllib
 from aiohttp import TCPConnector
 
+
+lock = asyncio.Lock()
+completed_requests = 0
 hotel_error_list = []
 passlist = []
 
@@ -60,6 +63,7 @@ async def parser(html, hotel_id):
     解析个人橱窗详情信息
     :return:
     """
+    global completed_requests
     try:
         pool = await aiomysql.create_pool(
             host='8.146.211.133',
@@ -69,6 +73,10 @@ async def parser(html, hotel_id):
             db='bg_admin',
             loop=asyncio.get_event_loop()
         )
+        async with lock:
+            completed_requests += 1
+            print(f'Progress: {completed_requests} completed')
+
         results = json.loads(html)
         formatted_data = []
         try:
@@ -99,7 +107,7 @@ async def parser(html, hotel_id):
 def run_windows_detail(res_data):
     global semaphore, new_loop
     new_loop = asyncio.new_event_loop()
-    semaphore = asyncio.Semaphore(20)
+    semaphore = asyncio.Semaphore(30)
     loop_thread = Thread(target=start_thread_loop, args=(new_loop,))
     # loop_thread.setDaemon(True)
     loop_thread.start()
