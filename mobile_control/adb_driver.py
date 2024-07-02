@@ -34,6 +34,7 @@ def run(device):
                     # 定位当前页面为订单页
                     fliggy_model.goto_target_page()
                     # 支付订单
+                    print('===')
                     click_type = fliggy_model.refresh(click_type)
                     busy_devices = select_device()
                     print("设备信息", busy_devices)
