@@ -39,6 +39,7 @@ def run(device):
                     if len(busy_devices) > 0:
                         for busy_device in busy_devices:
                             if busy_device['deviceId'] == device_id:
+                                print(busy_device)
                                 is_busy = int(busy_device.get("isBusy"))
                                 get_cookie = busy_device.get("getCookie")
                                 if get_cookie == "1":

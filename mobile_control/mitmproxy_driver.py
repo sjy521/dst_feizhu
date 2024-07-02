@@ -19,7 +19,7 @@ def mitmproxy_run(result, fliggy_model):
         adb_model.open_proxy("{}:8892".format(str(ip_address)))
         pid = adb_model.open_mitmproxy()
         adb_model.click_button(500, 1000)
-        time.sleep(5)
+        time.sleep(8)
         adb_model.click_back()
         adb_model.close_proxy()
         adb_model.kill_pid(pid)
