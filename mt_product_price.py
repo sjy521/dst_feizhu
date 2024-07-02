@@ -105,7 +105,6 @@ def run_windows_detail(res_data):
     loop_thread.start()
     ids = pandas.read_csv("/Users/xhzy/Desktop/9999999999999999.csv")
     for dat in [2, 3, 4]:
-        tasks = []
         for i in range(len(ids['supplier_hotel_id']) -10, -1, -10):
 
             data = {
@@ -176,11 +175,7 @@ def run_windows_detail(res_data):
 
 
 if __name__ == '__main__':
-    # source_id = '102540320683'
-    # sec_uid = 'MS4wLjABAAAAS7KFopXZsSEE6EuEtKS5PcyJrBSTOldSL3SUeTZGfqM'
-    #     data = pandas.read_csv('/Users/xhzy/Desktop/直播榜.csv')
 
     run_windows_detail('')
-#     pandas.DataFrame(douyindatalist).to_csv('/Users/xhzy/Desktop/new_test1.csv')
 
 
