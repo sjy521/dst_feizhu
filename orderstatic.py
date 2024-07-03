@@ -79,6 +79,8 @@ def orderstatic():
                             message += "去哪儿："
                         if (value == '20005'):
                             message += "携程："
+                        if (value == '20006'):
+                            message += "百度："
                     if (column == 'count(*)'):
                         message += str(value) + "\n"
                         totalCount += int(value)
@@ -99,6 +101,8 @@ def orderstatic():
                             message += "去哪儿四海通确认订单："
                         if (value == '20005'):
                             message += "携程确认订单："
+                        if (value == '20006'):
+                            message += "百度确认订单："
                     if (column == 'count(*)'):
                         message += str(value) + "\n"
                         confirm += int(value)
@@ -120,6 +124,8 @@ def orderstatic():
                             message += "去哪儿四海通售前利润："
                         if (value == '20005'):
                             message += "携程售前利润："
+                        if (value == '20006'):
+                            message += "百度售前利润："
                     if (column == 'profit'):
                         message += str("%.2f" % (float(value) / 100)) + "\n"
                         totalPofit += float("%.2f" % (float(value) / 100))
