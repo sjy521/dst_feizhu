@@ -111,8 +111,8 @@ def run_windows_detail(res_data):
     loop_thread = Thread(target=start_thread_loop, args=(new_loop,))
     # loop_thread.setDaemon(True)
     loop_thread.start()
-    ids = pandas.read_csv("./9999999999999999.csv")
-    for dat in [6, 7, 8]:
+    ids = pandas.read_csv("./副本9999999999999999.csv")
+    for dat in [6]:
         for i in range(0, len(ids['supplier_hotel_id']), 10):
 
             data = {
