@@ -38,6 +38,11 @@ def is_in_queue(element):
 
 def xiechengcheck():
     try:
+        now = datetime.datetime.now()
+        # 加一分钟
+        next_minute = now + datetime.timedelta(minutes=1)
+        # 格式化为所需的字符串格式
+        formatted_time = next_minute.strftime("%m-%d %H:%M")
         print("执行时间：{}".format(time.strftime("%m-%d %H:%M:%S")))
         url = "https://www.vipdlt.com/order/api/scrollOrderList"
         querystring = {"v": "0.6726812331766832"}
@@ -59,7 +64,7 @@ def xiechengcheck():
             dt = datetime.datetime.strptime(formDate, "%Y-%m-%d %H:%M:%S")
             # 格式化为所需的字符串
             formatted_time = dt.strftime("%m-%d %H:%M")
-            if time.strftime("%m-%d %H:%M") > formatted_time:
+            if formatted_time > formatted_time:
                 comConfirmNo = info['comConfirmNo']
                 channelOrderId = info['channelOrderId']
                 if comConfirmNo == "" and not is_in_queue(channelOrderId):
