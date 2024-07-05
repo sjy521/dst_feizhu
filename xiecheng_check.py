@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 import json
 import redis
@@ -53,11 +55,16 @@ def xiechengcheck():
         r_json = json.loads(response.text)
         infoBos = r_json['data']['infoBos']
         for info in infoBos:
-            comConfirmNo = info['comConfirmNo']
-            channelOrderId = info['channelOrderId']
-            if comConfirmNo == "" and not is_in_queue(channelOrderId):
-                push_to_queue(channelOrderId)
-                send_pay_order_for_dingding("携程漏单了, 商家订单号: {}".format(channelOrderId), ["18501953880", "13520735673", "13474763052", "18911137911"])
+            formDate = info['formDate']
+            dt = datetime.datetime.strptime(formDate, "%Y-%m-%d %H:%M:%S")
+            # 格式化为所需的字符串
+            formatted_time = dt.strftime("%m-%d %H:%M")
+            if time.strftime("%m-%d %H:%M") > formatted_time:
+                comConfirmNo = info['comConfirmNo']
+                channelOrderId = info['channelOrderId']
+                if comConfirmNo == "" and not is_in_queue(channelOrderId):
+                    push_to_queue(channelOrderId)
+                    send_pay_order_for_dingding("携程漏单了, 商家订单号: {}".format(channelOrderId), ["18501953880", "13520735673", "13474763052", "18911137911"])
     except Exception as f:
         print(f)
 
