@@ -301,6 +301,7 @@ def cancel_order(device_id, biz_order_id):
         if status is True:
             return True
         else:
+            send_pay_order_for_dingding("{}有取消失败的订单：{}: ，及时查看".format(device_id, biz_order_id))
             return False
     else:
         return False
