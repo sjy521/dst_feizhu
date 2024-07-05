@@ -107,13 +107,13 @@ async def parser(html, hotel_id):
 def run_windows_detail(res_data):
     global semaphore, new_loop
     new_loop = asyncio.new_event_loop()
-    semaphore = asyncio.Semaphore(30)
+    semaphore = asyncio.Semaphore(10)
     loop_thread = Thread(target=start_thread_loop, args=(new_loop,))
     # loop_thread.setDaemon(True)
     loop_thread.start()
     ids = pandas.read_csv("./9999999999999999.csv")
-    for dat in [2, 3, 4]:
-        for i in range(len(ids['supplier_hotel_id']) -10, -1, -10):
+    for dat in [6, 7, 8]:
+        for i in range(0, len(ids['supplier_hotel_id']), 10):
 
             data = {
                 "checkIn": "2024-07-0{}".format(dat),
