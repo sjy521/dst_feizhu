@@ -86,11 +86,11 @@ async def parser(html, hotel_id):
                     formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'],
                                            result['productInfo']['productLimitRule'],
                                            result['priceInfos'][0]['date'],
-                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
                                            result['room']['roomName'],
                                            result['room']['bedGroups'][0][0]['bedType'],
                                            result['room']['bedGroups'][0][0]['bedCount'],
-                                           result['meal']['count']))
+                                           result['meal']['count'],
+                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
         except Exception as f:
             #                 print(f)
             return None
