@@ -49,7 +49,6 @@ async def task(hotel_data, next_cursor=None):
     #     print(name)
     url = "http://10.18.99.1:8081/client/spa/batchQueryPrice"
 
-
     conn = aiohttp.TCPConnector(ssl=True)
     async with aiohttp.ClientSession(connector=conn) as session:
         html = await fetch(session, url, hotel_data)
@@ -87,14 +86,18 @@ async def parser(html, hotel_id):
                     formatted_data.append((result['hotelId'], result['productId'], result['totalPrice'],
                                            result['productInfo']['productLimitRule'],
                                            result['priceInfos'][0]['date'],
-                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+                                           time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+                                           result['room']['roomName'],
+                                           result['room']['bedGroups'][0][0]['bedType'],
+                                           result['room']['bedGroups'][0][0]['bedCount'],
+                                           result['meal']['count']))
         except Exception as f:
             #                 print(f)
             return None
 
         async with pool.acquire() as conn:
             async with conn.cursor() as cursor:
-                sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, date, createTime) VALUES (%s, %s, %s, %s, %s, %s)"
+                sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, date, roomName, bedType, bedCount, mealCount, createTime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
                 await cursor.executemany(sql, formatted_data)
                 await conn.commit()
@@ -107,79 +110,79 @@ async def parser(html, hotel_id):
 def run_windows_detail(res_data):
     global semaphore, new_loop
     new_loop = asyncio.new_event_loop()
-    semaphore = asyncio.Semaphore(10)
+    semaphore = asyncio.Semaphore(15)
     loop_thread = Thread(target=start_thread_loop, args=(new_loop,))
     # loop_thread.setDaemon(True)
     loop_thread.start()
-    ids = pandas.read_csv("./副本9999999999999999.csv")
-    for dat in [6]:
-        for i in range(0, len(ids['supplier_hotel_id']), 10):
+    ids = pandas.read_csv("./9999999999999999.csv")
+    for i in range(0, len(ids['supplier_hotel_id']), 10):
+        data = {
+            # "checkIn": "2024-07-0{}".format(dat),
+            # "checkout": "2024-07-0{}".format(dat + 1),
+            "checkIn": "2024-07-08",
+            "checkout": "2024-07-09",
+            "roomNum": 1,
+            "adultNum": 2,
+            "childNum": 0,
+            "childAges": [],
+            "guestType": 0,
+            "totalPrice":1000,
 
-            data = {
-                "checkIn": "2024-07-0{}".format(dat),
-                "checkout": "2024-07-0{}".format(dat + 1),
-                "roomNum": 1,
-                "adultNum": 2,
-                "childNum": 0,
-                "childAges": [],
-                "guestType": 0,
-                "totalPrice":1000,
+            "suppliers": [
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i])
 
-                "suppliers": [
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+1])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+1])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+2])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+2])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+3])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+3])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+4])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+4])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+5])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+5])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+6])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+6])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+7])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+7])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+8])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+8])
+                },
+                {
+                    "supplierId": 10001,
+                    "shotelId": str(ids['supplier_hotel_id'][i+9])
 
-                    },
-                    {
-                        "supplierId": 10001,
-                        "shotelId": str(ids['supplier_hotel_id'][i+9])
+                }
+            ]
+        }
 
-                    }
-                ]
-            }
-
-            asyncio.run_coroutine_threadsafe(task(data), new_loop)
+        asyncio.run_coroutine_threadsafe(task(data), new_loop)
 
 
 if __name__ == '__main__':
