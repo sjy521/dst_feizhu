@@ -87,6 +87,7 @@ async def parser(html, hotel_id):
                                            result['productInfo']['productLimitRule'],
                                            result['priceInfos'][0]['date'],
                                            result['room']['roomName'],
+                                           result['room']['roomId'],
                                            result['room']['bedGroups'][0][0]['bedType'],
                                            result['room']['bedGroups'][0][0]['bedCount'],
                                            result['meal']['count'],
@@ -97,7 +98,7 @@ async def parser(html, hotel_id):
 
         async with pool.acquire() as conn:
             async with conn.cursor() as cursor:
-                sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, date, roomName, bedType, bedCount, mealCount, createTime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                sql = "INSERT INTO mt_product_price (hotelId, productId, totalPrice, productLimitRule, date, roomName, roomId, bedType, bedCount, mealCount, createTime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
                 await cursor.executemany(sql, formatted_data)
                 await conn.commit()
