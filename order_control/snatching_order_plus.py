@@ -73,11 +73,12 @@ def run(tar_device_id):
             if device_info is not None:
                 device_id = device_info.get('deviceId')
                 device_name = device_info.get('deviceName')
+                delay_num = device_info.get('delayNum')
                 if not devices_error_count.get(device_name):
                     devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
-                res = get_effective_order(device_id, error_list, device_name)
+                res = get_effective_order(device_id, error_list, device_name, delay_num)
                 if res is not None:
                     d_ordr_id, bg_order_id = res
                     start_time = 0
