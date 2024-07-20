@@ -10,39 +10,20 @@ from mysql.connector import Error
 from decimal import Decimal
 import time
 
-
-def get_ding_pay_url():
-    timestamp = str(round(time.time() * 1000))
-    secret = "SEC90d9680ab0c7e1fae4ec8dbaa23b94af5c412e93f1031ed15a043bf93dff3b09"
-    access_token = "36f21a1ff5e7dbf329454965d11d4f6ede771cfc0137676b470c2bd773154f96"
-    secret_enc = secret.encode("utf-8")
-    string_to_sign = "{}\n{}".format(timestamp, secret)
-    string_to_sign_enc = string_to_sign.encode("utf-8")
-    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
-                                                                                             sign)
-    return url
-
-
 def send_pay_order_for_dingding(text, atphone=None):
-    if atphone is not None:
-        atMobiles = atphone
-    else:
-        atMobiles = []
-    url = get_ding_pay_url()
-    data = {
-        "at": {
-            "atMobiles": atMobiles,
-            "isAtAll": False
-        },
-        "text": {
-            "content": text
-        },
-        "msgtype": "text"
+    url ="https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=92c89055-3410-4824-9b4b-c0ea17412464"
+    headers = {
+        'Content-Type': "application/json;charset=UTF-8",
     }
-    res = requests.post(url, json=data)
-    res_json = json.loads(res.text)
+    data = {
+        'msgtype': "text",
+        'text':{
+            "content":text,
+            "mentioned_list":[],
+        }
+    }
+    r= requests.post(url, headers=headers, json=data)
+    res_json = json.loads(r.text)
     return res_json.get("errmsg")
 
 
