@@ -23,16 +23,17 @@ def get_ding_url():
 
 
 def get_ding_pay_url():
-    timestamp = str(round(time.time() * 1000))
-    secret = "SEC26b241f0640272d1d31dbcdff40fef0432a3be08606396230fb78dcc3794788b"
-    access_token = "7369d4bbe26545da0c96ce4102c7b0101c7b9e316da46e22e747eb9e568df12f"
-    secret_enc = secret.encode("utf-8")
-    string_to_sign = "{}\n{}".format(timestamp, secret)
-    string_to_sign_enc = string_to_sign.encode("utf-8")
-    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
-                                                                                             sign)
+    # timestamp = str(round(time.time() * 1000))
+    # secret = "SEC26b241f0640272d1d31dbcdff40fef0432a3be08606396230fb78dcc3794788b"
+    # access_token = "7369d4bbe26545da0c96ce4102c7b0101c7b9e316da46e22e747eb9e568df12f"
+    # secret_enc = secret.encode("utf-8")
+    # string_to_sign = "{}\n{}".format(timestamp, secret)
+    # string_to_sign_enc = string_to_sign.encode("utf-8")
+    # hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+    # sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+    # url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
+    #                                                                                          sign)
+    url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=303013f2-3152-42b8-b5d6-0ca5c736d04e"
     return url
 
 
@@ -74,4 +75,4 @@ def send_pay_order_for_dingding(text, atphone=None):
 
 
 if __name__ == '__main__':
-    print(send_abnormal_alarm_for_dingding("告警机器人测试"))
+    print(send_pay_order_for_dingding("告警机器人测试"))
