@@ -64,6 +64,7 @@ def send_pay_order_for_dingding(text, atphone=None):
             "atMobiles": atMobiles,
             "isAtAll": False
         },
+        "mentioned_mobile_list": atMobiles,
         "text": {
             "content": text
         },
