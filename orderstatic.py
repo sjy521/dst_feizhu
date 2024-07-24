@@ -130,7 +130,46 @@ def orderstatic():
             record = cursor.fetchall()
             for row in record:
                 for column, value in row.items():
-                    message += "一小时进单数：" + str(value)
+                    message += "一小时进单数：" + str(value) +"\n\n"
+            connectionOrder = mysql.connector.connect(
+                host='pc-2ze1l4f34v5ql1rsu.rwlb.rds.aliyuncs.com',
+                database='hotel_admin',
+                user='admin_db_user',
+                password='VvTUbbEp$D6uGiLDb'
+            )
+
+            cursorOrder = connectionOrder.cursor(dictionary=True)
+            cursorOrder.execute(
+                "SELECT distribute_id,count(*) as total,sum(CASE WHEN status=0 THEN 1 ELSE 0 END) AS fail,sum(CASE WHEN new_price=0 THEN 1 ELSE 0 END) AS full FROM db_check_price_record  where create_time>CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')and create_time<CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59') GROUP BY distribute_id;")
+            record = cursorOrder.fetchall()
+
+            for row in record:
+                total=0
+                fail=0
+                full=0
+                for column, value in row.items():
+                    if (column == 'distribute_id'):
+                        if (value == 20001):
+                            message += "去哪儿阿信失败率："
+                        if (value == 20002):
+                            message += "美团失败率："
+                        if (value == 20004):
+                            message += "去哪儿四海通失败率："
+                        if (value == 20006):
+                            message += "百度售失败率："
+                    if (column == 'total'):
+                        total=value
+                    if (column == 'fail'):
+                        fail=value
+                    if (column == 'full'):
+                        full=value
+                print(row)
+                totalRate=str(Decimal((fail / total)*100).quantize(Decimal('0.01')))
+                priceChange=str(Decimal(((fail-full) / total)*100).quantize(Decimal('0.01')))
+                fullRate=str(Decimal((full / total)*100).quantize(Decimal('0.01')))
+                message += totalRate +"%\n\t变价率："+priceChange+"%\n\t满房率："+fullRate+"%\n"
+            cursorOrder.close()
+            connectionOrder.close()
 
             print(message)  # 输出空行以区分不同的行
             send_pay_order_for_dingding(message)
