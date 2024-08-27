@@ -94,7 +94,7 @@ def orderstatic():
             message += "总确认订单数：" + str(confirm) + "\n\n" + "售前利润：\n"
 
             cursor.execute(
-                "SELECT bg.distributor_id,CASE 	WHEN bg.distributor_id=20003 THEN 		sum(bg.seller_price*0.9-bg.price) 	WHEN bg.supplier_id=10004 THEN 		sum(bg.seller_price-(so.price-so.brokerage)) 	ELSE 		sum(bg.seller_price-bg.price) END as profit from db_bg_order bg,db_supplier_order so where bg.bg_order_id=so.bg_order_id and bg.create_time>DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00')  and bg.create_time<NOW() and bg.order_status=11 GROUP BY bg.distributor_id;")
+                "SELECT bg.distributor_id,CASE 	WHEN bg.distributor_id=20003 THEN 		sum(bg.seller_price*0.9-bg.price) 	WHEN bg.supplier_id=10004 THEN 		sum(bg.seller_price-(so.price-so.brokerage)) 	ELSE 		sum(bg.seller_price-bg.price) END as profit from db_bg_order bg,db_supplier_order so where bg.bg_order_id=so.bg_order_id and bg.create_time>DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00')  and bg.create_time<NOW() and bg.order_status=11 and so.order_status=11 GROUP BY bg.distributor_id;")
             record = cursor.fetchall()
             for row in record:
                 for column, value in row.items():
