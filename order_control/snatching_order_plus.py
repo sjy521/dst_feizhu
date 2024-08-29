@@ -12,7 +12,7 @@ from log_model.set_log import setup_logging
 from util.order_list_util import check_order
 from util.ding_util import send_pay_order_for_dingding
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
-    build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn
+    build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn, handle_mt_full
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -78,9 +78,10 @@ def run(tar_device_id):
                     devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
-                res = get_effective_order(device_id, error_list, device_name, delay_num)
-                if res is not None:
-                    d_ordr_id, bg_order_id = res
+                build_order_res = get_effective_order(device_id, error_list, device_name, delay_num)
+                if build_order_res is not None:
+                    d_ordr_id = build_order_res.get("d_ordr_id")
+                    bg_order_id = build_order_res.get("bg_order_id")
                     start_time = 0
                     try:
                         tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
@@ -94,6 +95,7 @@ def run(tar_device_id):
                         if build_res is not None:
                             if build_res == "满房":
                                 fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
+                                handle_mt_full(build_order_res)
                                 logging.info("[{}]下单完成, 满房".format(bg_order_id))
                             elif build_res == "变价":
                                 fail_order_unlock(1, 0, bg_order_id, device_id, device_name)

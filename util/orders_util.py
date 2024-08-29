@@ -128,17 +128,23 @@ def get_effective_order(device_id, error_list, device_name, delay_num):
                 result = random.choices(results.get("rows"))[0]
                 if result.get("source") != "10002":
                     return None
-                bg_order_id = result.get("bgOrderId")
-                d_ordr_id = result.get("dorderId")
+                order_data = {
+                    "bg_order_id": result.get("bgOrderId"),
+                    "d_ordr_id": result.get("dorderId"),
+                    "hotel_id": result.get("hotelId"),
+                    "product_id": result.get("productId"),
+                    "check_in": result.get("checkInTime"),
+                    "check_out": result.get("checkOutTime")
+                }
                 # 加锁
                 url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
-                querystring = {"orderId": bg_order_id, "userName": device_name}
+                querystring = {"orderId": order_data['bg_order_id'], "userName": device_name}
                 order_response = requests.request("GET", url, params=querystring)
                 order_res_json = json.loads(order_response.text)
                 if order_res_json['result']['islock'] is True:
-                    return [d_ordr_id, bg_order_id]
+                    return order_data
                 else:
-                    logging.info("bgorderid: {}, result: {}".format(bg_order_id, str(order_res_json)))
+                    logging.info("bgorderid: {}, result: {}".format(order_data['bg_order_id'], str(order_res_json)))
     return None
 
 
@@ -279,6 +285,21 @@ def build_order(device_id, tar_json, phone):
             return None
     else:
         return None
+
+
+def handle_mt_full(build_order_res):
+    url = "http://spa.bingotravel.com.cn/client/spa/handleMtFull"
+    payload = {
+        "checkIn": build_order_res['check_in'],
+        "checkOut": build_order_res['check_out'],
+        "hotelId": build_order_res['hotel_id'],
+        "productId": build_order_res['product_id'],
+        "supplierId": 10002
+    }
+    response = requests.request("POST", url, json=payload, timeout=120)
+    res_json = json.loads(response.text)
+    logging.info("拉黑酒店：param:[{}], res: [{}]".format(payload, res_json))
+    return True
 
 
 def cancel_order(device_id, biz_order_id):
