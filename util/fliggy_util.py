@@ -177,7 +177,7 @@ class FliggyModel:
                 bgorder = get_bongo_order(order_id)
                 if bgorder is False:
                     cancel_order(self.device_id, order_id)
-                    send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
+                    # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
                     self.adbModel.click_back()
                     self.adbModel.click_back()
                     return False

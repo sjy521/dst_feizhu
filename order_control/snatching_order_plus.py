@@ -10,7 +10,6 @@ sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 from log_model.set_log import setup_logging
 from util.order_list_util import check_order
-from util.ding_util import send_pay_order_for_dingding
 from util.orders_util import get_effective_device, get_effective_order, get_url_by_bgorderid, order_create_order, \
     build_order, fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn, handle_mt_full
 
@@ -108,7 +107,7 @@ def run(tar_device_id):
                                     bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
                                     logging.info("[{}]下单完成, 重复找单".format(bg_order_id))
                                 else:
-                                    send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
+                                    # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
                                     unlock(bg_order_id, device_name)
                             else:
                                 biz_order_id, price = build_res
