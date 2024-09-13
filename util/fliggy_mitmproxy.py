@@ -27,14 +27,21 @@ def get_appmsg(flow: mitmproxy.http.HTTPFlow):
     for k, v in cookie.items():
         if 'cookie2' in k:
             print(v)
-            update_cookie_device(v)
-            break
+            cookie2 = v
+            for k, v in cookie.items():
+                if 'x5sec' in k:
+                    print(v)
+                    x5sec = v
+                    update_cookie_device(cookie2, x5sec)
+                    break
+            else:
+                break
     else:
         return 0
     return 1
 
 
-def update_cookie_device(cookie):
+def update_cookie_device(cookie, x5sec):
     """
     更新cookie
     :return:
@@ -44,6 +51,6 @@ def update_cookie_device(cookie):
         for result in all_devies:
             if result.get("isMyCookie") == "1":
                 device_id = result.get("deviceId")
-                set_get_cookie_device(device_id, cookie)
+                set_get_cookie_device(device_id, cookie, x5sec)
     else:
         return None

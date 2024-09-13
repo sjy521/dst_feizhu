@@ -61,7 +61,7 @@ def get_all_device():
 
 
 # 设置正在抓取的cookie的设备
-def set_get_cookie_device(device_id, cookie=None):
+def set_get_cookie_device(device_id, cookie=None, x5sec=None):
     """
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
@@ -70,6 +70,7 @@ def set_get_cookie_device(device_id, cookie=None):
     if cookie is not None:
         payload = {"deviceId": device_id,
                    "cookie2": cookie,
+                   "backUp": x5sec,
                    "getCookie": "0",
                    "isMyCookie": "0"
                    }
