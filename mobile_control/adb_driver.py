@@ -27,17 +27,7 @@ def run(device):
         if is_enable == '1' or is_enable == '2':
             while True:
                 try:
-                    # 判断手机是否连接
-                    if not fliggy_model.is_targat_device(device_name):
-                        time.sleep(10)
-                        continue
-                    # 定位当前页面为订单页
-                    fliggy_model.goto_target_page()
-                    # 支付订单
-                    print('===')
-                    click_type = fliggy_model.refresh(click_type)
                     busy_devices = select_device()
-                    print("设备信息", busy_devices)
                     if len(busy_devices) > 0:
                         for busy_device in busy_devices:
                             if busy_device['deviceId'] == device_id:
@@ -47,6 +37,20 @@ def run(device):
                                 if get_cookie == "1":
                                     print("准备刷新cookie")
                                     mitmproxy_run(busy_device, fliggy_model)
+                                if busy_device.get('isEnable') == '2':
+                                    continue
+                    else:
+                        time.sleep(1)
+                        continue
+                    # 判断手机是否连接
+                    if not fliggy_model.is_targat_device(device_name):
+                        time.sleep(10)
+                        continue
+                    # 定位当前页面为订单页
+                    fliggy_model.goto_target_page()
+                    # 支付订单
+                    print('===')
+                    click_type = fliggy_model.refresh(click_type)
                     pay_status = fliggy_model.pay_order(pay_password, device_name)
                     if pay_status:
                         if is_busy > 0:
