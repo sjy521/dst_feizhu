@@ -27,6 +27,10 @@ def run(device):
         if is_enable == '1' or is_enable == '2':
             while True:
                 try:
+                    # 判断手机是否连接
+                    if not fliggy_model.is_targat_device(device_name):
+                        time.sleep(10)
+                        continue
                     busy_devices = select_device()
                     if len(busy_devices) > 0:
                         for busy_device in busy_devices:
@@ -39,12 +43,12 @@ def run(device):
                                     mitmproxy_run(busy_device, fliggy_model)
                                 if busy_device.get('isEnable') == '2':
                                     continue
+                                break
+                        else:
+                            time.sleep(1)
+                            continue
                     else:
                         time.sleep(1)
-                        continue
-                    # 判断手机是否连接
-                    if not fliggy_model.is_targat_device(device_name):
-                        time.sleep(10)
                         continue
                     # 定位当前页面为订单页
                     fliggy_model.goto_target_page()
