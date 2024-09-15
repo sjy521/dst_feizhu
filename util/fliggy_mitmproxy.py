@@ -24,29 +24,31 @@ def get_appmsg(flow: mitmproxy.http.HTTPFlow):
     @return:
     """
     cookie = flow.request.cookies
+    cookie2 = _m_h5_tk_enc = _m_h5_tk = ""
+    for k, v in cookie.items():
+        if 'cookie2' in k:
+            print(v)
+            cookie2 = v
+            continue
+        if '_m_h5_tk_enc' in k:
+            print(v)
+            _m_h5_tk_enc = v
+            continue
+        if '_m_h5_tk' in k and "_m_h5_tk_enc" not in k:
+            print(v)
+            _m_h5_tk = v
+            continue
     for k, v in cookie.items():
         if 'x5sec' in k:
             print(v)
             x5sec = v
-            cookie2 = _m_h5_tk_enc = _m_h5_tk = ""
-            for k, v in cookie.items():
-                if 'cookie2' in k:
-                    print(v)
-                    cookie2 = v
-                    continue
-                if '_m_h5_tk_enc' in k:
-                    print(v)
-                    _m_h5_tk_enc = v
-                    continue
-                if '_m_h5_tk' in k and "_m_h5_tk_enc" not in k:
-                    print(v)
-                    _m_h5_tk = v
-                    continue
             update_cookie_device(cookie2, "{}|{}".format(x5sec, _m_h5_tk + ";" + _m_h5_tk_enc))
-            break
+            return 1
+    if cookie2 != "" and _m_h5_tk != "" and _m_h5_tk_enc != "":
+        update_cookie_device(cookie2, "{}".format(_m_h5_tk + ";" + _m_h5_tk_enc))
+        return 1
     else:
         return 0
-    return 1
 
 
 def update_cookie_device(cookie, x5sec):
