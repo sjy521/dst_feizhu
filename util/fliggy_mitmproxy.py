@@ -45,7 +45,7 @@ def get_appmsg(flow: mitmproxy.http.HTTPFlow):
             x5sec = v
             update_cookie_device(cookie2, "{}|{}".format(x5sec, _m_h5_tk + ";" + _m_h5_tk_enc))
             return 1
-    if x5sec != "" and cookie2 != "" and _m_h5_tk != "" and _m_h5_tk_enc != "":
+    if cookie2 != "" and _m_h5_tk != "" and _m_h5_tk_enc != "":
         update_cookie_device(cookie2, "{}".format(_m_h5_tk + ";" + _m_h5_tk_enc))
         return 1
     else:
