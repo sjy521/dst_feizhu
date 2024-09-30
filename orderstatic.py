@@ -171,8 +171,10 @@ def orderstatic():
                             message += "百度售失败率："
                         if (value == 30004):
                             message += "同程商旅失败率："
-                        if (value == '20007'):
+                        if (value == 20007):
                             message += "同程艺龙失败率："
+                        if (value == 30002):
+                            message += "夏洛特失败率："
                     if (column == 'total'):
                         total=value
                     if (column == 'fail'):
