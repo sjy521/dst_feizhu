@@ -125,10 +125,11 @@ def get_effective_order(device_id, error_list, device_name, delay_num):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > int(delay_num):
-            for _ in range(2):
-                result = random.choices(results.get("rows"))[0]
+            for _ in range(len(results.get("rows"))):
+                # result = random.choices(results.get("rows"))[0]
+                result = results.get("rows")[_]
                 if result.get("source") != "10002":
-                    return None
+                    continue
                 order_data = {
                     "bg_order_id": result.get("bgOrderId"),
                     "d_ordr_id": result.get("dorderId"),

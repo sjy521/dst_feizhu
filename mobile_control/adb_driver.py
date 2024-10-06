@@ -51,6 +51,7 @@ def run(device):
                         time.sleep(1)
                         continue
                     # 定位当前页面为订单页
+                    time.sleep(2)
                     fliggy_model.goto_target_page()
                     # 支付订单
                     print('===')
