@@ -14,7 +14,7 @@ from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_
 def get_all_order_info(device_id):
     global all_order
     errorpage = 0
-    page = 120
+    page = 100
     exceed_time_num = 20
     while page < 1000:
         try:
@@ -42,6 +42,7 @@ def get_all_order_info(device_id):
             print(page, len(all_order))
             page += 1
         except Exception as f:
+            page += 1
             errorpage += 1
             if errorpage >=10:
                 break
