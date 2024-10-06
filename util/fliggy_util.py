@@ -147,6 +147,7 @@ class FliggyModel:
         # 订单页
         logging.info("准备点击订单页")
         self.click("订单")
+        time.sleep(3)
 
     def refresh(self, click_type):
         """
@@ -276,6 +277,7 @@ class FliggyModel:
         """
         for _ in range(10):
             for __ in range(3):
+                time.sleep(2)
                 xml_path = self.adbModel.convert_to_xml(self.device_id)
                 if find_current_element_text(xml_path, "全部订单"):
                     return True
