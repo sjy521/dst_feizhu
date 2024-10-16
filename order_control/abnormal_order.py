@@ -100,7 +100,7 @@ def run(tar_device_id):
                                     bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name)
                                     logging.info("[{}]下单完成, 重复找单".format(bg_order_id))
                                 else:
-                                    send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
+                                    # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号，及时确认".format(device_name))
                                     unlock(bg_order_id, device_name)
                             else:
                                 biz_order_id, price = build_res
