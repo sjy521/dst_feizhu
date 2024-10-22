@@ -164,6 +164,8 @@ def get_abnormal_effective_order(device_id, error_list, device_name):
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
             result = random.choices(results.get("rows"))[0]
+            if result.get("source") != "10002":
+                return None
             bg_order_id = result.get("bgOrderId")
             if bg_order_id in error_list:
                 return None
