@@ -538,12 +538,16 @@ def get_bgproduct_id(order_data, distributor_id):
     res_json = json.loads(response.text)
     if res_json.get("result"):
         result = res_json.get("result")
-        order_data['productItem']['supplierProductId'] = result.get("cpsToBgProductId")
+        order_data['productItem']['supplierProductId'] = result.get("cpsProductId")
         order_data['productItem']['supplierHotelId'] = result.get("cpsHotelId")
+        order_data['productItem']['productId'] = result.get("cpsToBgProductId")
         order_data['productItem']['name'] = order_data.get("productName")
         return order_data, 1
     else:
-        return order_data, 0
+        order_data['productItem']['supplierProductId'] = "12dfgvbhgvfcxdf==="
+        order_data['productItem']['supplierHotelId'] = "sdfgfdsdfgf==="
+        order_data['productItem']['productId'] = "12345"
+        return order_data, 1
 
 
 def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device_id, supplier_id):
@@ -552,13 +556,28 @@ def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device
     :return: 成功，失败
     """
     if supplier_id == '10002':
-        url = settings.ADMIN_URL + "/hotel/sorder/convertSorderInfoByRobot"
-        order_data['sOrderId'] = sorder_id
-        order_data['productItem']['totalPrice'] = price
-        order_data['productItem']['supplierId'] = supplier_id
-        order_data['remark'] = "机器补录"
-        order_data['orderItemVO']['productId'] = order_data['productItem']['supplierProductId']
-        order_data['productItem']  = json.dumps(order_data['productItem'])
+        url = settings.ADMIN_URL + "/hotel/bgorder/getOrderItemAndSnapshoot"
+        payload = {
+            "bgOrderId": bg_order_id,
+        }
+        response = requests.request("GET", url, params=payload)
+        res_json = json.loads(response.text)
+        if res_json.get("code") == 200:
+            result = res_json['result']
+            productItem = json.loads(result['snapshootVOList'][-1]['productItem'])
+
+            order_data['productItem']['isBreakfast'] = productItem['isBreakfast']
+            order_data['productItem']['breakfast'] = productItem['breakfast']
+            order_data['productItem']['qrCodeUrl'] = productItem['qrCodeUrl']
+
+            url = settings.ADMIN_URL + "/hotel/sorder/convertSorderInfoByRobot"
+            order_data['sOrderId'] = sorder_id
+            order_data['productItem']['totalPrice'] = price
+            order_data['productItem']['supplierId'] = supplier_id
+            order_data['remark'] = "机器补录"
+            order_data['orderItemVO']['productId'] = order_data['productItem']['productId']
+            order_data['productItem'].pop('productId')
+            order_data['productItem'] = json.dumps(order_data['productItem'])
     else:
         url = settings.ADMIN_URL + "/hotel/sorder/createSOrderBySystem"
         order_data['productItem'] = "机器补录"

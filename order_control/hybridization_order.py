@@ -40,6 +40,7 @@ def fliggy_bulu(order_data, is_busy, device_id, bg_order_id, biz_order_id, price
             logging.info("[{}]下单完成, 订单号：[{}]".format(bg_order_id, biz_order_id))
     except Exception as f:
         cancel_order(device_id, biz_order_id)
+        send_pay_order_for_dingding("{}: 当前订单补录异常，及时确认".format(order_data['sOrderId']))
         logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
         unlock(bg_order_id, device_name)
 
