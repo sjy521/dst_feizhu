@@ -511,7 +511,7 @@ def get_hybridization_order(device_name, delay_num):
                     return order_data, d_order_id, state
                 else:
                     logging.info("bgorderid: {}, result: {}".format(order_data['bgOrderId'], str(order_res_json)))
-    return None
+    return None, None, None
 
 
 def update_json(original, new):
@@ -544,10 +544,7 @@ def get_bgproduct_id(order_data, distributor_id):
         order_data['productItem']['name'] = order_data.get("productName")
         return order_data, 1
     else:
-        order_data['productItem']['supplierProductId'] = "12dfgvbhgvfcxdf==="
-        order_data['productItem']['supplierHotelId'] = "sdfgfdsdfgf==="
-        order_data['productItem']['productId'] = "12345"
-        return order_data, 1
+        return order_data, 0
 
 
 def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device_id, supplier_id):
