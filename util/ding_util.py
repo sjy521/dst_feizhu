@@ -22,6 +22,21 @@ def get_ding_url():
     return url
 
 
+def get_my_ding_url():
+    # https://oapi.dingtalk.com/robot/send?access_token=77b8e267e68c2eb651316ab583e1b7150c695f03328c2b76549f42eb3e603b7c
+    timestamp = str(round(time.time() * 1000))
+    secret = "SEC2c58988a0c18de696d97de8e9ff9b7d5eb91c205e1c5ca2f116fd27432d76855"
+    access_token = "77b8e267e68c2eb651316ab583e1b7150c695f03328c2b76549f42eb3e603b7c"
+    secret_enc = secret.encode("utf-8")
+    string_to_sign = "{}\n{}".format(timestamp, secret)
+    string_to_sign_enc = string_to_sign.encode("utf-8")
+    hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+    sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
+    url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
+                                                                                             sign)
+    return url
+
+
 def get_ding_pay_url():
     # timestamp = str(round(time.time() * 1000))
     # secret = "SEC26b241f0640272d1d31dbcdff40fef0432a3be08606396230fb78dcc3794788b"
@@ -38,7 +53,25 @@ def get_ding_pay_url():
 
 
 def send_abnormal_alarm_for_dingding(text):
+    # 个人的，勿用
     url = get_ding_url()
+    data = {
+        "at": {
+            "isAtAll": False
+        },
+        "text": {
+            "content": text
+        },
+        "msgtype": "text"
+    }
+    res = requests.post(url, json=data)
+    res_json = json.loads(res.text)
+    return res_json.get("errmsg")
+
+
+def send_dingding(text):
+    # 个人的，勿用
+    url = get_my_ding_url()
     data = {
         "at": {
             "isAtAll": False
@@ -57,12 +90,12 @@ def send_pay_order_for_dingding(text, atphone=None):
     if atphone is not None:
         atMobiles = atphone
     else:
-        atMobiles = []
+        atMobiles = ["18518020709"]
     url = get_ding_pay_url()
     data = {
         "at": {
             "atMobiles": atMobiles,
-            "isAtAll": False
+            "isAtAll": True
         },
         "mentioned_mobile_list": atMobiles,
         "text": {
@@ -76,4 +109,4 @@ def send_pay_order_for_dingding(text, atphone=None):
 
 
 if __name__ == '__main__':
-    print(send_pay_order_for_dingding("告警机器人测试"))
+    print(send_dingding("大家好!"))

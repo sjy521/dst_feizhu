@@ -423,3 +423,181 @@ def build_error_warn(devices_error_count, device_name, device_id):
         devices_error_count[device_name] = 0
         return True
     devices_error_count[device_name] += 1
+
+
+# 以下是混投的相关订单接口
+def get_hybridization_order(device_name, delay_num):
+    url = settings.ADMIN_URL + "/hotel/bgorder/getMixedNoReadyOrderByPage"
+    payload = {"pageNum": 1, "pageSize": 30, "param": {}}
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        results = res_json.get("result")
+        if len(results.get("rows")) > int(delay_num):
+            for _ in range(len(results.get("rows")) - 1, -1, -1):
+                result = results.get("rows")[_]
+                # if result.get("bgOrderId") != 241023626668:
+                #     continue
+                # 初始化定义包含所有字段的第一个JSON
+                original_json = {
+                    "sOrderId": None,
+                    "bgOrderId": None,
+                    "supplierId": None,
+                    "hotelId": None,
+                    "checkInTime": None,
+                    "checkOutTime": None,
+                    "orderStatus": None,
+                    "failResult": None,
+                    "price": None,
+                    "sellerPrice": None,
+                    "brokerage": None,
+                    "payType": None,
+                    "remark": None,
+                    "finish": None,
+                    "operator": None,
+                    "productItem": {
+                        "supplierProductId": None,
+                        "supplierHotelId": None,
+                        "name": None,
+                        "totalPrice": None,
+                        "sellerPrice": None,
+                        "maxOccupancy": None,
+                        "isBreakfast": None,
+                        "breakfast": None,
+                        "isRefund": None,
+                        "remarks": None,
+                        "qrCodeUrl": None,
+                        "createKey": None,
+                        "subPrice": None,
+                        "initialTotalPrice": None,
+                        "promotionTotalPrice": None,
+                        "supplierId": None
+                    },
+                    "orderItemVO": {
+                        "productId": None,
+                        "orderId": None,
+                        "hotelName": None,
+                        "productName": None,
+                        "roomCount": None,
+                        "consumerName": None,
+                        "consumerPhone": None,
+                        "idCard": None,
+                        "contact": None,
+                        "refundRule": None
+                    },
+                    "paymentTransactionVO": {
+                        "serialNum": None,
+                        "serialOrderId": None,
+                        "payChannel": None,
+                        "payType": None,
+                        "payPrice": None,
+                        "commission": None,
+                        "payTime": None,
+                        "remark": None,
+                        "orderStatus": None
+                    }
+                }
+
+                order_data = update_json(original_json, result)
+                # 加锁
+                order_data['sOrderId'] = result.get("sorderId")
+                url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
+                querystring = {"orderId": order_data['bgOrderId'], "userName": device_name}
+                order_response = requests.request("GET", url, params=querystring)
+                order_res_json = json.loads(order_response.text)
+                if order_res_json['result']['islock'] is True:
+                    order_data, state = get_bgproduct_id(original_json, result.get("distributorId"))
+                    d_order_id = result.get("dorderId")
+                    return order_data, d_order_id, state
+                else:
+                    logging.info("bgorderid: {}, result: {}".format(order_data['bgOrderId'], str(order_res_json)))
+    return None
+
+
+def update_json(original, new):
+    for key in original:
+        # 如果是嵌套字典，递归处理
+        if isinstance(original[key], dict):
+            update_json(original[key], new)
+        # 如果是JSON字符串格式的嵌套对象，先转换为字典
+        elif isinstance(original[key], str) and original[key].startswith("{") and original[key].endswith("}"):
+            original_json_obj = json.loads(original[key])
+            new_json_obj = json.loads(new.get(key, "{}"))
+            update_json(original_json_obj, new_json_obj)
+            original[key] = json.dumps(original_json_obj)
+        else:
+            # 更新普通字段
+            original[key] = new.get(key, None)
+    return original
+
+
+def get_bgproduct_id(order_data, distributor_id):
+    url = settings.SPA_URL + "/hotel/v1.0/axin/getCpsInfoByAxinProductId"
+    payload = {"distributorId": distributor_id, "bgProductId": order_data['orderItemVO']['productId'], "bgHotelId": order_data['hotelId']}
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("result"):
+        result = res_json.get("result")
+        order_data['productItem']['supplierProductId'] = result.get("cpsToBgProductId")
+        order_data['productItem']['supplierHotelId'] = result.get("cpsHotelId")
+        order_data['productItem']['name'] = order_data.get("productName")
+        return order_data, 1
+    else:
+        return order_data, 0
+
+
+def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device_id, supplier_id):
+    """
+    order 混投补录订单
+    :return: 成功，失败
+    """
+    if supplier_id == '10002':
+        url = settings.ADMIN_URL + "/hotel/sorder/convertSorderInfoByRobot"
+        order_data['sOrderId'] = sorder_id
+        order_data['productItem']['totalPrice'] = price
+        order_data['productItem']['supplierId'] = supplier_id
+        order_data['remark'] = "机器补录"
+        order_data['orderItemVO']['productId'] = order_data['productItem']['supplierProductId']
+        order_data['productItem']  = json.dumps(order_data['productItem'])
+    else:
+        url = settings.ADMIN_URL + "/hotel/sorder/createSOrderBySystem"
+        order_data['productItem'] = "机器补录"
+        order_data['remark'] = "阿信支付"
+    order_data["payType"] = 1
+    order_data["brokerage"] = 0
+    order_data["orderStatus"] = 10
+    order_data['checkInTime'] = order_data['checkInTime'] + " 00:00:00"
+    order_data['checkOutTime'] = order_data['checkOutTime'] + " 00:00:00"
+    order_data['supplierId'] = supplier_id
+    order_data['operator'] = device_id
+    order_data["paymentTransactionVO"] = {
+        "sOrderId": order_data['sOrderId'],
+        "bgOrderId": bg_order_id,
+        "orderStatus": 10,
+        "payType": 1,
+        "payTime": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    }
+    response = requests.request("POST", url, json=order_data)
+    res_json = json.loads(response.text)
+    logging.info("[{}]补录: [{}]".format(bg_order_id, str(res_json)))
+    if res_json.get("code") == 200:
+        if res_json['success'] is True:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+def pay_axin(s_order_id):
+    url = settings.SPA_URL + "/hotel/v1.0/axin/axinPayBySorderId"
+    payload = {
+        "sOrderId": s_order_id,
+    }
+    response = requests.request("POST", url, json=payload)
+    res_json = json.loads(response.text)
+    if res_json:
+        return 1
+    else:
+        return 0
+
