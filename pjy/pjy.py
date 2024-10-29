@@ -60,6 +60,12 @@ openlist = [
         "open_id": "oIiOx5SUacmTWggqMM0YKbdqjTCA",
         "nuid": "99784",
         "name": "潘家园"
+    },
+    # 胖总
+    {
+        "open_id": "oIiOx5axf0CpsI4WCDwL-jxM2EAM",
+        "nuid": "99701",
+        "name": "胖总"
     }
 ]
 successlist = []
