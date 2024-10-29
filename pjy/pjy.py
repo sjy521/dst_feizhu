@@ -95,6 +95,14 @@ def send_request(mes):
     res_json = json.loads(response.text)
     if res_json['status']:
         successlist.append(mes['name'])
+        send_dingding("{}预约上了: 甲 ".format(mes['name']))
+    elif "已被约满" in res_json['msg']:
+        ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+        response = requests.request("POST", url, data=ding_payload, headers=headers)
+        res_json = json.loads(response.text)
+        if res_json['status']:
+            send_dingding("{}预约上了: 丁 ".format(mes['name']))
+            successlist.append(mes['name'])
     logging.info("[{}]: [{}]".format(mes['name'], response.text))
     return 1
 
@@ -113,14 +121,14 @@ def use_thread_pool():
         while True:
             successlist = []
             if is_five_pm():
-                send_dingding("10秒后准备预约！！！")
-                time.sleep(9)
-                for j in range(4):
+                send_dingding("9 秒后准备预约！！！")
+                time.sleep(8)
+                for j in range(10):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
                     time.sleep(0.5)
-                send_dingding("任务完成, 已经预约上了: [{}]".format(successlist))
-                logging.info("任务完成, 已经预约上了: [{}]".format(successlist))
+                send_dingding("任务完成, 已经预约上了: {}".format(successlist))
+                logging.info("任务完成, 已经预约上了: {}".format(successlist))
                 break
             else:
                 continue
