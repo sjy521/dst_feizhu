@@ -74,37 +74,87 @@ successlist = []
 def send_request(mes):
     global successlist
 
-    if mes['name'] in successlist:
-        logging.info("成功已过滤: [{}]".format(mes['name']))
-        return '已成功'
+    # if mes['name'] in successlist:
+    #     logging.info("成功已过滤: [{}]".format(mes['name']))
+    #     return '已成功'
+    try:
+        new_time = int(time.time())
+        token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
+
+        url = "https://pjy.lansezhihui.com/API/TenPayV4/"
+        payload = "nUid={}&productTypeId=1&productTypeTitle=%E7%8F%A0%E5%AE%9D%E3%80%81%E6%96%87%E5%88%9B&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+        headers = {
+            'Host': "pjy.lansezhihui.com",
+            'timespan': str(new_time),
+            'openId': mes['open_id'],
+            'content-type': "application/x-www-form-urlencoded",
+            'token': token,
+            'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
+            'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
+        }
+        response = requests.request("POST", url, data=payload, headers=headers)
+        res_json = json.loads(response.text)
+        if res_json['status']:
+            if mes['name'] in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
+                if not select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id']):
+                    logging.info("[{}]: [{}]".format(mes['name'], '取消了'))
+        elif "已被约满" in res_json['msg']:
+            ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+            response = requests.request("POST", url, data=ding_payload, headers=headers)
+            res_json = json.loads(response.text)
+            if res_json['status']:
+                send_dingding("{}预约上了: 丁 ".format(mes['name']))
+                successlist.append(mes['name'])
+        logging.info("[{}]: [{}]".format(mes['name'], response.text))
+    except Exception as f:
+        return 0
+    return 1
+
+
+def select_request(name, bespeakId, open_id):
     new_time = int(time.time())
     token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
-    url = "https://pjy.lansezhihui.com/API/TenPayV4/"
-    payload = "nUid={}&productTypeId=1&productTypeTitle=%E7%8F%A0%E5%AE%9D%E3%80%81%E6%96%87%E5%88%9B&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+    url = "https://pjy.lansezhihui.com/API/Users_BespeakV2/GetBespeakInfo/"
+
+    payload = "bespeakId={}".format(bespeakId)
     headers = {
         'Host': "pjy.lansezhihui.com",
         'timespan': str(new_time),
-        'openId': mes['open_id'],
+        'openId': open_id,
         'content-type': "application/x-www-form-urlencoded",
         'token': token,
         'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
         'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
     }
     response = requests.request("POST", url, data=payload, headers=headers)
-    res_json = json.loads(response.text)
-    if res_json['status']:
-        successlist.append(mes['name'])
-        send_dingding("{}预约上了: 甲 ".format(mes['name']))
-    elif "已被约满" in res_json['msg']:
-        ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
-        response = requests.request("POST", url, data=ding_payload, headers=headers)
-        res_json = json.loads(response.text)
-        if res_json['status']:
-            send_dingding("{}预约上了: 丁 ".format(mes['name']))
-            successlist.append(mes['name'])
-    logging.info("[{}]: [{}]".format(mes['name'], response.text))
-    return 1
+    select_res_json = json.loads(response.text)
+    if select_res_json['data']['areaTitle'] == '甲排前':
+        if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
+            cancel_request(bespeakId, open_id)
+            return False
+    send_dingding("{}预约上了: {}-{}".format(name, select_res_json['data']['areaTitle'], select_res_json['data']['stallTitle']))
+    return True
+
+
+def cancel_request(nBId, open_id):
+    new_time = int(time.time())
+    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
+
+    url = "https://pjy.lansezhihui.com/api/CancelMakeAppointment.ashx"
+
+    payload = "nBId={}".format(nBId)
+    headers = {
+        'Host': "pjy.lansezhihui.com",
+        'timespan': str(new_time),
+        'openId': open_id,
+        'content-type': "application/x-www-form-urlencoded",
+        'token': token,
+        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
+        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
+    }
+    response = requests.request("POST", url, data=payload, headers=headers)
+    print(response.text)
 
 
 def is_five_pm():
@@ -123,7 +173,7 @@ def use_thread_pool():
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
                 time.sleep(9)
-                for j in range(10):
+                for j in range(20):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
                     time.sleep(0.1)
