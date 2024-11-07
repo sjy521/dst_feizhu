@@ -95,9 +95,8 @@ def send_request(mes):
         response = requests.request("POST", url, data=payload, headers=headers)
         res_json = json.loads(response.text)
         if res_json['status']:
-            if mes['name'] in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
-                if not select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id']):
-                    logging.info("[{}]: [{}]".format(mes['name'], '取消了'))
+            if not select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id']):
+                logging.info("[{}]: [{}]".format(mes['name'], '取消了'))
         elif "已被约满" in res_json['msg']:
             ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
             response = requests.request("POST", url, data=ding_payload, headers=headers)
@@ -129,10 +128,11 @@ def select_request(name, bespeakId, open_id):
     }
     response = requests.request("POST", url, data=payload, headers=headers)
     select_res_json = json.loads(response.text)
-    if select_res_json['data']['areaTitle'] == '甲排前':
-        if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
-            cancel_request(bespeakId, open_id)
-            return False
+    if name in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
+        if select_res_json['data']['areaTitle'] == '甲排前':
+            if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
+                cancel_request(bespeakId, open_id)
+                return False
     send_dingding("{}预约上了: {}-{}".format(name, select_res_json['data']['areaTitle'], select_res_json['data']['stallTitle']))
     return True
 
