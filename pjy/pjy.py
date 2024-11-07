@@ -76,9 +76,9 @@ def send_request(mes):
     global successlist
     global trylist
 
-    # if mes['name'] in successlist:
-    #     logging.info("成功已过滤: [{}]".format(mes['name']))
-    #     return '已成功'
+    if mes['name'] in successlist:
+        logging.info("成功已过滤: [{}]".format(mes['name']))
+        return '已成功'
     try:
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
@@ -97,8 +97,8 @@ def send_request(mes):
         response = requests.request("POST", url, data=payload, headers=headers)
         res_json = json.loads(response.text)
         if res_json['status']:
-            if not select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id']):
-                logging.info("[{}]: [{}]".format(mes['name'], '取消了'))
+            successlist.append(mes['name'])
+            select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
         elif "已被约满" in res_json['msg']:
             ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
             response = requests.request("POST", url, data=ding_payload, headers=headers)
@@ -113,7 +113,6 @@ def send_request(mes):
 
 
 def select_request(name, bespeakId, open_id):
-    global trylist
 
     new_time = int(time.time())
     token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
@@ -132,13 +131,13 @@ def select_request(name, bespeakId, open_id):
     }
     response = requests.request("POST", url, data=payload, headers=headers)
     select_res_json = json.loads(response.text)
-    if name in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
-        if select_res_json['data']['areaTitle'] == '甲排前':
-            if name not in trylist:
-                if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
-                    cancel_request(bespeakId, open_id)
-                    trylist.append(name)
-                    return False
+    # if name in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
+    #     if select_res_json['data']['areaTitle'] == '甲排前':
+    #         if name not in trylist:
+    #             if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
+    #                 cancel_request(bespeakId, open_id)
+    #                 trylist.append(name)
+    #                 return False
     send_dingding("{}预约上了: {}-{}".format(name, select_res_json['data']['areaTitle'], select_res_json['data']['stallTitle']))
     return True
 
@@ -178,7 +177,7 @@ def use_thread_pool():
             successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(9)
+                time.sleep(10)
                 for j in range(20):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
