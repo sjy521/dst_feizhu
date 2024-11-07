@@ -69,10 +69,12 @@ openlist = [
     }
 ]
 successlist = []
+trylist = []
 
 
 def send_request(mes):
     global successlist
+    global trylist
 
     # if mes['name'] in successlist:
     #     logging.info("成功已过滤: [{}]".format(mes['name']))
@@ -111,6 +113,8 @@ def send_request(mes):
 
 
 def select_request(name, bespeakId, open_id):
+    global trylist
+
     new_time = int(time.time())
     token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
@@ -130,9 +134,11 @@ def select_request(name, bespeakId, open_id):
     select_res_json = json.loads(response.text)
     if name in ["榛小号", "宋小号", "李小浩", "潘家园", "胖总"]:
         if select_res_json['data']['areaTitle'] == '甲排前':
-            if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
-                cancel_request(bespeakId, open_id)
-                return False
+            if name not in trylist:
+                if not int(select_res_json['data']['stallTitle']) in [1, 16, 17, 31, 32, 46, 47]:
+                    cancel_request(bespeakId, open_id)
+                    trylist.append(name)
+                    return False
     send_dingding("{}预约上了: {}-{}".format(name, select_res_json['data']['areaTitle'], select_res_json['data']['stallTitle']))
     return True
 
