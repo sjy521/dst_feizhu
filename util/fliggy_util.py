@@ -277,7 +277,7 @@ class FliggyModel:
         """
         for _ in range(10):
             for __ in range(3):
-                time.sleep(4)
+                time.sleep(6)
                 xml_path = self.adbModel.convert_to_xml(self.device_id)
                 time.sleep(1)
                 if find_current_element_text(xml_path, "全部订单"):
