@@ -136,7 +136,7 @@ def find_current_element_text(xml_path, text):
     tree = html.etree.parse(xml_path)
     print(text)
     print(tree.xpath("//node/@text"))
-    elements = tree.xpath("//node[@text='{}']".format(text))
+    elements = tree.xpath("//node[@text=$text]", text=text)
     print(elements)
     if elements:
         return True
