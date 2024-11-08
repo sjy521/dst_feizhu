@@ -134,6 +134,8 @@ def find_current_element_text(xml_path, text):
     :return:
     """
     tree = html.etree.parse(xml_path)
+    print(text)
+    print(xml_path)
     elements = tree.xpath("//node[@text='{}']".format(text))
     print(elements)
     if elements:
