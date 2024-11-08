@@ -30,9 +30,15 @@ class FliggyModel:
         :param click_text:
         :return:
         """
-        if xml_path is None:
-            xml_path = self.adbModel.convert_to_xml(self.device_id)
-        coordinate = find_element_coordinates(xml_path, click_text)
+        if click_text not in ['酒店', '全部订单']:
+            if xml_path is None:
+                xml_path = self.adbModel.convert_to_xml(self.device_id)
+            coordinate = find_element_coordinates(xml_path, click_text)
+        else:
+            if click_text == '酒店':
+                coordinate = [726, 297]
+            else:
+                coordinate = [162,297]
         if coordinate:
             x, y = coordinate
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
