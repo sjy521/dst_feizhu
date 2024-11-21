@@ -419,7 +419,7 @@ def order_create_order(bg_order_id, sorder_id, price, device_id):
 def build_error_warn(devices_error_count, device_name, device_id):
     if devices_error_count[device_name] >= 10:
         set_not_effective_device(device_id, 0, 0)
-        send_pay_order_for_dingding("{}: 连续下单失败超六次，及时查看".format(device_name))
+        send_pay_order_for_dingding("{}: 账号可能出现问题，点开一家酒店核验查看".format(device_name))
         devices_error_count[device_name] = 0
         return True
     devices_error_count[device_name] += 1
