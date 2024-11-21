@@ -96,6 +96,7 @@ def send_request(mes):
         }
         response = requests.request("POST", url, data=payload, headers=headers)
         res_json = json.loads(response.text)
+        logging.info("甲：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
             select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
@@ -104,9 +105,9 @@ def send_request(mes):
             response = requests.request("POST", url, data=ding_payload, headers=headers)
             res_json = json.loads(response.text)
             if res_json['status']:
-                send_dingding("{}预约上了: 丁 ".format(mes['name']))
                 successlist.append(mes['name'])
-        logging.info("[{}]: [{}]".format(mes['name'], response.text))
+                select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
+            logging.info("丁：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
     except Exception as f:
         return 0
     return 1
