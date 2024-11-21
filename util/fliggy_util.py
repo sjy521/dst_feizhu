@@ -11,7 +11,7 @@ from util.order_list_util import get_bongo_order, order_list
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 from util.orders_util import set_not_effective_device, cancel_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
-    find_current_element_coordinates, find_setting, find_current_element_num
+    find_current_element_coordinates, find_setting, find_current_element_num, find_all_current_element_text
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -40,7 +40,11 @@ class FliggyModel:
             elif click_text == '全部订单':
                 coordinate = [162, 297]
             elif click_text == '去付款':
-                coordinate = [170, 555]
+                xml_path = self.adbModel.convert_to_xml(self.device_id)
+                if find_all_current_element_text(xml_path, "去付款"):
+                    coordinate = [170, 555]
+                else:
+                    return False
         if coordinate:
             x, y = coordinate
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))

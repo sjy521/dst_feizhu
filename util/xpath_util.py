@@ -134,11 +134,24 @@ def find_current_element_text(xml_path, text):
     :return:
     """
     tree = html.etree.parse(xml_path)
-    print(text)
-    print(tree.xpath("//node/@text"))
     elements = tree.xpath("//node[@text=$text]", text=text)
-    print(elements)
     if elements:
+        return True
+    else:
+        print("未发现element")
+        return False
+
+
+def find_all_current_element_text(xml_path, text):
+    """
+    从 XML 中根据文本查找当前元素的文本
+    :param xml_path: xml 地址
+    :param text: 元素文本名称
+    :return:
+    """
+    tree = html.etree.parse(xml_path)
+    alltext = "".join(tree.xpath("//node/@text"))
+    if text in alltext:
         return True
     else:
         print("未发现element")
