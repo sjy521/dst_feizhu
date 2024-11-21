@@ -7,7 +7,7 @@ from dynaconf import settings
 
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
-from util.order_list_util import get_bongo_order
+from util.order_list_util import get_bongo_order, order_list
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 from util.orders_util import set_not_effective_device, cancel_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
@@ -30,15 +30,17 @@ class FliggyModel:
         :param click_text:
         :return:
         """
-        if click_text not in ['酒店', '全部订单']:
+        if click_text not in ['酒店', '全部订单', '去付款']:
             if xml_path is None:
-                xml_path = self.adbModel.convert_to_xml(self.device_id)
+                xml_path = self.adbModel.new_convert_to_xml(self.device_id)
             coordinate = find_element_coordinates(xml_path, click_text)
         else:
             if click_text == '酒店':
                 coordinate = [726, 297]
-            else:
-                coordinate = [162,297]
+            elif click_text == '全部订单':
+                coordinate = [162, 297]
+            elif click_text == '去付款':
+                coordinate = [170, 555]
         if coordinate:
             x, y = coordinate
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
@@ -170,7 +172,7 @@ class FliggyModel:
             self.click("酒店")
             return 1
 
-    def pay_order(self, pay_password, device_name):
+    def pay_order(self, pay_password, device_name, device_id):
         """
         支付订单
         :return:
@@ -179,8 +181,11 @@ class FliggyModel:
             self.check_error()
             xml_path = self.click("去付款", timesleep=4)
             if xml_path:
-                order_id = self.find_orderId(xml_path, "订单号")
-                logging.info("{}: 当前订单号号是：{}".format(device_name, order_id))
+                order_info = order_list(device_id)
+                order_id = order_info.get("biz_order_id")
+                sr_name = order_info.get("sr_name")
+                price = order_info.get("price")
+                logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
                 bgorder = get_bongo_order(order_id)
                 if bgorder is False:
                     cancel_order(self.device_id, order_id)

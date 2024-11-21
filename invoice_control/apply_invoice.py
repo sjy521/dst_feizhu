@@ -18,7 +18,7 @@ def get_all_order_info(device_id):
     exceed_time_num = 20
     while page < 1000:
         try:
-            url = "http://192.168.111.66:8083/fliggy/orderlist?device_id={}&page={}".format(device_id, page)
+            url = "http://127.0.0.1:8083/fliggy/orderlist?device_id={}&page={}".format(device_id, page)
             payload = ""
             headers = {
                 'cache-control': "no-cache",
@@ -53,7 +53,7 @@ def getapplyinvoice(device_id):
     for i, order in enumerate(all_order):
         print(i, order)
         if order['status_value'] == "已完成":
-            url = "http://192.168.111.66:8083/fliggy/getapplyinvoice?orderId={}&device_id={}".format(
+            url = "http://127.0.0.1:8083/fliggy/getapplyinvoice?orderId={}&device_id={}".format(
                 order['biz_order_id'], device_id)
 
             payload = ""
@@ -77,7 +77,7 @@ def invoice(device_id):
         try:
             if all_order[i]['status_value'] == '已完成':
                 if all_order[i]['是否可以开发票']:
-                    url = "http://192.168.111.66:8083/fliggy/invoice?orderId={}&device_id={}".format(
+                    url = "http://127.0.0.1:8083/fliggy/invoice?orderId={}&device_id={}".format(
                         all_order[i]['biz_order_id'], device_id)
                     print(url)
                     headers = {

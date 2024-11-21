@@ -44,7 +44,7 @@ def run(device):
                                 get_cookie = busy_device.get("getCookie")
                                 if get_cookie == "1":
                                     mitmproxy_run(busy_device, fliggy_model)
-                    pay_status = fliggy_model.pay_order(pay_password, device_name)
+                    pay_status = fliggy_model.pay_order(pay_password, device_name, device_id)
                     if pay_status:
                         if is_busy > 0:
                             is_busy -= 1

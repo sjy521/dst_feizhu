@@ -56,7 +56,7 @@ def run(device):
                     print('===')
                     click_type = fliggy_model.refresh(click_type)
                     time.sleep(6)
-                    pay_status = fliggy_model.pay_order(pay_password, device_name)
+                    pay_status = fliggy_model.pay_order(pay_password, device_name, device_id)
                     if pay_status:
                         if is_busy > 0:
                             is_busy -= 1
