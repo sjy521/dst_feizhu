@@ -32,7 +32,7 @@ class FliggyModel:
         """
         if click_text not in ['酒店', '全部订单', '去付款']:
             if xml_path is None:
-                xml_path = self.adbModel.new_convert_to_xml(self.device_id)
+                xml_path = self.adbModel.convert_to_xml(self.device_id)
             coordinate = find_element_coordinates(xml_path, click_text)
         else:
             if click_text == '酒店':
@@ -180,6 +180,7 @@ class FliggyModel:
         if self.click_pay("待付款", timesleep=5):
             self.check_error()
             xml_path = self.click("去付款", timesleep=4)
+            self.check_lijizhifu()
             if xml_path:
                 order_info = order_list(device_id)
                 order_id = order_info.get("biz_order_id")
@@ -280,6 +281,16 @@ class FliggyModel:
                 continue
             return True
         return True
+
+    def check_lijizhifu(self):
+        """
+        检查立即支付
+        :return:
+        """
+        xml_path = self.adbModel.convert_to_xml(self.device_id)
+        if find_current_element_text(xml_path, "立即支付"):
+            self.adbModel.click_button(525, 2090)
+            time.sleep(5)
 
     def goto_target_page(self):
         """
