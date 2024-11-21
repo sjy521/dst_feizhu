@@ -181,61 +181,61 @@ class FliggyModel:
             self.check_error()
             xml_path = self.click("去付款", timesleep=4)
             self.check_lijizhifu()
-            if xml_path:
-                order_info = order_list(device_id)
-                order_id = order_info.get("biz_order_id")
-                sr_name = order_info.get("sr_name")
-                price = order_info.get("price")
-                logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
-                bgorder = get_bongo_order(order_id)
-                if bgorder is False:
-                    cancel_order(self.device_id, order_id)
-                    # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
-                    self.adbModel.click_back()
-                    self.adbModel.click_back()
-                    return False
-                xml_path = self.click(pay_password[0])
-                if xml_path is False:
-                    self.error_num += 1
-                    send_pay_order_for_dingding("{}: 支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(device_name, order_id))
-                    self.adbModel.click_back()
-                    self.adbModel.click_back()
-                    if self.error_num >= 6:
-                        set_not_effective_device(self.device_id, 0, 0)
-                    return False
-                self.click(pay_password[1], xml_path)
-                self.click(pay_password[2], xml_path)
-                self.click(pay_password[3], xml_path)
-                self.click(pay_password[4], xml_path)
-                # if cancelorder(order_id):
-                #     logging.info("验证成功")
-                #     # input("验证成功，点击回车继续付款...")
-                # else:
-                #     logging.info("验证失败, 准备返回")
-                #     # input("验证失败，点击回车继续付款...")
-                #     self.adbModel.click_back()
-                #     self.adbModel.click_back()
-                #     return True
-                self.click(pay_password[5], xml_path)
-                time.sleep(3)
-                if self.pay_success("支付成功"):
-                    self.error_num = 1
-                    status = 1
-                else:
-                    status = 0
-                    send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
-                    # cancel_order(self.device_id, order_id)
-                    set_not_effective_device(self.device_id, 0, 0)
-                    # unlock(bg_order_id, self.device_id)
-                logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
+            # if xml_path:
+            order_info = order_list(device_id)
+            order_id = order_info.get("biz_order_id")
+            sr_name = order_info.get("sr_name")
+            price = order_info.get("price")
+            logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
+            bgorder = get_bongo_order(order_id)
+            if bgorder is False:
+                cancel_order(self.device_id, order_id)
+                # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
                 self.adbModel.click_back()
-                time.sleep(2)
-                self.adbModel.click_button(280, 1380)
-                self.adbModel.click_back()
-                return True
-            else:
                 self.adbModel.click_back()
                 return False
+            xml_path = self.click(pay_password[0])
+            if xml_path is False:
+                self.error_num += 1
+                send_pay_order_for_dingding("{}: 支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(device_name, order_id))
+                self.adbModel.click_back()
+                self.adbModel.click_back()
+                if self.error_num >= 6:
+                    set_not_effective_device(self.device_id, 0, 0)
+                return False
+            self.click(pay_password[1], xml_path)
+            self.click(pay_password[2], xml_path)
+            self.click(pay_password[3], xml_path)
+            self.click(pay_password[4], xml_path)
+            # if cancelorder(order_id):
+            #     logging.info("验证成功")
+            #     # input("验证成功，点击回车继续付款...")
+            # else:
+            #     logging.info("验证失败, 准备返回")
+            #     # input("验证失败，点击回车继续付款...")
+            #     self.adbModel.click_back()
+            #     self.adbModel.click_back()
+            #     return True
+            self.click(pay_password[5], xml_path)
+            time.sleep(3)
+            if self.pay_success("支付成功"):
+                self.error_num = 1
+                status = 1
+            else:
+                status = 0
+                send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
+                # cancel_order(self.device_id, order_id)
+                set_not_effective_device(self.device_id, 0, 0)
+                # unlock(bg_order_id, self.device_id)
+            logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
+            self.adbModel.click_back()
+            time.sleep(2)
+            self.adbModel.click_button(280, 1380)
+            self.adbModel.click_back()
+            return True
+            # else:
+            #     self.adbModel.click_back()
+            #     return False
         else:
             return False
 
