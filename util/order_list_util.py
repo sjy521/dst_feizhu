@@ -10,7 +10,7 @@ setup_logging(default_path=settings.LOGGING)
 
 
 def order_list(device_id):
-    url = "http://build-order.bingotravel.com.cn/fliggy/orderlist?device_id={}&page=1".format(device_id)
+    url = "http://127.0.0.1:8083/fliggy/orderlist?device_id={}&page=1".format(device_id)
     payload = ""
     headers = {
         'cache-control': "no-cache",

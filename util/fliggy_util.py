@@ -92,7 +92,7 @@ class FliggyModel:
                     continue
                 logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
                 self.adbModel.click_button(x, y, timesleep=timesleep)
-                return xml_path
+                return y
             else:
                 logging.info("未发现[{}], 跳过点击...".format(click_text))
                 if timesleep is not None:
@@ -181,9 +181,13 @@ class FliggyModel:
         支付订单
         :return:
         """
-        if self.click_pay("待付款", timesleep=5):
+        pay_res = self.click_pay("待付款", timesleep=2)
+        if pay_res:
+            if pay_res > 700:
+                send_pay_order_for_dingding("{}: 有异常订单，请手动支付".format(device_name))
+                return False
             self.check_error()
-            xml_path = self.click("去付款", timesleep=4)
+            xml_path = self.click("去付款", timesleep=2)
             self.check_lijizhifu()
             # if xml_path:
             order_info = order_list(device_id)
@@ -194,7 +198,7 @@ class FliggyModel:
             bgorder = get_bongo_order(order_id)
             if bgorder is False:
                 cancel_order(self.device_id, order_id)
-                # send_pay_order_for_dingding("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
+                logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
                 self.adbModel.click_back()
                 self.adbModel.click_back()
                 return False
