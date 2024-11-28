@@ -94,20 +94,20 @@ def send_request(mes):
             'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
         }
-        response = requests.request("POST", url, data=payload, headers=headers)
+        # response = requests.request("POST", url, data=payload, headers=headers)
+        # res_json = json.loads(response.text)
+        # logging.info("甲：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
+        # if res_json['status']:
+        #     successlist.append(mes['name'])
+        #     select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
+        # elif "已被约满" in res_json['msg']:
+        ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+        response = requests.request("POST", url, data=ding_payload, headers=headers)
         res_json = json.loads(response.text)
-        logging.info("甲：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
             select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
-        elif "已被约满" in res_json['msg']:
-            ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
-            response = requests.request("POST", url, data=ding_payload, headers=headers)
-            res_json = json.loads(response.text)
-            if res_json['status']:
-                successlist.append(mes['name'])
-                select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
-            logging.info("丁：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
+        logging.info("丁：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
     except Exception as f:
         return 0
     return 1
