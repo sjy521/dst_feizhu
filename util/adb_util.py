@@ -194,7 +194,7 @@ class AdbModel:
     def library(self):
         res = subprocess.Popen(["adb", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = res.communicate()
-        if self.device_id in output:
+        if self.device_id in output.decode('utf-8'):
             return True
         else:
             return False
