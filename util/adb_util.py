@@ -192,7 +192,7 @@ class AdbModel:
             return False
 
     def library(self):
-        res = subprocess.Popen(["adb", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        res = subprocess.Popen(["adb", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = res.communicate()
         if self.device_id in output:
             return True
