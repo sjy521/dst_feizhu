@@ -164,13 +164,9 @@ class AdbModel:
         :return:
         """
         xml_dump_path = os.path.join(tempfile.gettempdir(), "{}.xml".format(device_id))
-        subprocess.Popen(
+        subprocess.run(
             ["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "/sdcard/{}.xml".format(device_id)])
-        # diff_info = subprocess.check_output(
-        #     ["adb", "-s", self.device_id, "shell", "diff", "/sdcard/ui_dump.xml", "/sdcard/ui_dump_error.xml"]).decode(
-        #     "utf-8")
-        # print(diff_info)
-        subprocess.Popen(["adb", "-s", self.device_id, "pull", "/sdcard/{}.xml".format(device_id), xml_dump_path])
+        subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/{}.xml".format(device_id), xml_dump_path])
         return xml_dump_path
 
     def is_wechat_open(self, wechat_name):
