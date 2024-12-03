@@ -15,7 +15,7 @@ class AdbModel:
         启动微信应用 com.tencent.mm/.ui.LauncherUI
         :return:
         """
-        subprocess.Popen(['adb', "-s", self.device_id, 'shell', 'am', 'start', '-n', wechat_name])
+        subprocess.run(['adb', "-s", self.device_id, 'shell', 'am', 'start', '-n', wechat_name])
         time.sleep(2)
 
     def kill_app(self, wechat_name):
@@ -24,7 +24,7 @@ class AdbModel:
         :param wechat_name:
         :return:
         """
-        subprocess.Popen(['adb', "-s", self.device_id, 'shell', 'am', 'force-stop', wechat_name])
+        subprocess.run(['adb', "-s", self.device_id, 'shell', 'am', 'force-stop', wechat_name])
 
     def start_server(self):
         """
@@ -32,7 +32,7 @@ class AdbModel:
         :param device_id:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "start-server"])
+        subprocess.run(["adb", "-s", self.device_id, "start-server"])
         time.sleep(2)
 
     def open_mitmproxy(self):
@@ -71,11 +71,11 @@ class AdbModel:
         :param device_id:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", proxy])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", proxy])
         time.sleep(2)
 
     def kill_pid(self, pid):
-        subprocess.Popen(["kill", "-9", str(pid)])
+        subprocess.run(["kill", "-9", str(pid)])
         time.sleep(2)
 
     def close_proxy(self):
@@ -84,7 +84,7 @@ class AdbModel:
         :param device_id:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", ":0"])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "settings", "put", "global", "http_proxy", ":0"])
         time.sleep(2)
 
     def kill_server(self):
@@ -93,7 +93,7 @@ class AdbModel:
         :param device_id:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "kill-server"])
+        subprocess.run(["adb", "-s", self.device_id, "kill-server"])
         time.sleep(2)
 
     def click_button(self, x, y, timesleep=2):
@@ -104,7 +104,7 @@ class AdbModel:
         :param y:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "input", "tap", str(x), str(y)])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "tap", str(x), str(y)])
         time.sleep(timesleep)
 
     def click_back(self):
@@ -114,7 +114,7 @@ class AdbModel:
         :return:
         """
         print("准备点击返回...")
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "input", "keyevent", "BACK"])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "keyevent", "BACK"])
 
     def screenshot(self, path):
         """
@@ -123,7 +123,7 @@ class AdbModel:
         :param path:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "screencap", "-p", path])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "screencap", "-p", path])
         time.sleep(2)
 
     def swipe(self, x1, y1, x2, y2):
@@ -136,7 +136,7 @@ class AdbModel:
         :param y2:
         :return:
         """
-        subprocess.Popen(["adb", "-s", self.device_id, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2)])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2)])
         time.sleep(2)
 
     def open_for_appid(self, app_id):
@@ -148,7 +148,7 @@ class AdbModel:
         # print(url_scheme)
         try:
             print('==')
-            subprocess.Popen(["adb", "-s", self.device_id, "shell", "am", "start", "-n",
+            subprocess.run(["adb", "-s", self.device_id, "shell", "am", "start", "-n",
                             f"com.tencent.mm/.plugin.appbrand.ui.AppBrandUI", "--ez", "extra_launch_from_mini_program",
                             "true", "--es", "extra_enter_scene", "from_chatting", "--es", "app_id", app_id])
             print('=')
