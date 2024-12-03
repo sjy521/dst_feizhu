@@ -80,6 +80,7 @@ def send_request(mes):
         logging.info("成功已过滤: [{}]".format(mes['name']))
         return '已成功'
     try:
+        start_time = str(datetime.now())
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
@@ -96,7 +97,7 @@ def send_request(mes):
         }
         response = requests.request("POST", url, data=payload, headers=headers)
         res_json = json.loads(response.text)
-        logging.info("甲：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
+        logging.info("甲：开始时间: [{}], 结束时间[{}], [{}]: [{}]".format(start_time, str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
             select_request(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
