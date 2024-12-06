@@ -438,6 +438,8 @@ def get_hybridization_order(device_name, delay_num):
                 result = results.get("rows")[_]
                 # if result.get("bgOrderId") != 241023626668:
                 #     continue
+                if result.get("source") != "10004":
+                    return None
                 # 初始化定义包含所有字段的第一个JSON
                 original_json = {
                     "sOrderId": None,
