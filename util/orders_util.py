@@ -605,6 +605,7 @@ def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device
 
             url = settings.ADMIN_URL + "/hotel/sorder/convertSorderInfoByRobot"
             order_data['sOrderId'] = sorder_id
+            order_data['price'] = price
             order_data['productItem']['totalPrice'] = price
             order_data['productItem']['supplierId'] = supplier_id
             order_data['remark'] = "机器补录"
