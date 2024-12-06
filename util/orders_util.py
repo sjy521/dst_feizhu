@@ -643,11 +643,8 @@ def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device
 
 
 def pay_axin(s_order_id):
-    url = settings.SPA_URL + "/hotel/v1.0/axin/axinPayBySorderId"
-    payload = {
-        "sOrderId": s_order_id,
-    }
-    response = requests.request("POST", url, json=payload)
+    url = settings.SPA_URL + "/hotel/v1.0/axin/axinPayBySorderId?sOrderId={}".format(s_order_id)
+    response = requests.request("POST", url)
     res_json = json.loads(response.text)
     if res_json:
         return 1
