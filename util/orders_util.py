@@ -252,6 +252,40 @@ def get_url_by_bgorderid(d_order_id, bg_order_id):
         return tar_json
 
 
+# 混投根据bgOrderId 获取供应商下单地址
+def axin_get_url_by_bgorderid(d_order_id, bg_order_id, supplier_hotel_id, supplier_product_id):
+    """
+    根据bgOrderId 获取供应商下单地址
+    :return: json
+    """
+    url = settings.ADMIN_URL + "/hotel/dorder/selectDOrderItem"
+    payload = {"dOrderId": d_order_id, "bgOrderId": bg_order_id}
+    response = requests.request("GET", url, params=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        results = res_json.get("result")
+        order_item = results['orderItem']
+        d_order = results['dOrder']
+        tar_json = {
+            "contact_phone": order_item.get("consumerPhone"),
+            "guest_list": [order_item.get("consumerName")],
+            "check_in": d_order.get("checkInTime").split(" ")[0],
+            "check_out": d_order.get("checkOutTime").split(" ")[0],
+            "sr_name": order_item.get("productName"),
+            "price": d_order.get("price")
+        }
+
+        url = settings.SPA_URL + "/client/spa/check"
+
+        payload = {"checkIn": tar_json['check_in'], "checkOut": tar_json['check_out'], "roomNum": 1, "totalPrice": -999,
+                   "supplierId": 10002, "sHotelId": supplier_hotel_id,
+                   "sproductId": supplier_product_id}
+        response = requests.request("POST", url, json=payload)
+        res_json1 = json.loads(response.text)
+        tar_json['wx_link'] = res_json1['result']['message']
+        return tar_json
+
+
 # 下单
 def build_order(device_id, tar_json, phone):
     """

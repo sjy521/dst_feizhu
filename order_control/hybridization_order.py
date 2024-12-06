@@ -14,7 +14,8 @@ from util.order_list_util import check_order
 from util.ding_util import send_pay_order_for_dingding
 from util.orders_util import get_effective_device, \
     fail_order_unlock, unlock, set_not_effective_device, cancel_order, build_error_warn, \
-    get_hybridization_order, pay_axin, hybridization_create_order, get_url_by_bgorderid, build_order
+    get_hybridization_order, pay_axin, hybridization_create_order, build_order, \
+    axin_get_url_by_bgorderid
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -105,7 +106,7 @@ def run(tar_device_id):
                         continue
                     start_time = 0
                     try:
-                        tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
+                        tar_json = axin_get_url_by_bgorderid(d_ordr_id, bg_order_id, order_res['productItem']['supplierHotelId'], order_res['productItem']['supplierProductId'])
                     except Exception as f:
                         logging.error("获取地址异常：{}".format(str(traceback.format_exc())))
                         axin_pay(order_res, bg_order_id, device_name)
