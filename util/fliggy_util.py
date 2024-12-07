@@ -190,6 +190,7 @@ class FliggyModel:
         sr_name = order_info.get("sr_name")
         price = order_info.get("price")
         logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
+        time.sleep(4)
         bgorder = get_bongo_order(order_id)
         if bgorder is False:
             cancel_order(device_id, order_id)
