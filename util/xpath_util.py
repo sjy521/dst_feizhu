@@ -72,6 +72,16 @@ def find_current_element_coordinates(xml_path, text):
     elements = tree.xpath("//node[@text='{}']/@bounds".format(text))
     if elements:
         # 假设只找到一个元素，获取其坐标
+        if text == '待付款':
+            for bounds in elements:
+                left, top, right, bottom = eval(bounds.replace('][', ","))
+                x = (left + right) // 2
+                y = (top + bottom) // 2
+                if y < 500:
+                    continue
+                return [x, y]
+            else:
+                return None
         bounds = elements[0]
         left, top, right, bottom = eval(bounds.replace('][', ","))
         x = (left + right) // 2
