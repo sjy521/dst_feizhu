@@ -166,15 +166,16 @@ class FliggyModel:
         刷新订单
         :return:
         """
-        if click_type == 1:
-            logging.info("准备点击全部订单")
-            self.click("全部订单")
-            return 0
-        # 订单页
-        if click_type == 0:
-            logging.info("准备点击酒店")
-            self.click("酒店")
-            return 1
+        self.adbModel.swipe(800, 400, 800, 1200)
+        # if click_type == 1:
+        #     logging.info("准备点击全部订单")
+        #     self.click("全部订单")
+        #     return 0
+        # # 订单页
+        # if click_type == 0:
+        #     logging.info("准备点击酒店")
+        #     self.click("酒店")
+        #     return 1
 
     def pay_order(self, pay_password, device_name, device_id):
         """
@@ -307,7 +308,7 @@ class FliggyModel:
         """
         for _ in range(10):
             for __ in range(3):
-                time.sleep(5)
+                time.sleep(3)
                 xml_path = self.adbModel.convert_to_xml(self.device_id)
                 if find_current_element_text(xml_path, "我的订单"):
                     return True

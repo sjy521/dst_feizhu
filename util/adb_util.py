@@ -136,7 +136,7 @@ class AdbModel:
         :param y2:
         :return:
         """
-        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2)])
+        subprocess.run(["adb", "-s", self.device_id, "shell", "input", "swipe", str(x1), str(y1), str(x2), str(y2), 500])
         time.sleep(2)
 
     def open_for_appid(self, app_id):
