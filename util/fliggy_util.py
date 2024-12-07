@@ -84,7 +84,7 @@ class FliggyModel:
         """
         for _ in range(4):
             if click_text == "待付款":
-                x, y = 170, 555
+                x, y = 170, 975
                 logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
                 self.adbModel.click_button(x, y, timesleep=timesleep)
                 return y
