@@ -23,6 +23,21 @@ def order_list(device_id):
     return order_info
 
 
+def adb_order_list(device_id):
+    url = "http://127.0.0.1:8083/fliggy/orderlist?device_id={}&page=1".format(device_id)
+    payload = ""
+    headers = {
+        'cache-control': "no-cache",
+        'Postman-Token': "9fd8ea5a-bd43-4cbb-b3cb-097a7a143c53"
+    }
+    response = requests.request("GET", url, data=payload, headers=headers)
+    res_json = json.loads(response.text)
+    for k, v in enumerate(res_json['data']['order_list']):
+        if v['status_value'] == "待付款":
+            return k, v
+    return None, None
+
+
 def check_order(device_id, tar_sr_name, tar_price):
     res = {}
     for i in range(2):

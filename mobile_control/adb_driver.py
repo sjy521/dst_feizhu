@@ -54,9 +54,12 @@ def run(device):
                     fliggy_model.goto_target_page()
                     # 支付订单
                     print('===')
+                    order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
+                    if order_num == None:
+                        continue
                     click_type = fliggy_model.refresh(click_type)
                     time.sleep(3)
-                    pay_status = fliggy_model.pay_order(pay_password, device_name, device_id)
+                    pay_status = fliggy_model.pay_order(pay_password, device_name, order_num, order_id)
                     if pay_status:
                         if is_busy > 0:
                             is_busy -= 1

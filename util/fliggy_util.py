@@ -7,7 +7,7 @@ from dynaconf import settings
 
 from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
-from util.order_list_util import get_bongo_order, order_list
+from util.order_list_util import get_bongo_order, adb_order_list
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 from util.orders_util import set_not_effective_device, cancel_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
@@ -83,6 +83,11 @@ class FliggyModel:
         :return:
         """
         for _ in range(4):
+            if click_text == "待付款":
+                x, y = 170, 555
+                logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
+                self.adbModel.click_button(x, y, timesleep=timesleep)
+                return y
             xml_path = self.adbModel.convert_to_xml(self.device_id)
             coordinate = find_current_element_coordinates(xml_path, click_text)
             if coordinate:
@@ -177,32 +182,38 @@ class FliggyModel:
         #     self.click("酒店")
         #     return 1
 
-    def pay_order(self, pay_password, device_name, device_id):
+    def get_fukuan(self, device_id, device_name):
+        num, order_info = adb_order_list(device_id)
+        if num is None:
+            return None, None
+        order_id = order_info.get("biz_order_id")
+        sr_name = order_info.get("sr_name")
+        price = order_info.get("price")
+        logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
+        bgorder = get_bongo_order(order_id)
+        if bgorder is False:
+            cancel_order(device_id, order_id)
+            logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
+            self.adbModel.click_back()
+            self.adbModel.click_back()
+            return None, None
+        return num, order_id
+
+    def pay_order(self, pay_password, device_name, order_num, order_id):
         """
         支付订单
         :return:
         """
+        if order_num > 0:
+            send_pay_order_for_dingding("{}: 有异常订单，请手动支付".format(device_name))
+            return False
         pay_res = self.click_pay("待付款", timesleep=2)
         if pay_res:
-            if pay_res > 700:
-                send_pay_order_for_dingding("{}: 有异常订单，请手动支付".format(device_name))
-                return False
             self.check_error()
             xml_path = self.click("去付款", timesleep=2)
-            self.check_lijizhifu()
-            # if xml_path:
-            order_info = order_list(device_id)
-            order_id = order_info.get("biz_order_id")
-            sr_name = order_info.get("sr_name")
-            price = order_info.get("price")
-            logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
-            bgorder = get_bongo_order(order_id)
-            if bgorder is False:
-                cancel_order(self.device_id, order_id)
-                logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
-                self.adbModel.click_back()
-                self.adbModel.click_back()
+            if xml_path == False:
                 return False
+            self.check_lijizhifu()
             xml_path = self.click(pay_password[0])
             if xml_path is False:
                 self.error_num += 1
