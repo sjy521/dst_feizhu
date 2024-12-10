@@ -474,6 +474,12 @@ def get_hybridization_order(device_name, delay_num):
                 #     continue
                 if result.get("source") != "10004":
                     continue
+                # 将 createTime 字符串转为 datetime 对象
+                create_time = datetime.datetime.strptime(result.get("createTime"), "%Y-%m-%d %H:%M:%S")
+                current_time = datetime.datetime.now()
+                # 比较当前时间与 createTime 是否晚了10秒
+                if current_time < create_time + datetime.timedelta(seconds=10):
+                    continue
                 # 初始化定义包含所有字段的第一个JSON
                 original_json = {
                     "sOrderId": None,
