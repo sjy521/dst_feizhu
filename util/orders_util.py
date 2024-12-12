@@ -618,13 +618,15 @@ def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device
             order_data['orderItemVO']['productId'] = order_data['productItem']['productId']
             order_data['productItem'].pop('productId')
             order_data['productItem'] = json.dumps(order_data['productItem'])
+            order_data["brokerage"] = 0
     else:
         url = settings.ADMIN_URL + "/hotel/sorder/createSOrderBySystem"
         order_data['productItem'] = "机器补录"
         order_data['remark'] = "阿信支付"
+        if order_data["brokerage"] is None:
+            order_data["brokerage"] = 0
     order_data["payType"] = 1
-    if order_data["brokerage"] is None:
-        order_data["brokerage"] = 0
+
     order_data["orderStatus"] = 10
     order_data['checkInTime'] = order_data['checkInTime'] + " 00:00:00"
     order_data['checkOutTime'] = order_data['checkOutTime'] + " 00:00:00"
