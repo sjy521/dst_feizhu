@@ -137,7 +137,8 @@ def run(tar_device_id):
                         else:
                             if timeout_main(order_res, start_time, device_id, tar_json, is_busy, bg_order_id, device_name):
                                 continue
-                            except_main(bg_order_id, error_list, device_id, device_name)
+                            # except_main(bg_order_id, error_list, device_id, device_name)
+                            axin_pay(order_res, bg_order_id, device_name)
                             logging.info("[{}]下单失败".format(bg_order_id))
                             build_error_warn(devices_error_count, device_name, device_id)
                             continue
