@@ -157,7 +157,7 @@ class FliggyModel:
             # 我的小程序
             logging.info("准备点击飞猪小程序...")
             # click("飞猪")
-            self.adbModel.click_button(200, 1000)
+            self.adbModel.click_button(145, 1133)
             time.sleep(2)
             if self.click_setting("更多", timesleep=1):
                 self.click("重新进入\n小程序", timesleep=5)
@@ -310,7 +310,10 @@ class FliggyModel:
         """
         xml_path = self.adbModel.convert_to_xml(self.device_id)
         if find_current_element_text(xml_path, "立即支付"):
-            self.adbModel.click_button(525, 2090)
+            self.adbModel.click_button(500, 2121)
+            time.sleep(5)
+        if find_current_element_text(xml_path, "微信支付"):
+            self.adbModel.click_button(500, 2121)
             time.sleep(5)
 
     def goto_target_page(self):
