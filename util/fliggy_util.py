@@ -210,7 +210,7 @@ class FliggyModel:
             return False
         pay_res = self.click_pay("待付款", timesleep=2)
         if pay_res:
-            self.check_error()
+            # self.check_error()
             xml_path = self.click("去付款", timesleep=2)
             if xml_path == False:
                 return False
@@ -309,12 +309,14 @@ class FliggyModel:
         :return:
         """
         xml_path = self.adbModel.convert_to_xml(self.device_id)
-        if find_current_element_text(xml_path, "立即支付"):
+        if find_all_current_element_text(xml_path, "立即支付"):
             self.adbModel.click_button(500, 2121)
             time.sleep(5)
-        if find_current_element_text(xml_path, "微信支付"):
+            return True
+        if find_all_current_element_text(xml_path, "微信支付"):
             self.adbModel.click_button(500, 2121)
             time.sleep(5)
+            return True
 
     def goto_target_page(self):
         """
