@@ -252,9 +252,9 @@ class FliggyModel:
                 # unlock(bg_order_id, self.device_id)
             logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
             self.adbModel.click_back()
-            time.sleep(2)
-            self.adbModel.click_button(280, 1380)
-            self.adbModel.click_back()
+            time.sleep(3)
+            # self.adbModel.click_button(280, 1380)
+            # self.adbModel.click_back()
             return True
             # else:
             #     self.adbModel.click_back()
