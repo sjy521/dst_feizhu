@@ -211,10 +211,12 @@ class FliggyModel:
         pay_res = self.click_pay("待付款", timesleep=2)
         if pay_res:
             # self.check_error()
-            xml_path = self.click("去付款", timesleep=2)
+            xml_path = self.click("去付款", timesleep=1)
             if xml_path == False:
                 return False
-            self.check_lijizhifu()
+            # self.check_lijizhifu()
+            self.adbModel.click_button(950, 2121)
+            time.sleep(3)
             xml_path = self.click(pay_password[0])
             if xml_path is False:
                 self.error_num += 1
@@ -308,6 +310,7 @@ class FliggyModel:
         检查立即支付
         :return:
         """
+        time.sleep(2)
         xml_path = self.adbModel.convert_to_xml(self.device_id)
         if find_all_current_element_text(xml_path, "立即支付"):
             self.adbModel.click_button(500, 2121)
