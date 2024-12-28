@@ -1,3 +1,5 @@
+import logging
+
 from lxml import html
 
 
@@ -162,9 +164,10 @@ def find_all_current_element_text(xml_path, text):
     tree = html.etree.parse(xml_path)
     alltext = "".join(tree.xpath("//node/@text"))
     if text in alltext:
+        logging.info('发现了' + text)
         return True
     else:
-        print("未发现element")
+        logging.info("未发现element")
         return False
 
 
