@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import tempfile
@@ -59,9 +60,9 @@ class AdbModel:
         # command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"
         process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
         output, error = process.communicate()
-        print("ip结果：{}".format(output))
+        logging.info("ip2结果：{}, {}".format(output, error))
         ip_address = output.decode('utf-8').strip()
-        if "exist" not in ip_address:
+        if ip_address != "":
             return ip_address
         else:
             # 服务器
@@ -73,6 +74,7 @@ class AdbModel:
             output, error = process.communicate()
             if output:
                 ip_address = output.decode('utf-8').strip()
+                logging.info("ip1结果：{}, {}".format(output, error))
                 return ip_address
             else:
                 return None
