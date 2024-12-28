@@ -53,17 +53,29 @@ class AdbModel:
         :return:
         """
         # 服务器
-        command = "ip addr show enp1s0 | awk '/inet /{print $2}' | cut -d / -f1"
+        try:
+            command = "ip addr show enp1s0 | awk '/inet /{print $2}' | cut -d / -f1"
 
-        # 本地
-        # command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-        output, error = process.communicate()
-        if output:
-            ip_address = output.decode('utf-8').strip()
-            return ip_address
-        else:
-            return None
+            # 本地
+            # command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+            output, error = process.communicate()
+            if output:
+                ip_address = output.decode('utf-8').strip()
+                return ip_address
+        except Exception as f:
+            # 服务器
+            command = "ip addr show enp2s0 | awk '/inet /{print $2}' | cut -d / -f1"
+
+            # 本地
+            # command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+            output, error = process.communicate()
+            if output:
+                ip_address = output.decode('utf-8').strip()
+                return ip_address
+            else:
+                return None
 
     def open_proxy(self, proxy):
         """
