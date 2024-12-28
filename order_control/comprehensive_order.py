@@ -40,9 +40,9 @@ def run(tar_device_id):
                 abnormal_res = abnormal_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
                 if abnormal_res:
                     continue
-                # 未处理
-                logging.info("准备处理未处理列表")
-                snatching_res = snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
+                # # 未处理
+                # logging.info("准备处理未处理列表")
+                # snatching_res = snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
 
             else:
                 logging.info("当前无可用的设备")
