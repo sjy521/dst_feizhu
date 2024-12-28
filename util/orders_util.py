@@ -125,9 +125,8 @@ def get_effective_order(device_id, error_list, device_name, delay_num):
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > int(delay_num):
-            for _ in range(len(results.get("rows")) - 1, -1, -1):
+            for result in results.get("rows")[::-1]:
                 # result = random.choices(results.get("rows"))[0]
-                result = results.get("rows")[_]
                 if result.get("source") != "10002":
                     continue
                 order_data = {
@@ -162,8 +161,9 @@ def get_abnormal_effective_order(device_id, error_list, device_name):
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         results = res_json.get("result")
-        if len(results.get("rows")) > 0:
-            result = random.choices(results.get("rows"))[0]
+        # if len(results.get("rows")) > 0:
+        #     result = random.choices(results.get("rows"))[0]
+        for result in results.get("rows")[::-1]:
             if result.get("source") != "10002":
                 return None
             bg_order_id = result.get("bgOrderId")
