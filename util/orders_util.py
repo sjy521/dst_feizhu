@@ -165,10 +165,10 @@ def get_abnormal_effective_order(device_id, error_list, device_name):
         #     result = random.choices(results.get("rows"))[0]
         for result in results.get("rows")[::-1]:
             if result.get("source") != "10002":
-                return None
+                continue
             bg_order_id = result.get("bgOrderId")
             if bg_order_id in error_list:
-                return None
+                continue
             d_ordr_id = result.get("dorderId")
             # 加锁
             url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
