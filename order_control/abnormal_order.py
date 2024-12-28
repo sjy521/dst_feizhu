@@ -125,7 +125,7 @@ def run(tar_device_id):
                     devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
-                delay_num = []
+                delay_num = device_info.get('delayNum')
                 abnormal_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
 
             else:

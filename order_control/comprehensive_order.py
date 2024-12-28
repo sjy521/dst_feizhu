@@ -28,7 +28,7 @@ def run(tar_device_id):
                     devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
-                delay_num = []
+                delay_num = device_info.get('delayNum')
 
                 # 混投
                 logging.info("准备处理混投列表")
