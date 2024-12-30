@@ -1,4 +1,5 @@
 import logging
+import random
 import time
 import os
 import sys
@@ -211,12 +212,12 @@ class FliggyModel:
         pay_res = self.click_pay("待付款", timesleep=2)
         if pay_res:
             # self.check_error()
-            xml_path = self.click("去付款", timesleep=1)
+            xml_path = self.click("去付款", timesleep=random.randint(2, 3))
             if xml_path == False:
                 return False
             # self.check_lijizhifu()
             self.adbModel.click_button(950, 2121)
-            time.sleep(3)
+            time.sleep(random.randint(3, 5))
             xml_path = self.click(pay_password[0])
             if xml_path is False:
                 self.error_num += 1
