@@ -178,7 +178,7 @@ class FliggyModel:
         self.adbModel.click_button(768, 2211)
         time.sleep(1)
         self.adbModel.click_button(768, 2211)
-        time.sleep(2)
+        time.sleep(3)
         # self.adbModel.swipe(800, 400, 800, 1200)
         # if click_type == 1:
         #     logging.info("准备点击全部订单")
