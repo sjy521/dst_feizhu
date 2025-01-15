@@ -172,7 +172,12 @@ class FliggyModel:
         刷新订单
         :return:
         """
-        self.adbModel.swipe(800, 400, 800, 1200)
+        self.adbModel.click_button(282, 447)
+        time.sleep(1)
+        self.adbModel.click_button(145, 458)
+        time.sleep(1)
+        self.adbModel.click_button(145, 458)
+        # self.adbModel.swipe(800, 400, 800, 1200)
         # if click_type == 1:
         #     logging.info("准备点击全部订单")
         #     self.click("全部订单")
