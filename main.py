@@ -1,11 +1,14 @@
 # coding:utf-8
 import logging.config
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 import flask
 import yaml
 from dynaconf import settings
 
+import orderExcel
 
 app = flask.Flask(__name__)
 
@@ -18,6 +21,13 @@ def ok():
 @app.route('/download/<file_name>', methods=['get', 'post'])
 def download(file_name):
     res = flask.send_file("/root/bgProjects/fliggy-mobile-control/invoice_control/{}.csv".format(file_name), as_attachment=True)
+    return res
+
+
+@app.route('/order/<check_in>/<check_out>', methods=['get', 'post'])
+def download_order(check_in, check_out):
+    file_name = orderExcel.order_excel(check_in, check_out)
+    res = flask.send_file(file_name, as_attachment=True)
     return res
 
 
