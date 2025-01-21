@@ -119,7 +119,7 @@ def get_effective_order(device_id, error_list, device_name, delay_num):
     :return: bgorderid
     """
     url = settings.ADMIN_URL + "/hotel/bgorder/getNoReadyOrderByPage"
-    payload = {"pageNum": 1, "pageSize": 30, "param": {}}
+    payload = {"pageNum": 1, "pageSize": 50, "param": {}}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -156,7 +156,7 @@ def get_abnormal_effective_order(device_id, error_list, device_name):
     :return: bgorderid
     """
     url = settings.ADMIN_URL + "/hotel/bgorder/getChangeOrderByPage"
-    payload = {"pageNum": 1, "pageSize": 20, "param": {}}
+    payload = {"pageNum": 1, "pageSize": 50, "param": {}}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -652,11 +652,16 @@ def hybridization_create_order(order_data, bg_order_id, sorder_id, price, device
 
 
 def pay_axin(s_order_id):
-    url = settings.SPA_URL + "/hotel/v1.0/axin/axinPayBySorderId?sOrderId={}".format(s_order_id)
-    response = requests.request("POST", url)
-    res_json = json.loads(response.text)
-    if res_json:
+    try:
+        url = settings.SPA_URL + "/hotel/v1.0/axin/axinPayBySorderId?sOrderId={}".format(s_order_id)
+        response = requests.request("POST", url)
+        res_json = json.loads(response.text)
+        logging.info("{}阿信支付结果: {}".format(s_order_id, res_json))
+        if res_json:
+            return 1
+        else:
+            return 0
+    except Exception as f:
+        logging.info("{}阿信支付结果异常".format(s_order_id))
         return 1
-    else:
-        return 0
 
