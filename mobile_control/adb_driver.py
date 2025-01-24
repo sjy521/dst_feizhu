@@ -54,6 +54,8 @@ def run(device):
                     fliggy_model.goto_target_page()
                     # 支付订单
                     print('===')
+                    if is_busy == 0:
+                        continue
                     order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
                     if order_num == None:
                         continue
