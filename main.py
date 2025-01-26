@@ -9,7 +9,7 @@ import yaml
 from dynaconf import settings
 
 import orderExcel
-
+import main_impl.douyin as douyin
 app = flask.Flask(__name__)
 
 
@@ -28,6 +28,12 @@ def download(file_name):
 def download_order(check_in, check_out):
     file_name = orderExcel.order_excel(check_in, check_out)
     res = flask.send_file(file_name, as_attachment=True)
+    return res
+
+
+@app.route('/douyin/offhotel/<hotel_id>', methods=['get', 'post'])
+def douyin_off_hotel(hotel_id):
+    res = douyin.offhotel(hotel_id)
     return res
 
 
