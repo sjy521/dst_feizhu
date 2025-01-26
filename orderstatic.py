@@ -68,6 +68,8 @@ def orderstatic():
                             message += "同程艺龙："
                         if (value == '20008'):
                             message += "去哪儿缤果："
+                        if (value == '20009'):
+                            message += "抖音："
                     if (column == 'count(*)'):
                         message += str(value) + "\n"
                         totalCount += int(value)
@@ -96,6 +98,8 @@ def orderstatic():
                             message += "同程艺龙确认订单："
                         if (value == '20008'):
                             message += "去哪儿缤果确认订单："
+                        if (value == '20009'):
+                            message += "抖音确认订单："
                     if (column == 'count(*)'):
                         message += str(value) + "\n"
                         confirm += int(value)
@@ -125,6 +129,8 @@ def orderstatic():
                             message += "同程艺龙售前利润："
                         if (value == '20008'):
                             message += "去哪儿缤果售前利润："
+                        if (value == '20009'):
+                            message += "抖音售前利润："
                     if (column == 'totalprofit'):
                         message += str("%.2f" % (float(value) / 100)) + "\n"
                         totalPofit += float("%.2f" % (float(value) / 100))
@@ -183,6 +189,8 @@ def orderstatic():
                             message += "去哪儿缤果失败率："
                         if (value == 30002):
                             message += "夏洛特失败率："
+                        if (value == 20009):
+                            message += "抖音失败率："
                     if (column == 'total'):
                         total=value
                     if (column == 'fail'):
