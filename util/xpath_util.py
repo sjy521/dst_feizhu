@@ -147,10 +147,28 @@ def find_current_element_text(xml_path, text):
     """
     tree = html.etree.parse(xml_path)
     alltext = "".join(tree.xpath("//node/@text"))
-    logging.info(alltext)
     if text in alltext:
         logging.info('发现了' + text)
         return True
+    else:
+        print("未发现element")
+        return False
+
+
+def find_success_element_text(xml_path, text_list):
+    """
+    从 XML 中根据文本查找当前元素的文本
+    :param xml_path: xml 地址
+    :param text: 元素文本名称
+    :return:
+    """
+    tree = html.etree.parse(xml_path)
+    alltext = "".join(tree.xpath("//node/@text"))
+    logging.info(alltext)
+    for text in text_list:
+        if text in alltext:
+            logging.info('发现了' + text)
+            return True
     else:
         print("未发现element")
         return False

@@ -12,7 +12,8 @@ from util.order_list_util import get_bongo_order, adb_order_list
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 from util.orders_util import set_not_effective_device, cancel_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
-    find_current_element_coordinates, find_setting, find_current_element_num, find_all_current_element_text
+    find_current_element_coordinates, find_setting, find_current_element_num, find_all_current_element_text, \
+    find_success_element_text
 
 setup_logging(default_path=settings.LOGGING)
 
@@ -254,13 +255,7 @@ class FliggyModel:
             #     return True
             self.click(pay_password[5], xml_path)
             time.sleep(3)
-            if self.pay_success("飞猪旅行"):
-                self.error_num = 1
-                status = 1
-            elif self.pay_success("完成"):
-                self.error_num = 1
-                status = 1
-            elif self.pay_success("成功"):
+            if self.pay_success(["飞猪旅行", "完成", "成功"]):
                 self.error_num = 1
                 status = 1
             else:
@@ -289,7 +284,7 @@ class FliggyModel:
         """
         logging.info("准备查找[{}]...".format(click_text))
         xml_path = self.adbModel.convert_to_xml(self.device_id)
-        res = find_current_element_text(xml_path, click_text)
+        res = find_success_element_text(xml_path, click_text)
         if res:
             return res
         else:
