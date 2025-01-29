@@ -257,6 +257,12 @@ class FliggyModel:
             if self.pay_success("飞猪旅行"):
                 self.error_num = 1
                 status = 1
+            elif self.pay_success("完成"):
+                self.error_num = 1
+                status = 1
+            elif self.pay_success("成功"):
+                self.error_num = 1
+                status = 1
             else:
                 status = 0
                 send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
