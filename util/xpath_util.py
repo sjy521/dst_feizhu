@@ -146,6 +146,8 @@ def find_current_element_text(xml_path, text):
     :return:
     """
     tree = html.etree.parse(xml_path)
+    if text == '完成':
+        logging.info("".join(tree.xpath("//node/@text")))
     elements = tree.xpath("//node[@text=$text]", text=text)
     if elements:
         return True
