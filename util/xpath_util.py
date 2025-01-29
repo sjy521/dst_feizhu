@@ -148,8 +148,9 @@ def find_current_element_text(xml_path, text):
     tree = html.etree.parse(xml_path)
     if text == '完成':
         logging.info("".join(tree.xpath("//node/@text")))
-    elements = tree.xpath("//node[@text=$text]", text=text)
-    if elements:
+    alltext = "".join(tree.xpath("//node/@text"))
+    if text in alltext:
+        logging.info('发现了' + text)
         return True
     else:
         print("未发现element")
