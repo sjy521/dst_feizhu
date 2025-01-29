@@ -254,7 +254,7 @@ class FliggyModel:
             #     return True
             self.click(pay_password[5], xml_path)
             time.sleep(3)
-            if self.pay_success("支付成功"):
+            if self.pay_success("完成"):
                 self.error_num = 1
                 status = 1
             else:
