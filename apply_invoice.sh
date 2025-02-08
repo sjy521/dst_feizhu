@@ -7,6 +7,9 @@ nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/f
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py 4TUGJN79S89HKBOF > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_4TUGJN79S89HKBOF.log 2>&1 &
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py EMWGCACYINKVR8KB > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_EMWGCACYINKVR8KB.log 2>&1 &
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py MRGMCU4TZXKJXGLZ > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_MRGMCU4TZXKJXGLZ.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py UCX4BAEMAYBM6PRW > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_UCX4BAEMAYBM6PRW.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py AESGTGFM49EYJN99 > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_AESGTGFM49EYJN99.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/invoice_control/apply_invoice.py X4FMSOQGDYHYW4WK > /root/bgProjects/fliggy-mobile-control/logs/apply_invoice_X4FMSOQGDYHYW4WK.log 2>&1 &
 #
 #nohup python3 /home/fliggy-mobile-control/fliggy-mobile-control/invoice_control/apply_invoice.py ORHQN799EI8TUWN7 > /home/fliggy-mobile-control/fliggy-mobile-control/logs/apply_invoice_ORHQN799EI8TUWN7.log 2>&1 &
 #nohup python3 /home/fliggy-mobile-control/fliggy-mobile-control/invoice_control/apply_invoice.py DYKV7LOV8HV855JR > /home/fliggy-mobile-control/fliggy-mobile-control/logs/apply_invoice_DYKV7LOV8HV855JR.log 2>&1 &
