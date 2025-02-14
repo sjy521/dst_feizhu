@@ -41,11 +41,13 @@ def kill_existing_process(device_id):
 def start_adb_driver(device_id, process_id):
     try:
         log_file = f"/root/bgProjects/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
+        venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
         command = [
             "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
             "/root/bgProjects/fliggy-mobile-control/mobile_control/adb_driver.py",
             device_id
         ]
+        subprocess.run([venv_activate], shell=True, check=True)
         with open(log_file, "a") as log:
             subprocess.Popen(command, stdout=log, stderr=log)
         print(f"adb_driver.py started for device ID {device_id}.")
@@ -57,6 +59,7 @@ def start_adb_driver(device_id, process_id):
                 "/root/bgProjects/fliggy-mobile-control/order_control/snatching_order_plus.py",
                 device_id
             ]
+            subprocess.run([venv_activate], shell=True, check=True)
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log)
             print(f"snatching_order_plus.py started for device ID {device_id}.")
@@ -67,6 +70,7 @@ def start_adb_driver(device_id, process_id):
                 "/root/bgProjects/fliggy-mobile-control/order_control/abnormal_order.py",
                 device_id
             ]
+            subprocess.run([venv_activate], shell=True, check=True)
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log)
             print(f"abnormal_order.py started for device ID {device_id}.")
@@ -77,6 +81,7 @@ def start_adb_driver(device_id, process_id):
                 "/root/bgProjects/fliggy-mobile-control/order_control/comprehensive_order.py",
                 device_id
             ]
+            subprocess.run([venv_activate], shell=True, check=True)
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log)
             print(f"comprehensive_order.py started for device ID {device_id}.")
