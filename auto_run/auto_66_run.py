@@ -96,7 +96,7 @@ def main():
         # 检查进程是否已经在运行
         if int(device.get("runStatus")) == 0:
             kill_existing_process(device.get("deviceId"))
-            start_adb_driver(device.get("deviceId"), device.get("processList"))
+            start_adb_driver(device.get("deviceId"), int(device.get("processList")))
 
 
 if __name__ == "__main__":
