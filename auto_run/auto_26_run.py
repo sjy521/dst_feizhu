@@ -12,9 +12,9 @@ def get_db_param():
     busy_devices = select_device()
     if len(busy_devices) > 0:
         for busy_device in busy_devices:
-            run_status = int(busy_device.get("runStatus"))
-            if run_status in [3]:
-                devices.append(busy_device)
+            # run_status = int(busy_device.get("runStatus"))
+            # if run_status in [3]:
+            devices.append(busy_device)
     return devices
 
 
@@ -97,6 +97,8 @@ def main():
         if int(device.get("runStatus")) == 3:
             kill_existing_process(device.get("deviceId"))
             start_adb_driver(device.get("deviceId"), int(device.get("processList")))
+        if int(device.get("runStatus")) in [0, 1]:
+            kill_existing_process(device.get("deviceId"))
 
 
 if __name__ == "__main__":
