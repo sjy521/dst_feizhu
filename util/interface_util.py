@@ -48,10 +48,24 @@ def select_device():
 
 
 def update_device(device_id, state):
-    url = "http://192.168.52.106:8083/library/update/library"
+    url = settings.ADMIN_URL81 + "/library/update/library"
     data = {
         "deviceId": device_id,
         "statue": state
+    }
+    res = requests.post(url, json=data)
+    resjson = json.load(res.text)
+    if resjson['success']:
+        return resjson['success']
+    else:
+        return None
+
+
+def update_device_run_status(device_id, run_status):
+    url = settings.ADMIN_URL81 + "/library/update/library"
+    data = {
+        "deviceId": device_id,
+        "runStatus": run_status
     }
     res = requests.post(url, json=data)
     resjson = json.load(res.text)
