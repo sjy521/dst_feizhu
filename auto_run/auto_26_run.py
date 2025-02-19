@@ -42,10 +42,10 @@ def kill_existing_process(device_id):
 # 启动adb_driver.py
 def start_adb_driver(device_id, process_id):
     try:
-        log_file = f"logs/adb_driver_{device_id}.log"
+        log_file = f"./logs/adb_driver_{device_id}.log"
         command = [
             "python3",
-            "mobile_control/adb_driver.py",
+            "./mobile_control/adb_driver.py",
             device_id
         ]
         with open(log_file, "a") as log:
@@ -53,30 +53,30 @@ def start_adb_driver(device_id, process_id):
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
-            log_file = f"logs/snatching_order_plus_{device_id}.log"
+            log_file = f"./logs/snatching_order_plus_{device_id}.log"
             command = [
                 "python3",
-                "order_control/snatching_order_plus.py",
+                "./order_control/snatching_order_plus.py",
                 device_id
             ]
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
             print(f"snatching_order_plus.py started for device ID {device_id}.")
         elif process_id == 1:
-            log_file = f"logs/abnormal_order_{device_id}.log"
+            log_file = f"./logs/abnormal_order_{device_id}.log"
             command = [
                 "python3",
-                "order_control/abnormal_order.py",
+                "./order_control/abnormal_order.py",
                 device_id
             ]
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
             print(f"abnormal_order.py started for device ID {device_id}.")
         elif process_id == 2:
-            log_file = f"logs/comprehensive_order_{device_id}.log"
+            log_file = f"./logs/comprehensive_order_{device_id}.log"
             command = [
                 "python3",
-                "order_control/comprehensive_order.py",
+                "./order_control/comprehensive_order.py",
                 device_id
             ]
             with open(log_file, "a") as log:
