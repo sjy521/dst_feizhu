@@ -40,50 +40,50 @@ def kill_existing_process(device_id):
 # 启动adb_driver.py
 def start_adb_driver(device_id, process_id):
     try:
-        log_file = f"/root/bgProjects/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
-        venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
+        log_file = f"logs/adb_driver_{device_id}.log"
+        venv_activate = "venv/bin/activate_this.py"
         command = [
-            "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
-            "/root/bgProjects/fliggy-mobile-control/mobile_control/adb_driver.py",
+            "/venv/bin/python3",
+            "mobile_control/adb_driver.py",
             device_id
         ]
-        subprocess.run([venv_activate], shell=True, check=True)
+        subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
         with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log)
+            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/snatching_order_plus_{device_id}.log"
+            log_file = f"logs/snatching_order_plus_{device_id}.log"
             command = [
-                "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
-                "/root/bgProjects/fliggy-mobile-control/order_control/snatching_order_plus.py",
+                "venv/bin/python3",
+                "order_control/snatching_order_plus.py",
                 device_id
             ]
-            subprocess.run([venv_activate], shell=True, check=True)
+            subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log)
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
             print(f"snatching_order_plus.py started for device ID {device_id}.")
         elif process_id == 1:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/abnormal_order_{device_id}.log"
+            log_file = f"logs/abnormal_order_{device_id}.log"
             command = [
-                "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
-                "/root/bgProjects/fliggy-mobile-control/order_control/abnormal_order.py",
+                "venv/bin/python3",
+                "order_control/abnormal_order.py",
                 device_id
             ]
-            subprocess.run([venv_activate], shell=True, check=True)
+            subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log)
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
             print(f"abnormal_order.py started for device ID {device_id}.")
         elif process_id == 2:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/comprehensive_order_{device_id}.log"
+            log_file = f"logs/comprehensive_order_{device_id}.log"
             command = [
-                "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
-                "/root/bgProjects/fliggy-mobile-control/order_control/comprehensive_order.py",
+                "venv/bin/python3",
+                "order_control/comprehensive_order.py",
                 device_id
             ]
-            subprocess.run([venv_activate], shell=True, check=True)
+            subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log)
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
             print(f"comprehensive_order.py started for device ID {device_id}.")
         update_device_run_status(device_id, 1)
     except Exception as e:

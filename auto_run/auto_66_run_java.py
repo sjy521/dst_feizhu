@@ -23,23 +23,23 @@ def kill_existing_process(key):
 def start_adb_driver(key):
     try:
         if key == "main.py":
-            log_file = "/root/bgProjects/fliggy-mobile-control/logs/main.log"
-            venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
+            log_file = "logs/main.log"
+            venv_activate = "venv/bin/activate_this.py"
             command = [
-                "/root/bgProjects/fliggy-mobile-control/venv/bin/python3",
-                "/root/bgProjects/fliggy-mobile-control/main.py",
+                "venv/bin/python3",
+                "main.py",
             ]
-            subprocess.run([venv_activate], shell=True, check=True)
+            subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log)
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
         elif key == "fliggy-build-order-web-1.0.jar":
-            log_file = "/root/bgProjects/fliggy-build-order/logs/appout.log"
+            log_file = "logs/appout.log"
             command = [
                 "java", "-jar",
-                "/root/bgProjects/fliggy-build-order/fliggy-build-order-web-1.0.jar",
+                "fliggy-build-order-web-1.0.jar",
             ]
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log)
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-build-order")
     except Exception as e:
         print(f"Error starting adb_driver.py: {e}")
 
