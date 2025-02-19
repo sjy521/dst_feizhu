@@ -28,9 +28,11 @@ def kill_existing_process(device_id):
 
         if result.stdout:
             # 获取进程ID并杀掉
-            pid = result.stdout.decode().strip()
-            subprocess.run(["kill", "-9", pid])
-            print(f"Killed existing process with PID {pid} for device ID {device_id}.")
+            pids = result.stdout.decode().strip().split("\n")
+            # 遍历所有 PID 进行 kill
+            for pid in pids:
+                subprocess.run(["kill", "-9", pid])
+                print(f"Killed existing process with PID {pid} for device ID {device_id}.")
         else:
             print(f"No existing process found for device ID {device_id}.")
     except Exception as e:
