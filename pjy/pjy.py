@@ -179,12 +179,13 @@ def use_thread_pool():
             successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(8.4)
+                time.sleep(8.2)
+                # time.sleep(8.4)
                 # time.sleep(8.8)
                 for j in range(20):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
-                    time.sleep(0.05)
+                    time.sleep(0.01)
                 break
             else:
                 continue
