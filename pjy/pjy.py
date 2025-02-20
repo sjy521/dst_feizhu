@@ -179,7 +179,7 @@ def use_thread_pool():
             successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(8.2)
+                time.sleep(8)
                 # time.sleep(8.4)
                 # time.sleep(8.8)
                 for j in range(20):
