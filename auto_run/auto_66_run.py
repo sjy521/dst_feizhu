@@ -43,15 +43,16 @@ def kill_existing_process(device_id):
 def start_adb_driver(device_id, process_id):
     try:
         log_file = f"/root/bgProjects/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
-        venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
         command = [
             "/venv/bin/python3",
             "mobile_control/adb_driver.py",
             device_id
         ]
-        subprocess.run([venv_activate], shell=True, check=True)
+        venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
+        with open(venv_activate) as f:
+            exec(f.read(), {'__file__': venv_activate})
         with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
+            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control", shell=True)
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
