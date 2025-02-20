@@ -52,7 +52,7 @@ def start_adb_driver(device_id, process_id):
         with open(venv_activate) as f:
             exec(f.read(), {'__file__': venv_activate})
         with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control", shell=True)
+            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
