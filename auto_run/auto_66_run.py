@@ -44,7 +44,7 @@ def start_adb_driver(device_id, process_id):
     try:
         log_file = f"/root/bgProjects/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
         command = [
-            "/venv/bin/python3",
+            "venv/bin/python3",
             "mobile_control/adb_driver.py",
             device_id
         ]
