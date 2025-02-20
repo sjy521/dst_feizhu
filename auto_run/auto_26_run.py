@@ -45,7 +45,7 @@ def start_adb_driver(device_id, process_id):
         log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
         command = [
             "python3",
-            "./mobile_control/adb_driver.py",
+            "mobile_control/adb_driver.py",
             device_id
         ]
         with open(log_file, "a") as log:
@@ -56,7 +56,7 @@ def start_adb_driver(device_id, process_id):
             log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/snatching_order_plus_{device_id}.log"
             command = [
                 "python3",
-                "./order_control/snatching_order_plus.py",
+                "order_control/snatching_order_plus.py",
                 device_id
             ]
             with open(log_file, "a") as log:
@@ -66,7 +66,7 @@ def start_adb_driver(device_id, process_id):
             log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/abnormal_order_{device_id}.log"
             command = [
                 "python3",
-                "./order_control/abnormal_order.py",
+                "order_control/abnormal_order.py",
                 device_id
             ]
             with open(log_file, "a") as log:
@@ -76,7 +76,7 @@ def start_adb_driver(device_id, process_id):
             log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/comprehensive_order_{device_id}.log"
             command = [
                 "python3",
-                "./order_control/comprehensive_order.py",
+                "order_control/comprehensive_order.py",
                 device_id
             ]
             with open(log_file, "a") as log:
