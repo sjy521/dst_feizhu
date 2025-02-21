@@ -44,13 +44,9 @@ def start_adb_driver(device_id, process_id):
     try:
         log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
         command = [
-            "nohup",
-            "python3",
+            "/usr/bin/python3",
             "mobile_control/adb_driver.py",
-            device_id,
-            ">logs/adb_driver_{}.log".format(device_id),
-            "2>&1",
-            "&"
+            device_id
         ]
         with open(log_file, "a") as log:
             subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
