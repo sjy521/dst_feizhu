@@ -178,8 +178,8 @@ class FliggyModel:
         # self.adbModel.click_button(975, 2211)
         # 首页
         time.sleep(2)
-        self.adbModel.click_button(130, 2211)
-
+        # self.adbModel.click_button(130, 2211)
+        self.adbModel.click_button(70, 200)
         time.sleep(3)
         self.adbModel.click_button(768, 2211)
         time.sleep(1)
@@ -265,8 +265,8 @@ class FliggyModel:
                 set_not_effective_device(self.device_id, 0, 0)
                 # unlock(bg_order_id, self.device_id)
             logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
-            self.adbModel.click_back()
-            time.sleep(3)
+            self.adbModel.click_button(598, 1950)
+            time.sleep(1)
             # self.adbModel.click_button(280, 1380)
             # self.adbModel.click_back()
             return True
