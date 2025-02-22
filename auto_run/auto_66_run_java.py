@@ -24,12 +24,13 @@ def start_adb_driver(key):
     try:
         if key == "main.py":
             log_file = "logs/main.log"
-            venv_activate = "venv/bin/activate_this.py"
             command = [
                 "venv/bin/python3",
                 "main.py",
             ]
-            subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
+            venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
+            with open(venv_activate) as f:
+                exec(f.read(), {'__file__': venv_activate})
             with open(log_file, "a") as log:
                 subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
         elif key == "fliggy-build-order-web-1.0.jar":
