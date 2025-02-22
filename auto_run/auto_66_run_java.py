@@ -23,7 +23,7 @@ def kill_existing_process(key):
 def start_adb_driver(key):
     try:
         if key == "main.py":
-            log_file = "logs/main.log"
+            log_file = "/root/bgProjects/fliggy-mobile-control/logs/main.log"
             command = [
                 "venv/bin/python3",
                 "main.py",
