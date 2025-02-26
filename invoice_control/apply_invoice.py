@@ -11,7 +11,7 @@ from util.orders_util import get_all_device
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
 
 
-def get_all_order_info(device_id):
+def get_all_order_info(device_id, day):
     global all_order
     errorpage = 0
     page = 100
@@ -29,7 +29,7 @@ def get_all_order_info(device_id):
             for res_data in res_json['data']['order_list']:
                 if res_data['order_time'] is not None:
                     if res_data['order_time'] < "{} 00:00:00".format(
-                            (datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d')):
+                            (datetime.datetime.now() - datetime.timedelta(days=day)).date().strftime('%Y-%m-%d')):
                         exceed_time_num -= 1
                         if exceed_time_num <= 0:
                             print('到达指定时间')
@@ -51,25 +51,28 @@ def get_all_order_info(device_id):
 
 def getapplyinvoice(device_id):
     for i, order in enumerate(all_order):
-        print(i, order)
-        if order['status_value'] == "已完成":
-            url = "http://127.0.0.1:8083/fliggy/getapplyinvoice?orderId={}&device_id={}".format(
-                order['biz_order_id'], device_id)
+        try:
+            print(i, order)
+            if order['status_value'] == "已完成":
+                url = "http://127.0.0.1:8083/fliggy/getapplyinvoice?orderId={}&device_id={}".format(
+                    order['biz_order_id'], device_id)
 
-            payload = ""
-            headers = {
-                'cache-control': "no-cache",
-                'Postman-Token': "9fd8ea5a-bd43-4cbb-b3cb-097a7a143c53"
-            }
+                payload = ""
+                headers = {
+                    'cache-control': "no-cache",
+                    'Postman-Token': "9fd8ea5a-bd43-4cbb-b3cb-097a7a143c53"
+                }
 
-            response = requests.request("GET", url, data=payload, headers=headers)
+                response = requests.request("GET", url, data=payload, headers=headers)
 
-            res_json = json.loads(response.text)
-            try:
-                order["是否可以开发票"] = res_json['data']
-                order["已开发票"] = False
-            except:
-                continue
+                res_json = json.loads(response.text)
+                try:
+                    order["是否可以开发票"] = res_json['data']
+                    order["已开发票"] = False
+                except:
+                    continue
+        except:
+            continue
 
 
 def invoice(device_id):
@@ -94,6 +97,15 @@ def invoice(device_id):
             continue
 
 
+def is_weekday():
+    current_date = datetime.datetime.now()
+    # 判断是否是周三
+    if current_date.weekday() == 2:
+        return True
+    else:
+        return False
+
+
 if __name__ == '__main__':
     args = sys.argv
     device_id = args[1]
@@ -103,9 +115,14 @@ if __name__ == '__main__':
     for res in all_device:
         if res.get("deviceId") == device_id:
             device_name = res.get("deviceName")
-            file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d'), device_name)
+            if is_weekday():
+                day = 14
+                file_name = "{}{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d'), (datetime.datetime.now() - datetime.timedelta(days=14)).date().strftime('%Y-%m-%d'), device_name)
+            else:
+                day = 7
+                file_name = "{}{}发票记录".format((datetime.datetime.now() - datetime.timedelta(days=7)).date().strftime('%Y-%m-%d'), device_name)
             # file_name = "{}{}发票记录".format("2024-05-27-2024-06-02", device_name)
-            get_all_order_info(device_id)
+            get_all_order_info(device_id, day)
             getapplyinvoice(device_id)
             invoice(device_id)
             if len(all_order) != 0:
