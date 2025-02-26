@@ -105,8 +105,8 @@ def main():
         if int(device.get("runStatus")) == 0:
             kill_existing_process(device.get("deviceId"))
             start_adb_driver(device.get("deviceId"), int(device.get("processList")))
-        if int(device.get("runStatus")) in [3,4]:
-            kill_existing_process(device.get("deviceId"))
+            if int(device.get("runStatus")) in [3,4]:
+                kill_existing_process(device.get("deviceId"))
 
 
 if __name__ == "__main__":
