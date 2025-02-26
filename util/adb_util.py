@@ -77,7 +77,7 @@ class AdbModel:
                 logging.info("ip1结果：{}, {}".format(output, error))
                 return ip_address
             else:
-                return None
+                return "192.168.18.111"
 
     def open_proxy(self, proxy):
         """
