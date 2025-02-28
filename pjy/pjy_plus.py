@@ -16,13 +16,13 @@ from util.ding_util import send_dingding
 setup_logging(default_path=settings.LOGGING)
 # 用户列表
 openlist = [
-    {"open_id": "oIiOx5Ut64lZTbwF2_oeaw4FCQfA", "nuid": "98781", "name": "榛榛"},
-    {"open_id": "oIiOx5SUacmTWggqMM0YKbdqjTCA", "nuid": "99784", "name": "潘家园"},
-    {"open_id": "oIiOx5Xq4XDz_xRBSfdsOdIY7dZ0", "nuid": "99548", "name": "榛小号"},
-    {"open_id": "oIiOx5SZDPe0L560aLqkHKyuhAbo", "nuid": "99449", "name": "宋小号"},
-    {"open_id": "oIiOx5Vp93EJQ4uge2ErDJAbfBTE", "nuid": "99587", "name": "丰台"},
-    {"open_id": "oIiOx5UPUlc-a85OHdArycE-Khho", "nuid": "99624", "name": "李小浩"},
-    {"open_id": "oIiOx5VPJ7OBGK9HcRkwnRVssfLc", "nuid": "99447", "name": "李浩"},
+    # {"open_id": "oIiOx5Ut64lZTbwF2_oeaw4FCQfA", "nuid": "98781", "name": "榛榛"},
+    # {"open_id": "oIiOx5SUacmTWggqMM0YKbdqjTCA", "nuid": "99784", "name": "潘家园"},
+    # {"open_id": "oIiOx5Xq4XDz_xRBSfdsOdIY7dZ0", "nuid": "99548", "name": "榛小号"},
+    # {"open_id": "oIiOx5SZDPe0L560aLqkHKyuhAbo", "nuid": "99449", "name": "宋小号"},
+    # {"open_id": "oIiOx5Vp93EJQ4uge2ErDJAbfBTE", "nuid": "99587", "name": "丰台"},
+    # {"open_id": "oIiOx5UPUlc-a85OHdArycE-Khho", "nuid": "99624", "name": "李小浩"},
+    # {"open_id": "oIiOx5VPJ7OBGK9HcRkwnRVssfLc", "nuid": "99447", "name": "李浩"},
     {"open_id": "oIiOx5axf0CpsI4WCDwL-jxM2EAM", "nuid": "99701", "name": "胖总"}
 ]
 
@@ -122,8 +122,8 @@ async def cancel_request(session, nBId, open_id):
 # 判断是否为下午5点
 def is_five_pm():
     current_time = datetime.now()
-    # return True
-    return current_time.hour == 17 and current_time.minute == 0
+    return True
+    # return current_time.hour == 17 and current_time.minute == 0
 
 
 # 主函数
@@ -133,7 +133,7 @@ async def main():
             if is_five_pm():
                 logging.info("9 秒后准备预约！！！")
                 await asyncio.sleep(8.3)  # 精确控制时间
-                for _ in range(20):  # 每个用户发送20次请求
+                for _ in range(2):  # 每个用户发送20次请求
                     tasks = []
                     for mes in openlist:
                         tasks.append(send_request(session, mes))
