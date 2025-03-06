@@ -44,12 +44,13 @@ def start_adb_driver(device_id, process_id):
     try:
         log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
         command = [
-            "python3.11",
+            "python3",
             "mobile_control/adb_driver.py",
             device_id
         ]
+        env = os.environ.copy()
         with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
+            subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control", env=env)
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
