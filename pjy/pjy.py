@@ -174,13 +174,13 @@ def is_five_pm():
 
 def use_thread_pool():
     global successlist
-    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=100) as executor:
         while True:
             successlist = []
             if is_five_pm():
-                send_dingding("9 秒后准备预约！！！")
+                # send_dingding("9 秒后准备预约！！！")
                 # time.sleep(8)
-                time.sleep(8.5)
+                time.sleep(8.3)
                 # time.sleep(8.8)
                 for j in range(20):
                     # 提交任务到线程池中
