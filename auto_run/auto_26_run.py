@@ -42,47 +42,47 @@ def kill_existing_process(device_id):
 # 启动adb_driver.py
 def start_adb_driver(device_id, process_id):
     try:
-        log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
-        command = [
-            "python3",
-            "mobile_control/adb_driver.py",
-            device_id
-        ]
-        env = os.environ.copy()
-        with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control", env=env)
-        print(f"adb_driver.py started for device ID {device_id}.")
+        # log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
+        # command = [
+        #     "python3",
+        #     "mobile_control/adb_driver.py",
+        #     device_id
+        # ]
+        # env = os.environ.copy()
+        # with open(log_file, "a") as log:
+        #     subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control", env=env)
+        # print(f"adb_driver.py started for device ID {device_id}.")
 
-        if process_id == 0:
-            log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/snatching_order_plus_{device_id}.log"
-            command = [
-                "python3",
-                "order_control/snatching_order_plus.py",
-                device_id
-            ]
-            with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
-            print(f"snatching_order_plus.py started for device ID {device_id}.")
-        elif process_id == 1:
-            log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/abnormal_order_{device_id}.log"
-            command = [
-                "python3",
-                "order_control/abnormal_order.py",
-                device_id
-            ]
-            with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
-            print(f"abnormal_order.py started for device ID {device_id}.")
-        elif process_id == 2:
-            log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/comprehensive_order_{device_id}.log"
-            command = [
-                "python3",
-                "order_control/comprehensive_order.py",
-                device_id
-            ]
-            with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
-            print(f"comprehensive_order.py started for device ID {device_id}.")
+        # if process_id == 0:
+        #     log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/snatching_order_plus_{device_id}.log"
+        #     command = [
+        #         "python3",
+        #         "order_control/snatching_order_plus.py",
+        #         device_id
+        #     ]
+        #     with open(log_file, "a") as log:
+        #         subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
+        #     print(f"snatching_order_plus.py started for device ID {device_id}.")
+        # elif process_id == 1:
+        #     log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/abnormal_order_{device_id}.log"
+        #     command = [
+        #         "python3",
+        #         "order_control/abnormal_order.py",
+        #         device_id
+        #     ]
+        #     with open(log_file, "a") as log:
+        #         subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
+        #     print(f"abnormal_order.py started for device ID {device_id}.")
+        # elif process_id == 2:
+        #     log_file = f"/home/fliggy-mobile-control/fliggy-mobile-control/logs/comprehensive_order_{device_id}.log"
+        #     command = [
+        #         "python3",
+        #         "order_control/comprehensive_order.py",
+        #         device_id
+        #     ]
+        #     with open(log_file, "a") as log:
+        #         subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/fliggy-mobile-control/fliggy-mobile-control")
+        #     print(f"comprehensive_order.py started for device ID {device_id}.")
         update_device_run_status(device_id, 4)
     except Exception as e:
         print(f"Error starting adb_driver.py: {e}")
@@ -98,7 +98,7 @@ def main():
     for device in db_params:
         # 检查进程是否已经在运行
         if int(device.get("runStatus")) == 3:
-            kill_existing_process(device.get("deviceId"))
+            # kill_existing_process(device.get("deviceId"))
             start_adb_driver(device.get("deviceId"), int(device.get("processList")))
         if int(device.get("runStatus")) in [0, 1]:
             kill_existing_process(device.get("deviceId"))
