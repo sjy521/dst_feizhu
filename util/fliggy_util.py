@@ -351,6 +351,8 @@ class FliggyModel:
                     self.adbModel.click_button(70, 200)
                     time.sleep(3)
                     self.adbModel.click_button(768, 2211)
+                    time.sleep(3)
+                    return True
             logging.info("定位订单页失败，准备重启飞猪小程序...")
             self.open_mini_feizhu()
 
