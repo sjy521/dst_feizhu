@@ -31,18 +31,18 @@ def run(tar_device_id):
                 delay_num = device_info.get('delayNum')
 
                 # 混投
-                logging.info("准备处理混投列表")
-                hybridization_res = hybridization_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
-                if hybridization_res:
-                    continue
+                # logging.info("准备处理混投列表")
+                # hybridization_res = hybridization_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
+                # if hybridization_res:
+                #     continue
                 # 变价
                 logging.info("准备处理变价列表")
                 abnormal_res = abnormal_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
                 if abnormal_res:
                     continue
                 # # 未处理
-                # logging.info("准备处理未处理列表")
-                # snatching_res = snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
+                logging.info("准备处理未处理列表")
+                snatching_res = snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
 
             else:
                 logging.info("当前无可用的设备")
