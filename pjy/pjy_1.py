@@ -97,7 +97,7 @@ def send_request(mes):
         ticket = get_ticket()
         if ticket is False:
             return "无可用ticket"
-        payload = menudist["玩具单"].format(mes['nuid'], ticket)
+        payload = menudist["珠宝"].format(mes['nuid'], ticket)
         headers = {
             'Host': "pjy.lansezhihui.com",
             'timespan': str(new_time),
