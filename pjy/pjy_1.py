@@ -207,6 +207,7 @@ def use_thread_pool():
                 break
             else:
                 continue
+    time.sleep(10)
     for openmsg in openlist:
         select_request(openmsg)
 
