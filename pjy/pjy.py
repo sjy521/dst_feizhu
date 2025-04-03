@@ -99,10 +99,31 @@ def send_request(mes):
         res_json = json.loads(response.text)
         if res_json['status']:
             successlist.append(mes['name'])
+            select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
         logging.info("丁：时间[{}], [{}]: [{}]".format(start_time, mes['name'], response.text))
     except Exception as f:
         return 0
     return 1
+
+
+def select_result(name, bespeakId, open_id):
+    new_time = int(time.time())
+    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
+    url = "https://pjy.lansezhihui.com/api/GetOneBespeak.ashx"
+    headers = {
+        'Host': "pjy.lansezhihui.com",
+        'timespan': str(new_time),
+        'openId': open_id,
+        'content-type': "application/x-www-form-urlencoded",
+        'token': token,
+        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
+        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
+    }
+    payload = "nBId={}".format(bespeakId)
+    response = requests.request("POST", url, data=payload, headers=headers)
+    select_res_json = json.loads(response.text)
+    send_dingding("{}预约上了: {}-{}".format(name, select_res_json['bespeakInfo']['strATitle'], select_res_json['bespeakInfo']['strSTitle']))
+    return True
 
 
 def select_request(mes):

@@ -112,6 +112,7 @@ def send_request(mes):
         logging.info("甲：开始时间: [{}], 结束时间[{}], [{}]: [{}]".format(start_time, str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
+            select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
     except Exception as f:
         return 0
     return 1
@@ -124,6 +125,26 @@ def get_ticket():
         return ticket
     else:
         return False
+
+
+def select_result(name, bespeakId, open_id):
+    new_time = int(time.time())
+    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
+    url = "https://pjy.lansezhihui.com/api/GetOneBespeak.ashx"
+    headers = {
+        'Host': "pjy.lansezhihui.com",
+        'timespan': str(new_time),
+        'openId': open_id,
+        'content-type': "application/x-www-form-urlencoded",
+        'token': token,
+        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
+        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
+    }
+    payload = "nBId={}".format(bespeakId)
+    response = requests.request("POST", url, data=payload, headers=headers)
+    select_res_json = json.loads(response.text)
+    send_dingding("{}预约上了: {}-{}".format(name, select_res_json['bespeakInfo']['strATitle'], select_res_json['bespeakInfo']['strSTitle']))
+    return True
 
 
 def select_request(mes):
@@ -150,7 +171,7 @@ def select_request(mes):
             payload = "nBId={}".format(nBid)
             response = requests.request("POST", url, data=payload, headers=headers)
             select_res_json = json.loads(response.text)
-            send_dingding("{}预约上了: {}-{}".format(mes['name'], select_res_json['bespeakInfo']['strATitle'], select_res_json['bespeakInfo']['strSTitle']))
+            send_dingding("复查结果: {}预约上了: {}-{}".format(mes['name'], select_res_json['bespeakInfo']['strATitle'], select_res_json['bespeakInfo']['strSTitle']))
             return True
     except Exception as f:
         return False
@@ -208,6 +229,7 @@ def use_thread_pool():
             else:
                 continue
     time.sleep(10)
+    send_dingding("重新发一次抢单结果！！！")
     for openmsg in openlist:
         select_request(openmsg)
 
