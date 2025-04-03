@@ -6,7 +6,7 @@ import os
 import requests
 from datetime import datetime
 import concurrent.futures
-import random
+import redis
 import time
 import json
 
@@ -68,6 +68,15 @@ openlist = [
         "name": "胖总"
     }
 ]
+
+menudist = {
+    "珠宝": "nUid={}&productTypeId=1&productTypeTitle=%E7%8F%A0%E5%AE%9D%E3%80%81%E6%96%87%E5%88%9B&wxcode=123456&ticket={}",
+    "玩具单": "nUid={}&productTypeId=2&productTypeTitle=%E7%8E%A9%E5%85%B7%EF%BC%88%E5%8D%95%E6%91%8A%EF%BC%89&wxcode=123456&ticket={}",
+    "古玩": "nUid={}&productTypeId=3&productTypeTitle=%E5%8F%A4%E7%8E%A9%E3%80%81%E6%9D%82%E9%A1%B9&wxcode=123456&ticket={}",
+    "玩具双": "nUid={}&productTypeId=70&productTypeTitle=%E7%8E%A9%E5%85%B7%EF%BC%88%E5%8F%8C%E6%91%8A%EF%BC%89&wxcode=123456&ticket={}",
+    "文创": "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&wxcode=123456&ticket={}"
+    }
+
 successlist = []
 trylist = []
 
@@ -85,7 +94,10 @@ def send_request(mes):
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
         url = "https://pjy.lansezhihui.com/API/TenPayV4/"
-        payload = "nUid={}&productTypeId=1&productTypeTitle=%E7%8F%A0%E5%AE%9D%E3%80%81%E6%96%87%E5%88%9B&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
+        ticket = get_ticket()
+        if ticket is False:
+            return "无可用ticket"
+        payload = menudist["玩具单"].format(mes['nuid'], ticket)
         headers = {
             'Host': "pjy.lansezhihui.com",
             'timespan': str(new_time),
@@ -100,16 +112,18 @@ def send_request(mes):
         logging.info("甲：开始时间: [{}], 结束时间[{}], [{}]: [{}]".format(start_time, str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
-        elif "已被约满" in res_json['msg']:
-            ding_payload = "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&code={}&wxcode=123456".format(mes['nuid'], random.randint(1000, 9999))
-            response = requests.request("POST", url, data=ding_payload, headers=headers)
-            res_json = json.loads(response.text)
-            if res_json['status']:
-                successlist.append(mes['name'])
-            logging.info("丁：时间[{}], [{}]: [{}]".format(str(datetime.now()), mes['name'], response.text))
     except Exception as f:
         return 0
     return 1
+
+
+def get_ticket():
+    ticket = redis_con.spop("ticket")
+    logging.info("ticket: {}".format(ticket))
+    if ticket:
+        return ticket
+    else:
+        return False
 
 
 def select_request(mes):
@@ -131,7 +145,7 @@ def select_request(mes):
         response = requests.request("POST", url, data=payload, headers=headers)
         home_res_json = json.loads(response.text)
         nBid = home_res_json['data']['nightMarket']['nBid']
-        if nBid:
+        if nBid != "0":
             url = "https://pjy.lansezhihui.com/api/GetOneBespeak.ashx"
             payload = "nBId={}".format(nBid)
             response = requests.request("POST", url, data=payload, headers=headers)
@@ -164,20 +178,30 @@ def cancel_request(nBId, open_id):
 
 def is_five_pm():
     current_time = datetime.now()
-    # 判断当前时间是否为下午5点（17:00）
-    if current_time.hour == 17 and current_time.minute == 0:
+    # 判断当前时间是否为下午7点（19:00）
+    if current_time.hour == 19 and current_time.minute == 0:
         return True
     return False
 
 
 def use_thread_pool():
-    global successlist
+    global successlist, redis_con
+    redis_host = "r-2ze3pe04ijr8tkn1rt.redis.rds.aliyuncs.com"
+    redis_port = 6379
+
+    redis_con = redis.StrictRedis(
+        host=redis_host,
+        port=redis_port,
+        password="",
+        decode_responses=True  # 自动将结果解码为字符串
+    )
     with concurrent.futures.ProcessPoolExecutor(max_workers=100) as executor:
         while True:
             successlist = []
             if is_five_pm():
-                # send_dingding("9 秒后准备预约！！！")
-                for j in range(20):
+                send_dingding("9 秒后准备预约！！！")
+                time.sleep(8.6)
+                for j in range(3):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
                 break
