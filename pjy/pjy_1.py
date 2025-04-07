@@ -91,6 +91,7 @@ menudist = {
 
 successlist = []
 trylist = []
+reslist = []
 
 
 def send_request(mes):
@@ -183,7 +184,7 @@ def select_request(mes):
             payload = "nBId={}".format(nBid)
             response = requests.request("POST", url, data=payload, headers=headers)
             select_res_json = json.loads(response.text)
-            send_dingding("复查结果: {}预约上了: {}-{}".format(mes['name'], select_res_json['bespeakInfo']['strATitle'], select_res_json['bespeakInfo']['strSTitle']))
+            reslist.append("{}: {}预约上了 - {}".format(select_res_json['bespeakInfo']['strATitle'], mes['name'], select_res_json['bespeakInfo']['strSTitle']))
             return True
     except Exception as f:
         return False
@@ -244,9 +245,10 @@ def use_thread_pool():
     send_dingding("重新发一次抢单结果！！！")
     for openmsg in openlist:
         select_request(openmsg)
+    reslist.sort()
+    send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
 
 
 if __name__ == '__main__':
     use_thread_pool()
-
 
