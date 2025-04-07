@@ -66,6 +66,18 @@ openlist = [
         "open_id": "oIiOx5axf0CpsI4WCDwL-jxM2EAM",
         "nuid": "99701",
         "name": "胖总"
+    },
+    # 华威北里
+    {
+        "open_id": "oIiOx5ezlozlh-J0Y1ZTy6eXimK0",
+        "nuid": "110020",
+        "name": "华威北里"
+    },
+    # 什刹海
+    {
+        "open_id": "oIiOx5UQX8PG7YzOhKcNk5zO4KiM",
+        "nuid": "110075",
+        "name": "什刹海"
     }
 ]
 
