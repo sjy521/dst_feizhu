@@ -25,6 +25,18 @@ openlist = [
         "nuid": "99447",
         "name": "李浩"
     },
+    # 李小浩
+    {
+        "open_id": "oIiOx5UPUlc-a85OHdArycE-Khho",
+        "nuid": "99624",
+        "name": "李小浩"
+    },
+    # 胖总
+    {
+        "open_id": "oIiOx5axf0CpsI4WCDwL-jxM2EAM",
+        "nuid": "99701",
+        "name": "胖总"
+    },
     # 榛小号
     {
         "open_id": "oIiOx5Xq4XDz_xRBSfdsOdIY7dZ0",
@@ -43,12 +55,6 @@ openlist = [
         "nuid": "99587",
         "name": "丰台"
     },
-    # 李小浩
-    {
-        "open_id": "oIiOx5UPUlc-a85OHdArycE-Khho",
-        "nuid": "99624",
-        "name": "李小浩"
-    },
     # 榛榛
     {
         "open_id": "oIiOx5Ut64lZTbwF2_oeaw4FCQfA",
@@ -60,12 +66,6 @@ openlist = [
         "open_id": "oIiOx5SUacmTWggqMM0YKbdqjTCA",
         "nuid": "99784",
         "name": "潘家园"
-    },
-    # 胖总
-    {
-        "open_id": "oIiOx5axf0CpsI4WCDwL-jxM2EAM",
-        "nuid": "99701",
-        "name": "胖总"
     },
     # 华威北里
     {
@@ -235,12 +235,12 @@ def use_thread_pool():
         password="",
         decode_responses=True  # 自动将结果解码为字符串
     )
-    with concurrent.futures.ProcessPoolExecutor(max_workers=100) as executor:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
         while True:
             successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(8.6)
+                time.sleep(8.7)
                 for j in range(3):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
@@ -253,7 +253,7 @@ def use_thread_pool():
     reslist.sort()
     send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
     send_text = ""
-    for k, v in resdict:
+    for k, v in resdict.items():
         send_text += "{}:{}\n".format(k, v)
     send_dingding("榛榛专用:\n{}".format(send_text))
 
