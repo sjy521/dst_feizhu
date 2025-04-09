@@ -1,6 +1,6 @@
 #default:
 prod:
-  is_debug: true
+  is_debug: false
 #  mysql
   mysql_host: 8.146.211.133
   mysql_port: 3306
@@ -15,7 +15,7 @@ prod:
   admin_url: http://10.18.99.2:8080
   admin_url81: http://10.18.99.2:8081
 
-  spa_url: http://spa.bingotravel.com.cn
+  spa_url: http://10.18.99.1:8081
 
 
 #prod:
