@@ -89,26 +89,17 @@ menudist = {
     "文创": "nUid={}&productTypeId=73&productTypeTitle=%E6%96%87%E5%88%9B%E3%80%81%E9%A5%B0%E5%93%81&wxcode=123456&ticket={}"
     }
 
-successlist = []
-trylist = []
 reslist = []
 resdict = {}
 
 
 def send_request(mes):
-    global successlist
-    global trylist
-
-    if mes['name'] in successlist:
-        logging.info("成功已过滤: [{}]".format(mes['name']))
-        return '已成功'
     try:
         start_time = str(datetime.now())
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
-        # url = "https://pjy.lansezhihui.com/API/TenPayV4/"
-        url = "https://www.baidu.com"
+        url = "https://pjy.lansezhihui.com/API/TenPayV4/"
         ticket = get_ticket()
         if ticket is False:
             return "无可用ticket"
@@ -125,7 +116,7 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        target = datetime.now().replace(hour=14, minute=4, second=20, microsecond=1)
+        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=1)
         now = datetime.now()
         if now < target:
             delta = (target - now).total_seconds()
@@ -135,7 +126,6 @@ def send_request(mes):
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
         if res_json['status']:
-            successlist.append(mes['name'])
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
     except Exception as f:
         return 0
@@ -229,14 +219,13 @@ def cancel_request(nBId, open_id):
 def is_five_pm():
     current_time = datetime.now()
     # 判断当前时间是否为下午7点（19:00）
-    # if current_time.hour == 19 and current_time.minute == 0:
-    #     return True
-    # return False
-    return True
+    if current_time.hour == 19 and current_time.minute == 0:
+        return True
+    return False
 
 
 def use_thread_pool():
-    global successlist, redis_con, session
+    global redis_con, session
     redis_host = "r-2ze3pe04ijr8tkn1rt.redis.rds.aliyuncs.com"
     redis_port = 6379
 
@@ -254,10 +243,9 @@ def use_thread_pool():
     )
     session.mount('http://', adapter)
     session.mount('https://', adapter)
-    session.get("https://www.baidu.com")
-    with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
+    session.get("https://pjy.lansezhihui.com")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
         while True:
-            successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
                 for j in range(3):
@@ -267,14 +255,14 @@ def use_thread_pool():
             else:
                 continue
     time.sleep(10)
-    # for openmsg in openlist:
-    #     select_request(openmsg)
-    # reslist.sort()
-    # send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
-    # send_text = ""
-    # for k, v in resdict.items():
-    #     send_text += "{}:{}\n".format(k, v)
-    # send_dingding("榛榛专用:\n{}".format(send_text))
+    for openmsg in openlist:
+        select_request(openmsg)
+    reslist.sort()
+    send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
+    send_text = ""
+    for k, v in resdict.items():
+        send_text += "{}:{}\n".format(k, v)
+    send_dingding("榛榛专用:\n{}".format(send_text))
 
 
 if __name__ == '__main__':
