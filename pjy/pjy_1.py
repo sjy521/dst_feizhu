@@ -103,6 +103,8 @@ def send_request(mes):
         logging.info("成功已过滤: [{}]".format(mes['name']))
         return '已成功'
     try:
+        session = requests.Session()
+        session.get("https://www.baidu.com")
         start_time = str(datetime.now())
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
@@ -115,12 +117,15 @@ def send_request(mes):
         payload = menudist["珠宝"].format(mes['nuid'], ticket)
         headers = {
             'Host': "pjy.lansezhihui.com",
+            'Connection': 'keep-alive',
             'timespan': str(new_time),
             'openId': mes['open_id'],
+            'charset': 'utf-8',
             'content-type': "application/x-www-form-urlencoded",
             'token': token,
             'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
-            'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
+            'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
+            'Accept-Encoding': 'gzip, deflate, br'
         }
         req_time = str(datetime.now())
         response = requests.request("POST", url, data=payload, headers=headers)
