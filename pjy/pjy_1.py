@@ -103,8 +103,6 @@ def send_request(mes):
         logging.info("成功已过滤: [{}]".format(mes['name']))
         return '已成功'
     try:
-        session = requests.Session()
-        session.get("https://www.baidu.com")
         start_time = str(datetime.now())
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
@@ -128,7 +126,7 @@ def send_request(mes):
             'Accept-Encoding': 'gzip, deflate, br'
         }
         req_time = str(datetime.now())
-        response = requests.request("POST", url, data=payload, headers=headers)
+        response = session.post(url, data=payload, headers=headers)
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
         if res_json['status']:
@@ -234,7 +232,7 @@ def is_five_pm():
 
 
 def use_thread_pool():
-    global successlist, redis_con
+    global successlist, redis_con, session
     redis_host = "r-2ze3pe04ijr8tkn1rt.redis.rds.aliyuncs.com"
     redis_port = 6379
 
@@ -244,6 +242,8 @@ def use_thread_pool():
         password="",
         decode_responses=True  # 自动将结果解码为字符串
     )
+    session = requests.Session()
+    session.get("https://www.baidu.com")
     with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
         while True:
             successlist = []
