@@ -107,7 +107,8 @@ def send_request(mes):
         new_time = int(time.time())
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
-        url = "https://pjy.lansezhihui.com/API/TenPayV4/"
+        # url = "https://pjy.lansezhihui.com/API/TenPayV4/"
+        url = "https://www.baidu.com"
         ticket = get_ticket()
         if ticket is False:
             return "无可用ticket"
@@ -121,9 +122,10 @@ def send_request(mes):
             'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
         }
+        req_time = int(time.time())
         response = requests.request("POST", url, data=payload, headers=headers)
         res_json = json.loads(response.text)
-        logging.info("甲：开始时间: [{}], 结束时间[{}], [{}]: [{}]".format(start_time, str(datetime.now()), mes['name'], response.text))
+        logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         if res_json['status']:
             successlist.append(mes['name'])
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
@@ -219,9 +221,10 @@ def cancel_request(nBId, open_id):
 def is_five_pm():
     current_time = datetime.now()
     # 判断当前时间是否为下午7点（19:00）
-    if current_time.hour == 19 and current_time.minute == 0:
-        return True
-    return False
+    # if current_time.hour == 19 and current_time.minute == 0:
+    #     return True
+    # return False
+    return True
 
 
 def use_thread_pool():
@@ -248,14 +251,14 @@ def use_thread_pool():
             else:
                 continue
     time.sleep(10)
-    for openmsg in openlist:
-        select_request(openmsg)
-    reslist.sort()
-    send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
-    send_text = ""
-    for k, v in resdict.items():
-        send_text += "{}:{}\n".format(k, v)
-    send_dingding("榛榛专用:\n{}".format(send_text))
+    # for openmsg in openlist:
+    #     select_request(openmsg)
+    # reslist.sort()
+    # send_dingding("复查结果:\n{}".format("，\n".join(reslist)))
+    # send_text = ""
+    # for k, v in resdict.items():
+    #     send_text += "{}:{}\n".format(k, v)
+    # send_dingding("榛榛专用:\n{}".format(send_text))
 
 
 if __name__ == '__main__':
