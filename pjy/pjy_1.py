@@ -124,12 +124,13 @@ def send_request(mes):
         }
         req_time = int(time.time())
         response = requests.request("POST", url, data=payload, headers=headers)
-        res_json = json.loads(response.text)
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
+        res_json = json.loads(response.text)
         if res_json['status']:
             successlist.append(mes['name'])
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
     except Exception as f:
+        logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]".format(start_time, req_time, str(datetime.now()), mes['name']))
         return 0
     return 1
 
