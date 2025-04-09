@@ -125,7 +125,7 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        target = datetime.now().replace(hour=11, minute=57, second=10, microsecond=1)
+        target = datetime.now().replace(hour=11, minute=59, second=10, microsecond=1)
         req_time = datetime.now()
         if req_time < target:
             delta = (target - req_time).total_seconds()
