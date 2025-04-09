@@ -1,4 +1,4 @@
-# 59 16 * * 2,4 /pjy.sh
+# 59 18 * * 2,4 /pjy.sh
 import hashlib
 import logging
 import sys
@@ -125,7 +125,7 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        target = datetime.now().replace(hour=12, minute=3, second=10, microsecond=1)
+        target = datetime.now().replace(hour=14, minute=4, second=20, microsecond=1)
         now = datetime.now()
         if now < target:
             delta = (target - now).total_seconds()
@@ -255,7 +255,7 @@ def use_thread_pool():
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     session.get("https://www.baidu.com")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
         while True:
             successlist = []
             if is_five_pm():
