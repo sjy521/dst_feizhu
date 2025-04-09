@@ -243,6 +243,13 @@ def use_thread_pool():
         decode_responses=True  # 自动将结果解码为字符串
     )
     session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(
+        pool_connections=30,
+        pool_maxsize=30,
+        max_retries=3
+    )
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
     session.get("https://www.baidu.com")
     with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
         while True:
