@@ -125,11 +125,12 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        target = datetime.now().replace(hour=11, minute=59, second=10, microsecond=1)
-        req_time = datetime.now()
-        if req_time < target:
-            delta = (target - req_time).total_seconds()
+        target = datetime.now().replace(hour=12, minute=3, second=10, microsecond=1)
+        now = datetime.now()
+        if now < target:
+            delta = (target - now).total_seconds()
             time.sleep(delta)
+        req_time = datetime.now()
         response = session.post(url, data=payload, headers=headers)
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
