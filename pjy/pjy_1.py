@@ -122,7 +122,7 @@ def send_request(mes):
             'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
         }
-        req_time = int(time.time())
+        req_time = str(datetime.now())
         response = requests.request("POST", url, data=payload, headers=headers)
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
