@@ -125,7 +125,11 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        req_time = str(datetime.now())
+        target = datetime.now().replace(hour=11, minute=57, second=10, microsecond=1)
+        req_time = datetime.now()
+        if req_time < target:
+            delta = (target - req_time).total_seconds()
+            time.sleep(delta)
         response = session.post(url, data=payload, headers=headers)
         logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
@@ -133,7 +137,6 @@ def send_request(mes):
             successlist.append(mes['name'])
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
     except Exception as f:
-        logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]".format(start_time, req_time, str(datetime.now()), mes['name']))
         return 0
     return 1
 
@@ -244,8 +247,8 @@ def use_thread_pool():
     )
     session = requests.Session()
     adapter = requests.adapters.HTTPAdapter(
-        pool_connections=30,
-        pool_maxsize=30,
+        pool_connections=40,
+        pool_maxsize=40,
         max_retries=3
     )
     session.mount('http://', adapter)
@@ -256,7 +259,6 @@ def use_thread_pool():
             successlist = []
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(8.7)
                 for j in range(3):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
