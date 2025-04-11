@@ -56,6 +56,7 @@ def run(device):
                     print('===')
                     if is_busy == 0:
                         continue
+                    time.sleep(3)
                     order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
                     if order_num == None:
                         continue
