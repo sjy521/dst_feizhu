@@ -44,6 +44,7 @@ class FliggyModel:
             elif click_text == '去付款':
                 # xml_path = self.adbModel.convert_to_xml(self.device_id)
                 # if find_all_current_element_text(xml_path, "去付款"):
+                time.sleep(2)
                 coordinate = [170, 555]
                 # else:
                 #     return False
