@@ -42,11 +42,11 @@ class FliggyModel:
             elif click_text == '全部订单':
                 coordinate = [162, 297]
             elif click_text == '去付款':
-                xml_path = self.adbModel.convert_to_xml(self.device_id)
-                if find_all_current_element_text(xml_path, "去付款"):
-                    coordinate = [170, 555]
-                else:
-                    return False
+                # xml_path = self.adbModel.convert_to_xml(self.device_id)
+                # if find_all_current_element_text(xml_path, "去付款"):
+                coordinate = [170, 555]
+                # else:
+                #     return False
         if coordinate:
             x, y = coordinate
             logging.info("准备点击[{}], 坐标[{},{}]...".format(click_text, x, y))
