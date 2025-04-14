@@ -229,7 +229,7 @@ class FliggyModel:
         xml_path = self.click("去付款", timesleep=random.randint(2, 3))
         if xml_path == False:
             return False
-        # self.check_lijizhifu()
+        self.check_lijizhifu()
         self.adbModel.click_button(950, 2121)
         time.sleep(random.randint(3, 5))
         xml_path = self.click(pay_password[0])
@@ -323,16 +323,12 @@ class FliggyModel:
         检查立即支付
         :return:
         """
-        time.sleep(2)
         xml_path = self.adbModel.convert_to_xml(self.device_id)
-        if find_all_current_element_text(xml_path, "立即支付"):
-            self.adbModel.click_button(500, 2121)
-            time.sleep(5)
-            return True
-        if find_all_current_element_text(xml_path, "微信支付"):
-            self.adbModel.click_button(500, 2121)
-            time.sleep(5)
-            return True
+
+        coordinate = find_element_coordinates(xml_path, "微信支付")
+        if coordinate is None or 1597 > coordinate[1] > 1534:
+            self.adbModel.click_button(991, 1573)
+        time.sleep(1)
 
     def goto_target_page(self):
         """
