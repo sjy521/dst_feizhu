@@ -35,7 +35,7 @@ def run(device):
                     if len(busy_devices) > 0:
                         for busy_device in busy_devices:
                             if busy_device['deviceId'] == device_id:
-                                print(busy_device)
+                                # print(busy_device)
                                 is_busy = int(busy_device.get("isBusy"))
                                 get_cookie = busy_device.get("getCookie")
                                 if get_cookie == "1":
@@ -55,6 +55,7 @@ def run(device):
                     # 支付订单
                     print('===')
                     if is_busy == 0:
+                        time.sleep(2)
                         continue
                     time.sleep(3)
                     order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)

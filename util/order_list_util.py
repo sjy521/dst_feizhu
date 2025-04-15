@@ -32,10 +32,11 @@ def adb_order_list(device_id):
     }
     response = requests.request("GET", url, data=payload, headers=headers)
     res_json = json.loads(response.text)
+    num, value = None, None
     for k, v in enumerate(res_json['data']['order_list']):
         if v['status_value'] == "待付款":
-            return k, v
-    return None, None
+            num, value = k, v
+    return num, value
 
 
 def check_order(device_id, tar_sr_name, tar_price):
@@ -68,6 +69,7 @@ def get_bongo_order(sorder_id):
     payload = {"pageNum": 1, "pageSize": 10, "param": {"sOrderId": sorder_id}}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
+    print(res_json)
     if res_json.get("code") == 200:
         results = res_json.get("result")
         if len(results.get("rows")) > 0:
@@ -77,8 +79,8 @@ def get_bongo_order(sorder_id):
     return None
 
 
-# if __name__ == '__main__':
-#     device_id = "HYT4897HSSAUZLNZ"
-#     tar_sr_name = "特惠电竞大床房"
-#     tar_price = "16800"
-#     print(check_order(device_id, tar_sr_name, tar_price))
+if __name__ == '__main__':
+    device_id = "HYT4897HSSAUZLNZ"
+    tar_sr_name = "特惠电竞大床房"
+    tar_price = "16800"
+    print(get_bongo_order("2397053604543881485"))
