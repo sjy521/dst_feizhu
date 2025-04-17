@@ -116,7 +116,7 @@ def send_request(mes):
             'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
             'Accept-Encoding': 'gzip, deflate, br'
         }
-        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=1)
+        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
         now = datetime.now()
         if now < target:
             delta = (target - now).total_seconds()
@@ -248,7 +248,8 @@ def use_thread_pool():
         while True:
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                for j in range(3):
+                time.sleep(9)
+                for j in range(2):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
                 break
