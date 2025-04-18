@@ -327,7 +327,7 @@ class FliggyModel:
         xml_path = self.adbModel.convert_to_xml(self.device_id)
 
         coordinate = find_element_coordinates(xml_path, "微信支付")
-        if 1597 > coordinate[1] > 1534:
+        if coordinate is not None & 1597 > coordinate[1] > 1534:
             self.adbModel.click_button(991, 1573)
         time.sleep(1)
 
