@@ -20,11 +20,11 @@ setup_logging(default_path=settings.LOGGING)
 
 openlist = [
     # 李浩
-    {
-        "open_id": "oIiOx5VPJ7OBGK9HcRkwnRVssfLc",
-        "nuid": "99447",
-        "name": "李浩"
-    },
+    # {
+    #     "open_id": "oIiOx5VPJ7OBGK9HcRkwnRVssfLc",
+    #     "nuid": "99447",
+    #     "name": "李浩"
+    # },
     # 李小浩
     {
         "open_id": "oIiOx5UPUlc-a85OHdArycE-Khho",
@@ -96,7 +96,7 @@ resdict = {}
 def send_request(mes):
     try:
         start_time = str(datetime.now())
-        new_time = int(time.time())
+        new_time = int(time.time()) + 1
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
         url = "https://pjy.lansezhihui.com/API/TenPayV4/"
@@ -239,7 +239,7 @@ def use_thread_pool():
     adapter = requests.adapters.HTTPAdapter(
         pool_connections=40,
         pool_maxsize=40,
-        max_retries=3
+        max_retries=0
     )
     session.mount('http://', adapter)
     session.mount('https://', adapter)
@@ -248,7 +248,7 @@ def use_thread_pool():
         while True:
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(9)
+                time.sleep(5)
                 for j in range(2):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
