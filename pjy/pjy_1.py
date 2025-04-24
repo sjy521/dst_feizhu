@@ -248,7 +248,7 @@ def use_thread_pool():
         while True:
             if is_five_pm():
                 send_dingding("9 秒后准备预约！！！")
-                time.sleep(5)
+                time.sleep(6)
                 for j in range(2):
                     # 提交任务到线程池中
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
