@@ -100,10 +100,6 @@ def send_request(mes):
         token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
         url = "https://pjy.lansezhihui.com/API/TenPayV4/"
-        ticket = get_ticket()
-        if ticket is False:
-            return "无可用ticket"
-        payload = menudist["珠宝"].format(mes['nuid'], ticket)
         headers = {
             'Host': "pjy.lansezhihui.com",
             'Connection': 'keep-alive',
@@ -121,9 +117,13 @@ def send_request(mes):
         if now < target:
             delta = (target - now).total_seconds()
             time.sleep(delta)
+        ticket = get_ticket()
+        if ticket is False:
+            return "无可用ticket"
+        payload = menudist["珠宝"].format(mes['nuid'], ticket)
         req_time = datetime.now()
         response = session.post(url, data=payload, headers=headers)
-        logging.info("甲：开始时间: [{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, req_time, str(datetime.now()), mes['name'], response.text))
+        logging.info("甲：开始时间: [{}], 请求前时间:[{}], 请求时间:[{}], 结束时间[{}], [{}]: [{}]".format(start_time, str(now), req_time, str(datetime.now()), mes['name'], response.text))
         res_json = json.loads(response.text)
         if res_json['status']:
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
