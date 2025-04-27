@@ -95,7 +95,9 @@ def use_thread_pool():
                         for j in range(3):
                             logging.info(("获取滑块, 当前时间：{}, aidEncrypted:[{}], HOSTSIGN:[{}]".format(str(datetime.now()), aidEncrypted, HOSTSIGN)))
                             ticket = get_ticket(HOSTSIGN, aidEncrypted)
-                            redis_con.sadd(ticket)
+                            logging.info("ticket: {}", ticket)
+                            if ticket:
+                                redis_con.sadd(ticket)
                         return True
                 else:
                     time.sleep(0.01)
