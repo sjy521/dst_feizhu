@@ -231,7 +231,7 @@ class FliggyModel:
             return False
         self.check_lijizhifu()
         self.adbModel.click_button(950, 2121)
-        time.sleep(random.randint(3, 5))
+        time.sleep(random.randint(5, 6))
         self.adbModel.click_button(950, 2151)
         xml_path = self.click(pay_password[0])
         if xml_path is False:
