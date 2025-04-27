@@ -179,6 +179,8 @@ class AdbModel:
         """
         xml_dump_path = os.path.join(tempfile.gettempdir(), "{}.xml".format(device_id))
         subprocess.run(
+            ["adb", "-s", self.device_id, "shell", "rm", "/sdcard/*.xml"])
+        subprocess.run(
             ["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "--compressed", "/sdcard/{}.xml".format(device_id)])
         subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/{}.xml".format(device_id), xml_dump_path])
         return xml_dump_path

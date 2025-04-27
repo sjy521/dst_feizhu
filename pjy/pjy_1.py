@@ -9,6 +9,11 @@ import concurrent.futures
 import redis
 import time
 import json
+import cv2
+import time
+import numpy as np
+import requests
+from matplotlib import pyplot as plt
 
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
@@ -93,25 +98,30 @@ reslist = []
 resdict = {}
 
 
+def get_headers(open_id):
+    new_time = int(time.time())
+    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
+    headers = {
+        'Host': "pjy.lansezhihui.com",
+        'Connection': 'keep-alive',
+        'timespan': str(new_time),
+        'openId': open_id,
+        'charset': 'utf-8',
+        'content-type': "application/x-www-form-urlencoded",
+        'token': token,
+        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
+        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
+        'Accept-Encoding': 'gzip, deflate, br'
+    }
+    return headers
+
+
 def send_request(mes):
     try:
         start_time = str(datetime.now())
-        new_time = int(time.time()) + 1
-        token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
         url = "https://pjy.lansezhihui.com/API/TenPayV4/"
-        headers = {
-            'Host': "pjy.lansezhihui.com",
-            'Connection': 'keep-alive',
-            'timespan': str(new_time),
-            'openId': mes['open_id'],
-            'charset': 'utf-8',
-            'content-type': "application/x-www-form-urlencoded",
-            'token': token,
-            'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
-            'Referer': "https://servicewechat.com/wxdf133ab9147107d2/33/page-frame.html",
-            'Accept-Encoding': 'gzip, deflate, br'
-        }
+        headers = get_headers(mes['open_id'])
         target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
         now = datetime.now()
         if now < target:
@@ -133,27 +143,20 @@ def send_request(mes):
 
 
 def get_ticket():
-    ticket = redis_con.spop("ticket")
-    logging.info("ticket: {}".format(ticket))
-    if ticket:
-        return ticket
-    else:
-        return False
+    for i in range(100):
+        ticket = redis_con.spop("ticket")
+        logging.info("ticket: {}".format(ticket))
+        if ticket:
+            return ticket
+        else:
+            time.sleep(0.1)
+            continue
+    return False
 
 
 def select_result(name, bespeakId, open_id):
-    new_time = int(time.time())
-    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
     url = "https://pjy.lansezhihui.com/api/GetOneBespeak.ashx"
-    headers = {
-        'Host': "pjy.lansezhihui.com",
-        'timespan': str(new_time),
-        'openId': open_id,
-        'content-type': "application/x-www-form-urlencoded",
-        'token': token,
-        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
-        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
-    }
+    headers = get_headers(open_id)
     payload = "nBId={}".format(bespeakId)
     response = requests.request("POST", url, data=payload, headers=headers)
     select_res_json = json.loads(response.text)
@@ -163,18 +166,8 @@ def select_result(name, bespeakId, open_id):
 
 def select_request(mes):
     try:
-        new_time = int(time.time())
-        token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
-        headers = {
-            'Host': "pjy.lansezhihui.com",
-            'timespan': str(new_time),
-            'openId': mes['open_id'],
-            'content-type': "application/x-www-form-urlencoded",
-            'token': token,
-            'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
-            'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
-        }
+        headers = get_headers(mes['open_id'])
         url = "https://pjy.lansezhihui.com/api/home"
         payload = "nUId={}&userStatus=2".format(mes['nuid'])
         response = requests.request("POST", url, data=payload, headers=headers)
@@ -197,21 +190,11 @@ def select_request(mes):
 
 
 def cancel_request(nBId, open_id):
-    new_time = int(time.time())
-    token = hashlib.md5("QK1LNHW8QMMGJS2VUYQQTW0A7AQHYM4MA678CSR6XOU8X14B6G{}".format(new_time).encode()).hexdigest()
 
     url = "https://pjy.lansezhihui.com/api/CancelMakeAppointment.ashx"
 
     payload = "nBId={}".format(nBId)
-    headers = {
-        'Host': "pjy.lansezhihui.com",
-        'timespan': str(new_time),
-        'openId': open_id,
-        'content-type': "application/x-www-form-urlencoded",
-        'token': token,
-        'User-Agent': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003426) NetType/WIFI Language/zh_CN",
-        'Referer': "https://servicewechat.com/wxdf133ab9147107d2/31/page-frame.html",
-    }
+    headers = get_headers(open_id)
     response = requests.request("POST", url, data=payload, headers=headers)
     print(response.text)
 
@@ -254,6 +237,7 @@ def use_thread_pool():
                     future_to_result = {executor.submit(send_request, i): i for i in openlist}
                 break
             else:
+                time.sleep(0.01)
                 continue
     time.sleep(10)
     for openmsg in openlist:
