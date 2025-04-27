@@ -3,6 +3,8 @@ import hashlib
 import logging
 import sys
 import os
+import os
+os.environ["OPENCV_IO_ENABLE_OPENGL"] = "false"
 import cv2
 import requests
 from datetime import datetime

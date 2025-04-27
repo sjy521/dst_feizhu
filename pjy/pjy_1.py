@@ -3,17 +3,12 @@ import hashlib
 import logging
 import sys
 import os
-import requests
 from datetime import datetime
 import concurrent.futures
 import redis
-import time
 import json
-import cv2
 import time
-import numpy as np
 import requests
-from matplotlib import pyplot as plt
 
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
