@@ -64,7 +64,7 @@ def get_ticket(HOSTSIGN, aidEncrypted):
 def is_five_pm():
     current_time = datetime.now()
     # 判断当前时间是否为下午5点（17:00）
-    if current_time.hour == 17 and current_time.minute == 0:
+    if current_time.hour == 19 and current_time.minute == 0:
         return True
     return False
 

@@ -144,7 +144,7 @@ def get_ticket():
         if ticket:
             return ticket
         else:
-            time.sleep(0.02)
+            time.sleep(0.05)
             continue
     return False
 
