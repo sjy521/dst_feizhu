@@ -98,7 +98,7 @@ def use_thread_pool():
                                 ticket = get_ticket(HOSTSIGN, aidEncrypted)
                                 logging.info("ticket: {}", ticket)
                                 if ticket:
-                                    redis_con.sadd(ticket)
+                                    redis_con.sadd("ticket", ticket)
                             return True
                         else:
                             time.sleep(0.1)
