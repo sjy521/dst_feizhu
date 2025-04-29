@@ -8,7 +8,7 @@ import flask
 import yaml
 from dynaconf import settings
 
-from excel_impl import orderExcel
+from excel_impl import orderExcel, exportHT
 import main_impl.douyin as douyin
 app = flask.Flask(__name__)
 
@@ -27,6 +27,13 @@ def download(file_name):
 @app.route('/order/<check_in>/<check_out>', methods=['get', 'post'])
 def download_order(check_in, check_out):
     file_name = orderExcel.order_excel(check_in, check_out)
+    res = flask.send_file(file_name, as_attachment=True)
+    return res
+
+
+@app.route('/huntou/<check_in>/<check_out>', methods=['get', 'post'])
+def download_huntou_order(check_in, check_out):
+    file_name = exportHT.order_csv(check_in, check_out)
     res = flask.send_file(file_name, as_attachment=True)
     return res
 

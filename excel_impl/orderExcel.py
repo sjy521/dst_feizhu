@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import mysql.connector
 
 
@@ -87,7 +88,13 @@ def order_excel(check_in, check_out):
 
     df['订单状态'] = df['订单状态'].map(order_status_mapping)
 
-    # 导出到 Excel
-    output_file = "订单导出.csv"
+    # 创建输出文件夹路径
+    output_directory = "./"
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    # 完整的文件路径（保存为 .csv 格式）
+    output_file = os.path.join(output_directory, "订单导出.csv")
+
     df.to_csv(output_file, index=False)
     return output_file
