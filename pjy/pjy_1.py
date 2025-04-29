@@ -199,7 +199,7 @@ def is_five_pm():
     # 判断当前时间是否为下午7点（19:00）
     if current_time.hour == 19 and current_time.minute == 0:
         return True
-    return True
+    return False
 
 
 def use_thread_pool():

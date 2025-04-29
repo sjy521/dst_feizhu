@@ -13,6 +13,7 @@ import time
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 
 from dynaconf import settings
+from pjy.pjy_1 import is_five_pm
 from log_model.set_log import setup_logging
 setup_logging(default_path=settings.LOGGING)
 
@@ -59,14 +60,6 @@ def get_ticket(HOSTSIGN, aidEncrypted):
 
         logging.info(("获取滑块总耗时：{}, 当前时间：{}".format(time.time() - start_time, str(datetime.now()))))
         return response.json()['ticket']
-
-
-def is_five_pm():
-    current_time = datetime.now()
-    # 判断当前时间是否为下午5点（17:00）
-    if current_time.hour == 19 and current_time.minute == 0:
-        return True
-    return True
 
 
 def use_thread_pool():
