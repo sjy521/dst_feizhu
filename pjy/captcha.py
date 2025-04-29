@@ -35,7 +35,7 @@ def get_ticket(HOSTSIGN, aidEncrypted):
     sess = response.json()['sess']
     img_url = "https://turing.captcha.qcloud.com" + response.json()['data']['dyn_show_info']['bg_elem_cfg']['img_url']
 
-    response = requests.get(img_url)
+    response = requests.get(img_url, headers=headers)
     image_data = np.frombuffer(response.content, np.uint8)
     image = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
     image = cv2.convertScaleAbs(image, alpha=0.21, beta=0)
