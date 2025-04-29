@@ -58,6 +58,7 @@ def get_ticket(HOSTSIGN, aidEncrypted):
         response = requests.request("POST", url, data=payload, headers=headers)
 
         logging.info(("获取滑块总耗时：{}, 当前时间：{}".format(time.time() - start_time, str(datetime.now()))))
+        logging.info(response.text)
         return response.json()['ticket']
 
 
