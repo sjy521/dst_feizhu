@@ -8,7 +8,7 @@ import flask
 import yaml
 from dynaconf import settings
 
-import orderExcel
+from excel_impl import orderExcel
 import main_impl.douyin as douyin
 app = flask.Flask(__name__)
 

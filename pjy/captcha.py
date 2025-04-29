@@ -102,6 +102,8 @@ def use_thread_pool():
                 else:
                     time.sleep(0.01)
                     continue
+        else:
+            time.sleep(1)
 
 
 if __name__ == '__main__':

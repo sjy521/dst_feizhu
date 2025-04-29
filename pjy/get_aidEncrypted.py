@@ -44,12 +44,13 @@ def get_aidEncrypted(mes):
         time.sleep(delta)
     for i in range(5):
         logging.info("{} aidEncrypted 开始".format(str(datetime.now())))
-        url = "https://pjy.lansezhihui.com/API/Users_Bespeak/Create/",
-        data = "isBespek=1",
+        url = "https://pjy.lansezhihui.com/API/Users_Bespeak/Create/"
+        data = "isBespek=1"
         header = get_headers(mes['open_id'])
-        response = session.post(url, data=data, header=header)
-        aidEncrypted = response.json()['aidEncrypted']
-        if aidEncrypted == "":
+        response = session.post(url, data=data, headers=header)
+        logging.info("encrypted请求结果：{}".format(response.text))
+        aidEncrypted = response.json().get('aidEncrypted')
+        if not aidEncrypted:
             logging.info("{} aidEncrypted 失败：[{}]".format(str(datetime.now()), response.text))
             time.sleep(0.01)
             continue
