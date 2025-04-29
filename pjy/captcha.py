@@ -58,7 +58,6 @@ def get_ticket(HOSTSIGN, aidEncrypted):
         response = requests.request("POST", url, data=payload, headers=headers)
 
         logging.info(("获取滑块总耗时：{}, 当前时间：{}".format(time.time() - start_time, str(datetime.now()))))
-        logging.info(response.text)
         return response.json()['ticket']
 
 
@@ -97,7 +96,7 @@ def use_thread_pool():
                             for j in range(3):
                                 logging.info(("获取滑块, 当前时间：{}, aidEncrypted:[{}], HOSTSIGN:[{}]".format(str(datetime.now()), aidEncrypted, HOSTSIGN)))
                                 ticket = get_ticket(HOSTSIGN, aidEncrypted)
-                                logging.info("ticket: {}", ticket)
+                                logging.info("ticket: {}".format(ticket))
                                 if ticket:
                                     redis_con.sadd("ticket", ticket)
                             return True
