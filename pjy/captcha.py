@@ -66,7 +66,7 @@ def is_five_pm():
     # 判断当前时间是否为下午5点（17:00）
     if current_time.hour == 19 and current_time.minute == 0:
         return True
-    return False
+    return True
 
 
 def use_thread_pool():

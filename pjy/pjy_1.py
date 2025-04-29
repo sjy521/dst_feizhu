@@ -144,7 +144,7 @@ def get_ticket():
         if ticket:
             return ticket
         else:
-            time.sleep(0.05)
+            time.sleep(0.1)
             continue
     return False
 
@@ -199,7 +199,7 @@ def is_five_pm():
     # 判断当前时间是否为下午7点（19:00）
     if current_time.hour == 19 and current_time.minute == 0:
         return True
-    return False
+    return True
 
 
 def use_thread_pool():
@@ -222,19 +222,19 @@ def use_thread_pool():
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     session.get("https://pjy.lansezhihui.com")
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
-    #     while True:
-    #         if is_five_pm():
-    #             send_dingding("9 秒后准备预约！！！")
-    #             # time.sleep(6)
-    #             for j in range(2):
-    #                 # 提交任务到线程池中
-    #                 future_to_result = {executor.submit(send_request, i): i for i in openlist}
-    #             break
-    #         else:
-    #             time.sleep(0.01)
-    #             continue
-    # time.sleep(10)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
+        while True:
+            if is_five_pm():
+                send_dingding("9 秒后准备预约！！！")
+                # time.sleep(6)
+                for j in range(2):
+                    # 提交任务到线程池中
+                    future_to_result = {executor.submit(send_request, i): i for i in openlist}
+                break
+            else:
+                time.sleep(0.01)
+                continue
+    time.sleep(30)
     for openmsg in openlist:
         select_request(openmsg)
     reslist.sort()

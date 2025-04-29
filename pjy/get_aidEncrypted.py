@@ -60,6 +60,9 @@ def get_aidEncrypted(mes):
 
 
 if __name__ == '__main__':
-    if is_five_pm():
-        logging.info("{} aidEncrypted 准备".format(str(datetime.now())))
-        get_aidEncrypted(openlist[0])
+    while True:
+        if is_five_pm():
+            logging.info("{} aidEncrypted 准备".format(str(datetime.now())))
+            get_aidEncrypted(openlist[0])
+        else:
+            time.sleep(0.05)
