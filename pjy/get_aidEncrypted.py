@@ -63,6 +63,7 @@ if __name__ == '__main__':
     while True:
         if is_five_pm():
             logging.info("{} aidEncrypted 准备".format(str(datetime.now())))
-            get_aidEncrypted(openlist[0])
+            if get_aidEncrypted(openlist[0]):
+                break
         else:
             time.sleep(0.05)

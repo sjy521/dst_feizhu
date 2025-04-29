@@ -85,20 +85,25 @@ def use_thread_pool():
         if HOSTSIGN:
             while True:
                 if is_five_pm():
-                    target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
-                    now = datetime.now()
-                    if now < target:
-                        delta = (target - now).total_seconds()
-                        time.sleep(delta)
-                    aidEncrypted = redis_con.get("aidEncrypted")
-                    if aidEncrypted:
-                        for j in range(3):
-                            logging.info(("获取滑块, 当前时间：{}, aidEncrypted:[{}], HOSTSIGN:[{}]".format(str(datetime.now()), aidEncrypted, HOSTSIGN)))
-                            ticket = get_ticket(HOSTSIGN, aidEncrypted)
-                            logging.info("ticket: {}", ticket)
-                            if ticket:
-                                redis_con.sadd(ticket)
-                        return True
+                    for p in range(100):
+                        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
+                        now = datetime.now()
+                        if now < target:
+                            delta = (target - now).total_seconds()
+                            time.sleep(delta)
+                        aidEncrypted = redis_con.get("aidEncrypted")
+                        if aidEncrypted:
+                            for j in range(3):
+                                logging.info(("获取滑块, 当前时间：{}, aidEncrypted:[{}], HOSTSIGN:[{}]".format(str(datetime.now()), aidEncrypted, HOSTSIGN)))
+                                ticket = get_ticket(HOSTSIGN, aidEncrypted)
+                                logging.info("ticket: {}", ticket)
+                                if ticket:
+                                    redis_con.sadd(ticket)
+                            return True
+                        else:
+                            time.sleep(0.1)
+                    else:
+                        break
                 else:
                     time.sleep(0.01)
                     continue
