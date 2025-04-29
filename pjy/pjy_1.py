@@ -222,19 +222,19 @@ def use_thread_pool():
     session.mount('http://', adapter)
     session.mount('https://', adapter)
     session.get("https://pjy.lansezhihui.com")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
-        while True:
-            if is_five_pm():
-                send_dingding("9 秒后准备预约！！！")
-                # time.sleep(6)
-                for j in range(2):
-                    # 提交任务到线程池中
-                    future_to_result = {executor.submit(send_request, i): i for i in openlist}
-                break
-            else:
-                time.sleep(0.01)
-                continue
-    time.sleep(10)
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=30) as executor:
+    #     while True:
+    #         if is_five_pm():
+    #             send_dingding("9 秒后准备预约！！！")
+    #             # time.sleep(6)
+    #             for j in range(2):
+    #                 # 提交任务到线程池中
+    #                 future_to_result = {executor.submit(send_request, i): i for i in openlist}
+    #             break
+    #         else:
+    #             time.sleep(0.01)
+    #             continue
+    # time.sleep(10)
     for openmsg in openlist:
         select_request(openmsg)
     reslist.sort()
