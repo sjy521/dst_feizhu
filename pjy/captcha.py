@@ -94,11 +94,11 @@ def use_thread_pool():
                                     redis_con.sadd("ticket", ticket)
                             return True
                         else:
-                            time.sleep(0.1)
+                            time.sleep(0.05)
                     else:
                         break
                 else:
-                    time.sleep(0.01)
+                    time.sleep(0.1)
                     continue
         else:
             time.sleep(1)

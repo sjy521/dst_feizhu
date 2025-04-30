@@ -124,6 +124,7 @@ def send_request(mes):
             time.sleep(delta)
         ticket = get_ticket()
         if ticket is False:
+            logging.info("当前时间: [{}], 没有可用ticket: [{}]".format(str(datetime.now()), mes['name']))
             return "无可用ticket"
         payload = menudist["珠宝"].format(mes['nuid'], ticket)
         req_time = datetime.now()
@@ -133,15 +134,16 @@ def send_request(mes):
         if res_json['status']:
             select_result(mes['name'], res_json['data']['bespeakId'], mes['open_id'])
     except Exception as f:
+        logging.info("当前时间: [{}], 请求失败: [{}]".format(str(datetime.now()), mes['name']))
         return 0
     return 1
 
 
 def get_ticket():
-    for i in range(100):
+    for i in range(200):
         ticket = redis_con.spop("ticket")
-        logging.info("ticket: {}".format(ticket))
         if ticket:
+            logging.info("ticket: {}".format(ticket))
             return ticket
         else:
             time.sleep(0.1)

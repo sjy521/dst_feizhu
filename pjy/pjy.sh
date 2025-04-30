@@ -13,6 +13,13 @@ nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/f
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha7.log 2>&1 &
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha8.log 2>&1 &
 nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+nohup /root/bgProjects/fliggy-mobile-control/venv/bin/python3 /root/bgProjects/fliggy-mobile-control/pjy/captcha.py > /root/bgProjects/fliggy-mobile-control/pjy/captcha9.log 2>&1 &
+
 
 
 
