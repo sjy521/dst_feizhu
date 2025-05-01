@@ -182,6 +182,7 @@ class AdbModel:
             ["adb", "-s", self.device_id, "shell", "rm", "/sdcard/*.xml"])
         subprocess.run(
             ["adb", "-s", self.device_id, "shell", "uiautomator", "dump", "--compressed", "/sdcard/{}.xml".format(device_id)])
+        time.sleep(1)
         subprocess.run(["adb", "-s", self.device_id, "pull", "/sdcard/{}.xml".format(device_id), xml_dump_path])
         return xml_dump_path
 
