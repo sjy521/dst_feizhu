@@ -68,11 +68,11 @@ openlist = [
         "name": "潘家园"
     },
     # 华威北里
-    {
-        "open_id": "oIiOx5ezlozlh-J0Y1ZTy6eXimK0",
-        "nuid": "110020",
-        "name": "华威北里"
-    },
+    # {
+    #     "open_id": "oIiOx5ezlozlh-J0Y1ZTy6eXimK0",
+    #     "nuid": "110020",
+    #     "name": "华威北里"
+    # },
     # 什刹海
     {
         "open_id": "oIiOx5UQX8PG7YzOhKcNk5zO4KiM",
@@ -117,7 +117,7 @@ def send_request(mes):
 
         url = "https://pjy.lansezhihui.com/API/TenPayV4/"
         headers = get_headers(mes['open_id'])
-        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
+        target = datetime.now().replace(hour=19, minute=0, second=9, microsecond=0)
         now = datetime.now()
         if now < target:
             delta = (target - now).total_seconds()

@@ -37,7 +37,7 @@ def get_aidEncrypted(mes):
     )
     session = requests.Session()
     session.get("https://pjy.lansezhihui.com")
-    target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
+    target = datetime.now().replace(hour=19, minute=0, second=9, microsecond=0)
     now = datetime.now()
     if now < target:
         delta = (target - now).total_seconds()

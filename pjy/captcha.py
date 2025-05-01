@@ -79,7 +79,7 @@ def use_thread_pool():
             while True:
                 if is_five_pm():
                     for p in range(100):
-                        target = datetime.now().replace(hour=19, minute=0, second=10, microsecond=0)
+                        target = datetime.now().replace(hour=19, minute=0, second=9, microsecond=0)
                         now = datetime.now()
                         if now < target:
                             delta = (target - now).total_seconds()
@@ -92,6 +92,7 @@ def use_thread_pool():
                                 logging.info("ticket: {}".format(ticket))
                                 if ticket:
                                     redis_con.sadd("ticket", ticket)
+                                    redis_con.expire("ticket", 300)
                             return True
                         else:
                             time.sleep(0.05)
