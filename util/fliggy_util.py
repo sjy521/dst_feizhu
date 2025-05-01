@@ -324,6 +324,10 @@ class FliggyModel:
         检查立即支付
         :return:
         """
+        self.adbModel.click_button(170, 555)
+        time.sleep(1)
+        self.adbModel.click_button(170, 555)
+        time.sleep(3)
         xml_path = self.adbModel.convert_to_xml(self.device_id)
 
         coordinate = find_element_coordinates(xml_path, "微信支付")
