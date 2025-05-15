@@ -106,7 +106,7 @@ def orderstatic():
             message += "总确认订单数：" + str(confirm) + "\n\n" + "售前利润：\n"
 
             cursor.execute(
-                "SELECT     bg.distributor_id,    SUM(CASE         WHEN bg.distributor_id = 20003 THEN bg.seller_price * 0.9 - bg.price        WHEN bg.supplier_id = 10004 THEN bg.seller_price - (so.price - so.brokerage)        ELSE bg.seller_price - bg.price    END) as profit,    SUM(CASE         WHEN bg.distributor_id = 20003 THEN bg.seller_price * 0.9 - bg.price        WHEN bg.supplier_id = 10004 THEN bg.seller_price - (so.price - so.brokerage)        ELSE bg.seller_price - bg.price    END) as totalprofit FROM db_bg_order bg INNER JOIN (    SELECT bg_order_id, price, brokerage    FROM (        SELECT bg_order_id, price, brokerage,               ROW_NUMBER() OVER (PARTITION BY bg_order_id ORDER BY create_time DESC) as rn        FROM db_supplier_order        WHERE order_status = 11    ) t    WHERE rn = 1) so ON bg.bg_order_id = so.bg_order_id WHERE bg.create_time >= DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00')  AND bg.create_time < NOW()  AND bg.order_status = 11 GROUP BY bg.distributor_id;")
+                "SELECT     bg.distributor_id,     SUM( bg.seller_price - bg.price) as totalprofit FROM db_bg_order bg  WHERE bg.create_time >= DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00')   AND bg.create_time < NOW()  AND bg.order_status = 11 GROUP BY bg.distributor_id;")
             record = cursor.fetchall()
             for row in record:
                 for column, value in row.items():
@@ -134,21 +134,30 @@ def orderstatic():
                     if (column == 'totalprofit'):
                         message += str("%.2f" % (float(value) / 100)) + "\n"
                         totalPofit += float("%.2f" % (float(value) / 100))
-            message += "总售前利润：" + str(float("%.2f" % totalPofit)) + "\n\n销售额：\n"
+            message += "总售前利润：" + str(float("%.2f" % totalPofit)) + "\n\n供应商：\n"
 
             cursor.execute(
-                "SELECT supplier_id,sum(price) as price from db_bg_order where create_time>DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') and create_time<NOW() and order_status=11 and supplier_id=10002 GROUP BY supplier_id;")
+                "SELECT     o.supplier_id,    COUNT(*) AS orderCount,    SUM(CAST(o.seller_price AS DECIMAL(10,2)) - CAST(o.price AS DECIMAL(10,2))) AS totalprofit,    SUM(CAST(o.price AS DECIMAL(10,2))) AS price,    SUM(        CASE             WHEN o.supplier_id = 10002 THEN CAST(o.price AS DECIMAL(10,2)) * 0.045            WHEN o.supplier_id = 10004 THEN (                SELECT COALESCE(SUM(CAST(so.brokerage AS DECIMAL(10,2))), 0)                FROM db_supplier_order so                WHERE so.bg_order_id = o.bg_order_id            )            ELSE 0        END    ) AS brokerage FROM db_bg_order o WHERE o.create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00')    AND o.create_time < NOW()    AND o.order_status = 11    AND o.supplier_id IN (10002, 10004) GROUP BY o.supplier_id;")
             record = cursor.fetchall()
             for row in record:
                 for column, value in row.items():
                     if (column == 'supplier_id'):
                         if (value == '10002'):
-                            message += "飞猪四海通销售额："
+                            message += "飞猪四海通：\n"
+                        if (value == '10004'):
+                            message += "阿信：\n"
                     if (column == 'price'):
+                        message+="销售额："
                         message += str("%.2f" % (float(value) / 100)) + "\n"
-                        message += "飞猪四海通佣金：" + str(
-                            (Decimal(value * Decimal(0.045)) / 100).quantize(Decimal('0.01'))) + "\n\n"
-
+                    if (column == 'orderCount'):
+                        message+="确认单："
+                        message += str(value) + "\n"
+                    if (column == 'totalprofit'):
+                        message+="售前利润："
+                        message +=str("%.2f" % (float(value) / 100)) + "\n"
+                    if (column == 'brokerage'):
+                        message+="佣金："
+                        message +=str("%.2f" % (float(value) / 100)) + "\n\n"
             cursor.execute(
                 "SELECT count(*) as hourOrder from db_bg_order where create_time>CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')and create_time<CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59');")
             record = cursor.fetchall()
