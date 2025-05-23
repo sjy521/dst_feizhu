@@ -367,7 +367,7 @@ def orderstatic():
             cursorOrder.close()
             connectionOrder.close()
             print(message)
-            # send_pay_order_for_dingding(message)
+            send_pay_order_for_dingding(message)
             cursor.close()
             connection.close()
             print("MySQL connection is closed")
