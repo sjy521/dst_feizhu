@@ -47,41 +47,56 @@ def orderstatic():
             # Total Orders with Ring and YoY
             cursor.execute("""
                 SELECT 
-                    distributor_id, 
-                    COUNT(*) as count,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
-                     AND distributor_id = t.distributor_id) as count_prev_day,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
-                     AND distributor_id = t.distributor_id) as count_prev_week
-                FROM db_bg_order t
-                WHERE create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
-                AND create_time < NOW()
-                GROUP BY distributor_id;
+                    d.distributor_id,
+                    COALESCE(COUNT(t.bg_order_id), 0) as count,
+                    COALESCE((
+                        SELECT COUNT(*) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as count_prev_day,
+                    COALESCE((
+                        SELECT COUNT(*) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as count_prev_week
+                FROM (
+                    SELECT '20001' as distributor_id
+                    UNION SELECT '20002'
+                    UNION SELECT '20003'
+                    UNION SELECT '20004'
+                    UNION SELECT '30004'
+                    UNION SELECT '20007'
+                    UNION SELECT '20008'
+                    UNION SELECT '20009'
+                ) d
+                LEFT JOIN db_bg_order t
+                    ON t.distributor_id = d.distributor_id
+                    AND t.create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
+                    AND t.create_time < NOW()
+                GROUP BY d.distributor_id;
             """)
             record = cursor.fetchall()
+            distributor_map = {
+                '20001': "去哪儿阿信",
+                '20002': "美团",
+                '20003': "飞猪",
+                '20004': "去哪儿多省点",
+                '30004': "同程商旅",
+                '20007': "同程艺龙",
+                '20008': "去哪儿缤果",
+                '20009': "抖音"
+            }
             for row in record:
                 distributor_id = row['distributor_id']
                 count = row['count']
                 count_prev_day = row['count_prev_day'] or 0
                 count_prev_week = row['count_prev_week'] or 0
-                distributor_map = {
-                    '20001': "去哪儿阿信",
-                    '20002': "美团",
-                    '20003': "飞猪",
-                    '20004': "去哪儿",
-                    '20005': "携程",
-                    '20006': "百度",
-                    '30004': "同程商旅",
-                    '20007': "同程艺龙",
-                    '20008': "去哪儿缤果",
-                    '20009': "抖音"
-                }
+                if count == 0 and count_prev_day == 0 and count_prev_week == 0:
+                    continue
                 distributor_name = distributor_map.get(distributor_id, distributor_id)
                 message += f"{distributor_name}：{count}，{count_prev_day}，{count_prev_week}\n"
                 totalCount += int(count)
@@ -92,45 +107,60 @@ def orderstatic():
             # Confirmed Orders with Ring and YoY
             cursor.execute("""
                 SELECT 
-                    distributor_id, 
-                    COUNT(*) as count,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
-                     AND order_status IN (11, 12) 
-                     AND distributor_id = t.distributor_id) as count_prev_day,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
-                     AND order_status IN (11, 12) 
-                     AND distributor_id = t.distributor_id) as count_prev_week
-                FROM db_bg_order t
-                WHERE create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
-                AND create_time < NOW() 
-                AND order_status IN (11, 12)
-                GROUP BY distributor_id;
+                    d.distributor_id,
+                    COALESCE(COUNT(t.bg_order_id), 0) as count,
+                    COALESCE((
+                        SELECT COUNT(*) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
+                        AND order_status IN (11, 12) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as count_prev_day,
+                    COALESCE((
+                        SELECT COUNT(*) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
+                        AND order_status IN (11, 12) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as count_prev_week
+                FROM (
+                    SELECT '20001' as distributor_id
+                    UNION SELECT '20002'
+                    UNION SELECT '20003'
+                    UNION SELECT '20004'
+                    UNION SELECT '30004'
+                    UNION SELECT '20007'
+                    UNION SELECT '20008'
+                    UNION SELECT '20009'
+                ) d
+                LEFT JOIN db_bg_order t
+                    ON t.distributor_id = d.distributor_id
+                    AND t.create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
+                    AND t.create_time < NOW() 
+                    AND t.order_status IN (11, 12)
+                GROUP BY d.distributor_id;
             """)
             record = cursor.fetchall()
+            distributor_map_confirm = {
+                '20001': "去哪儿阿信确认订单",
+                '20002': "美团确认订单",
+                '20003': "飞猪确认订单",
+                '20004': "去哪儿四海通确认订单",
+                '30004': "同程商旅确认订单",
+                '20007': "同程艺龙确认订单",
+                '20008': "去哪儿缤果确认订单",
+                '20009': "抖音确认订单"
+            }
             for row in record:
                 distributor_id = row['distributor_id']
                 count = row['count']
                 count_prev_day = row['count_prev_day'] or 0
                 count_prev_week = row['count_prev_week'] or 0
-                distributor_map = {
-                    '20001': "去哪儿阿信确认订单",
-                    '20002': "美团确认订单",
-                    '20003': "飞猪确认订单",
-                    '20004': "去哪儿四海通确认订单",
-                    '20005': "携程确认订单",
-                    '20006': "百度确认订单",
-                    '30004': "同程商旅确认订单",
-                    '20007': "同程艺龙确认订单",
-                    '20008': "去哪儿缤果确认订单",
-                    '20009': "抖音确认订单"
-                }
-                distributor_name = distributor_map.get(distributor_id, distributor_id)
+                if count == 0 and count_prev_day == 0 and count_prev_week == 0:
+                    continue
+                distributor_name = distributor_map_confirm.get(distributor_id, distributor_id)
                 message += f"{distributor_name}：{count}，{count_prev_day}，{count_prev_week}\n"
                 confirm += int(count)
             totalConfirm_prev_day = sum([row['count_prev_day'] or 0 for row in record])
@@ -140,45 +170,60 @@ def orderstatic():
             # Pre-sale Profits with Ring and YoY
             cursor.execute("""
                 SELECT 
-                    bg.distributor_id, 
-                    SUM(bg.seller_price - bg.price) as totalprofit,
-                    (SELECT SUM(seller_price - price) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
-                     AND order_status IN (11, 12) 
-                     AND distributor_id = bg.distributor_id) as profit_prev_day,
-                    (SELECT SUM(seller_price - price) 
-                     FROM db_bg_order 
-                     WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
-                     AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
-                     AND order_status IN (11, 12) 
-                     AND distributor_id = bg.distributor_id) as profit_prev_week
-                FROM db_bg_order bg
-                WHERE bg.create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
-                AND bg.create_time < NOW() 
-                AND bg.order_status IN (11, 12)
-                GROUP BY bg.distributor_id;
+                    d.distributor_id,
+                    COALESCE(SUM(bg.seller_price - bg.price), 0) as totalprofit,
+                    COALESCE((
+                        SELECT SUM(seller_price - price) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 1 DAY) 
+                        AND order_status IN (11, 12) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as profit_prev_day,
+                    COALESCE((
+                        SELECT SUM(seller_price - price) 
+                        FROM db_bg_order 
+                        WHERE create_time > DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d 00:00:00') 
+                        AND create_time < DATE_SUB(NOW(), INTERVAL 7 DAY) 
+                        AND order_status IN (11, 12) 
+                        AND distributor_id = d.distributor_id
+                    ), 0) as profit_prev_week
+                FROM (
+                    SELECT '20001' as distributor_id
+                    UNION SELECT '20002'
+                    UNION SELECT '20003'
+                    UNION SELECT '20004'
+                    UNION SELECT '30004'
+                    UNION SELECT '20007'
+                    UNION SELECT '20008'
+                    UNION SELECT '20009'
+                ) d
+                LEFT JOIN db_bg_order bg
+                    ON bg.distributor_id = d.distributor_id
+                    AND bg.create_time > DATE_FORMAT(NOW(), '%Y-%m-%d 00:00:00') 
+                    AND bg.create_time < NOW() 
+                    AND bg.order_status IN (11, 12)
+                GROUP BY d.distributor_id;
             """)
             record = cursor.fetchall()
+            distributor_map_profit = {
+                '20001': "去哪儿阿信售前利润",
+                '20002': "美团售前利润",
+                '20003': "飞猪售前利润",
+                '20004': "去哪儿四海通售前利润",
+                '30004': "同程商旅售前利润",
+                '20007': "同程艺龙售前利润",
+                '20008': "去哪儿缤果售前利润",
+                '20009': "抖音售前利润"
+            }
             for row in record:
                 distributor_id = row['distributor_id']
                 totalprofit = float(row['totalprofit'] or 0) / 100
                 profit_prev_day = float(row['profit_prev_day'] or 0) / 100
                 profit_prev_week = float(row['profit_prev_week'] or 0) / 100
-                distributor_map = {
-                    '20001': "去哪儿阿信售前利润",
-                    '20002': "美团售前利润",
-                    '20003': "飞猪售前利润",
-                    '20004': "去哪儿四海通售前利润",
-                    '20005': "携程售前利润",
-                    '20006': "百度售前利润",
-                    '30004': "同程商旅售前利润",
-                    '20007': "同程艺龙售前利润",
-                    '20008': "去哪儿缤果售前利润",
-                    '20009': "抖音售前利润"
-                }
-                distributor_name = distributor_map.get(distributor_id, distributor_id)
+                if totalprofit == 0 and profit_prev_day == 0 and profit_prev_week == 0:
+                    continue
+                distributor_name = distributor_map_profit.get(distributor_id, distributor_id)
                 message += f"{distributor_name}：{totalprofit:.2f}，{profit_prev_day:.2f}，{profit_prev_week:.2f}\n"
                 totalProfit += totalprofit
             totalProfit_prev_day = sum([float(row['profit_prev_day'] or 0) / 100 for row in record])
@@ -273,17 +318,19 @@ def orderstatic():
                 GROUP BY o.supplier_id;
             """)
             record = cursor.fetchall()
+            supplier_map = {
+                '10002': "飞猪四海通",
+                '10004': "阿信"
+            }
             for row in record:
                 supplier_id = row['supplier_id']
-                supplier_map = {
-                    '10002': "飞猪四海通",
-                    '10004': "阿信"
-                }
                 supplier_name = supplier_map.get(supplier_id, supplier_id)
-                message += f"{supplier_name}：\n"
                 price = float(row['price'] or 0) / 100
                 price_prev_day = float(row['price_prev_day'] or 0) / 100
                 price_prev_week = float(row['price_prev_week'] or 0) / 100
+                if price == 0 and price_prev_day == 0 and price_prev_week == 0:
+                    continue
+                message += f"{supplier_name}：\n"
                 message += f"销售额：{price:.2f}，{price_prev_day:.2f}，{price_prev_week:.2f}\n"
                 orderCount = row['orderCount']
                 orderCount_prev_day = row['orderCount_prev_day'] or 0
@@ -316,16 +363,19 @@ def orderstatic():
                      AND create_time < CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:'), '59')) as hourOrder_prev_week
                 FROM db_bg_order 
                 WHERE create_time > CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')
-                AND create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59');
+                AND create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59')
+                AND distributor_id IN ('20001', '20002', '20003', '20004', '30004', '20007', '20008', '20009');
             """)
             record = cursor.fetchall()
             for row in record:
                 hourOrder = row['hourOrder']
                 hourOrder_prev_day = row['hourOrder_prev_day'] or 0
                 hourOrder_prev_week = row['hourOrder_prev_week'] or 0
+                if hourOrder == 0 and hourOrder_prev_day == 0 and hourOrder_prev_week == 0:
+                    continue
                 message += f"一小时进单数：{hourOrder}，{hourOrder_prev_day}，{hourOrder_prev_week}\n\n"
 
-            # Failure Rates (unchanged)
+            # Failure Rates
             connectionOrder = mysql.connector.connect(
                 host='pc-2ze1l4f34v5ql1rsu.rwlb.rds.aliyuncs.com',
                 database='hotel_admin',
@@ -334,31 +384,47 @@ def orderstatic():
             )
             cursorOrder = connectionOrder.cursor(dictionary=True)
             cursorOrder.execute("""
-                SELECT distribute_id, count(*) as total, 
-                       sum(CASE WHEN status=0 THEN 1 ELSE 0 END) AS fail, 
-                       sum(CASE WHEN new_price=0 THEN 1 ELSE 0 END) AS full 
-                FROM db_check_price_record 
-                WHERE create_time > CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')
-                AND create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59') 
-                GROUP BY distribute_id;
+                SELECT 
+                    d.distribute_id,
+                    COALESCE(count(*), 0) as total,
+                    COALESCE(sum(CASE WHEN status=0 THEN 1 ELSE 0 END), 0) AS fail,
+                    COALESCE(sum(CASE WHEN new_price=0 THEN 1 ELSE 0 END), 0) AS full
+                FROM (
+                    SELECT 20001 as distribute_id
+                    UNION SELECT 20002
+                    UNION SELECT 20003
+                    UNION SELECT 20004
+                    UNION SELECT 30004
+                    UNION SELECT 20007
+                    UNION SELECT 20008
+                    UNION SELECT 20009
+                    UNION SELECT 30002
+                ) d
+                LEFT JOIN db_check_price_record r
+                    ON r.distribute_id = d.distribute_id
+                    AND r.create_time > CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')
+                    AND r.create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59')
+                GROUP BY d.distribute_id;
             """)
             record = cursorOrder.fetchall()
+            distributor_map_failure = {
+                20001: "去哪儿阿信失败率",
+                20002: "美团失败率",
+                20003: "飞猪失败率",
+                20004: "去哪儿四海通失败率",
+                30004: "同程商旅失败率",
+                20007: "同程艺龙失败率",
+                20008: "去哪儿缤果失败率",
+                20009: "抖音失败率",
+                30002: "夏洛特失败率"
+            }
             for row in record:
                 total = row['total']
+                if total == 0:
+                    continue
                 fail = row['fail']
                 full = row['full']
-                distributor_map = {
-                    20001: "去哪儿阿信失败率",
-                    20002: "美团失败率",
-                    20004: "去哪儿四海通失败率",
-                    20006: "百度售失败率",
-                    30004: "同程商旅失败率",
-                    20007: "同程艺龙失败率",
-                    20008: "去哪儿缤果失败率",
-                    30002: "夏洛特失败率",
-                    20009: "抖音失败率"
-                }
-                distributor_name = distributor_map.get(row['distribute_id'], row['distribute_id'])
+                distributor_name = distributor_map_failure.get(row['distribute_id'], row['distribute_id'])
                 totalRate = str(Decimal((fail / total) * 100).quantize(Decimal('0.01')))
                 priceChange = str(Decimal(((fail - full) / total) * 100).quantize(Decimal('0.01')))
                 fullRate = str(Decimal((full / total) * 100).quantize(Decimal('0.01')))
@@ -366,10 +432,10 @@ def orderstatic():
 
             cursorOrder.close()
             connectionOrder.close()
-            print(message)
-            send_pay_order_for_dingding(message)
             cursor.close()
             connection.close()
+            print(message)
+            send_pay_order_for_dingding(message)
             print("MySQL connection is closed")
     except Error as e:
         print("Error while connecting to MySQL", e)
