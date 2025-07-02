@@ -56,7 +56,6 @@ class FliggyModel:
             return None
 
     def click_template(self, template_name: str, threshold: float = 0.8) -> bool:
-        print("当前工作目录:", os.getcwd())
         template_path = "../template_model/" + template_name + ".jpg"
         coords = self.find_template(template_path, threshold)
         if coords:
@@ -68,6 +67,7 @@ class FliggyModel:
             return False
 
     def check_template(self, template_name: str, threshold: float = 0.8):
+        print("当前工作目录:", os.getcwd())
         template_path = "../template_model/" + template_name + ".jpg"
         coords = self.find_template(template_path, threshold)
         if coords:
@@ -408,23 +408,7 @@ class FliggyModel:
         跳转到目标页面
         :return:
         """
-        for _ in range(10):
-            for __ in range(3):
-                time.sleep(3)
-                xml_path = self.adbModel.convert_to_xml(self.device_id)
-                if find_current_element_text(xml_path, "我的订单"):
-                    return True
-                else:
-                    time.sleep(2)
-                    self.adbModel.click_button(70, 200)
-                    time.sleep(3)
-                    self.adbModel.click_button(768, 2211)
-                    time.sleep(3)
-                    return True
-            logging.info("定位订单页失败，准备重启飞猪小程序...")
-            self.open_mini_feizhu()
-
-        send_abnormal_alarm_for_dingding("定位飞猪小程序订单页失败超10次")
+        self.check_template("订单页")
 
     def is_targat_device(self, device_name):
         if self.adbshakedown is None:
