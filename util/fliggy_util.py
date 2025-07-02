@@ -67,7 +67,7 @@ class FliggyModel:
             return False
 
     def check_template(self, template_name: str, threshold: float = 0.8):
-        logging.info("当前工作目录:", os.getcwd())
+        logging.info("当前工作目录: {}".format(os.getcwd()))
         template_path = "../template_model/" + template_name + ".jpg"
         coords = self.find_template(template_path, threshold)
         if coords:
