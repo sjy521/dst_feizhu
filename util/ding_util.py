@@ -103,7 +103,7 @@ def send_pay_order_for_dingding(text, atphone=None):
         },
         "msgtype": "text"
     }
-    res = requests.post(url, json=data)
+    res = requests.post(url, json=data, timeout=30)
     res_json = json.loads(res.text)
     return res_json.get("errmsg")
 

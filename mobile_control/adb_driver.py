@@ -22,7 +22,7 @@ def run(device):
     is_enable = device.get("isEnable")
     while True:
         fliggy_model = FliggyModel(device_id)
-        fliggy_model.open_mini_feizhu()
+        # fliggy_model.open_mini_feizhu()
         click_type = 0
         if is_enable == '1' or is_enable == '2':
             while True:
@@ -55,24 +55,23 @@ def run(device):
                     # 支付订单
                     print('===')
                     if is_busy == 0:
-                        time.sleep(2)
+                        time.sleep(1)
                         continue
-                    time.sleep(3)
+                    # time.sleep(3)
                     order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
                     if order_num == None:
                         continue
                     click_type = fliggy_model.refresh(click_type)
-                    time.sleep(3)
                     pay_status = fliggy_model.pay_order(pay_password, device_name, order_num, order_id)
                     if pay_status:
                         if is_busy > 0:
                             is_busy -= 1
                         set_not_effective_device(device_id, "", is_busy)
                         continue
-                    busy_id = fliggy_model.get_pay_num()
-                    if busy_id is not False:
-                        set_not_effective_device(device_id, "", busy_id)
-                    time.sleep(1)
+                    # busy_id = fliggy_model.get_pay_num()
+                    # if busy_id is not False:
+                    #     set_not_effective_device(device_id, "", busy_id)
+                    # time.sleep(1)
                 except Exception as f:
                     logging.info("异常： [{}]， 准备跳过...".format(traceback.format_exc()))
                     continue

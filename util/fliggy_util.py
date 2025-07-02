@@ -3,6 +3,8 @@ import random
 import time
 import os
 import sys
+import cv2
+import subprocess
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 
@@ -25,6 +27,53 @@ class FliggyModel:
         self.error_num = 0
         self.device_id = device_id
         self.adbshakedown = None
+
+    def adb(self, *args):
+        cmd = ["adb", "-s", self.device_id] + list(args)
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"ADB command failed: {' '.join(cmd)}\n{result.stderr}")
+        return result.stdout.strip()
+
+    def get_screenshot(self, local_path: str = "screen.png") -> str:
+        self.adb("shell", "screencap", "-p", "/sdcard/screen.png")
+        self.adb("pull", "/sdcard/screen.png", local_path)
+        return local_path
+
+    def find_template(self, template_path: str, threshold: float = 0.8) -> Optional[tuple]:
+        screen_path = self.get_screenshot()
+        screen_img = cv2.imread(screen_path, 0)
+        template = cv2.imread(template_path, 0)
+
+        result = cv2.matchTemplate(screen_img, template, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+
+        if max_val >= threshold:
+            h, w = template.shape
+            return max_loc[0] + w // 2, max_loc[1] + h // 2
+        else:
+            return None
+
+    def click_template(self, template_name: str, threshold: float = 0.8) -> bool:
+        template_path = "../template_model/" + template_name + ".jpg"
+        coords = self.find_template(template_path, threshold)
+        if coords:
+            self.adb("shell", "input", "tap", str(coords[0]), str(coords[1]))
+            print(f"点击{template_name} Clicked at: {coords}")
+            return True
+        else:
+            print(f"没有找到 {template_name}")
+            return False
+
+    def check_template(self, template_name: str, threshold: float = 0.8):
+        template_path = "../template_model/" + template_name + ".jpg"
+        coords = self.find_template(template_path, threshold)
+        if coords:
+            print(f"找到了{template_name}")
+            return coords
+        else:
+            print(f"没有找到{template_name}")
+            return False
 
     def click(self, click_text, xml_path=None, timesleep=0):
         """
@@ -205,7 +254,7 @@ class FliggyModel:
         sr_name = order_info.get("sr_name")
         price = order_info.get("price")
         logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
-        time.sleep(4)
+        time.sleep(1)
         bgorder = get_bongo_order(order_id)
         if bgorder is False:
             cancel_order(device_id, order_id)
@@ -221,18 +270,55 @@ class FliggyModel:
         :return:
         """
         if order_num > 0:
-            send_pay_order_for_dingding("{}: 有异常订单，请手动支付".format(device_name))
+            send_pay_order_for_dingding("{}: 有多笔订单，请人工确认后支付".format(device_name))
             return False
         pay_res = self.click_pay("待付款", timesleep=2)
-        # if pay_res:
-        # self.check_error()
-        xml_path = self.click("去付款", timesleep=random.randint(2, 3))
+        time.sleep(2)
+        xml_path = self.click_template("去付款")
+        time.sleep(random.randint(2, 3))
         if xml_path == False:
             return False
         self.check_lijizhifu()
         self.adbModel.click_button(950, 2121)
-        time.sleep(random.randint(5, 6))
+        time.sleep(random.randint(0, 1))
         self.adbModel.click_button(950, 2151)
+        return self.weixin_pay(pay_password, device_name, order_num, order_id)
+
+    def weixin_pay(self, pay_password, device_name, order_num, order_id):
+        self.adbModel.click_button(180, 1737, timesleep=0.1)
+        self.adbModel.click_button(180, 2047, timesleep=0.1)
+        self.adbModel.click_button(539, 1892, timesleep=0.1)
+        self.adbModel.click_button(899, 1737, timesleep=0.1)
+        self.adbModel.click_button(899, 1737, timesleep=0.1)
+        self.adbModel.click_button(539, 2047, timesleep=0.1)
+        time.sleep(3)
+        if self.check_template("支付成功"):
+            self.error_num = 1
+            status = 1
+        else:
+            status = 0
+            send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
+            set_not_effective_device(self.device_id, 0, 0)
+        logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
+        self.adbModel.click_button(598, 1950)
+        time.sleep(2)
+        return True
+
+    def yun_shan_fu_pay(self, pay_password, device_name, order_num, order_id):
+        """
+        云闪付支付
+        :return:
+        """
+        # 点击支付渠道
+        self.adbModel.click_button(928, 1320, timesleep=0.5)
+        # 选择云闪付
+        xml_path = self.click("云闪付")
+        if xml_path is False:
+            return False
+        # 确定支付
+        self.adbModel.click_button(560, 2040, timesleep=0.5)
+        # 点击允许跳转
+        self.adbModel.click_button(762, 1337, timesleep=0.5)
         xml_path = self.click(pay_password[0])
         if xml_path is False:
             self.error_num += 1
@@ -246,35 +332,20 @@ class FliggyModel:
         self.click(pay_password[2], xml_path)
         self.click(pay_password[3], xml_path)
         self.click(pay_password[4], xml_path)
-        # if cancelorder(order_id):
-        #     logging.info("验证成功")
-        #     # input("验证成功，点击回车继续付款...")
-        # else:
-        #     logging.info("验证失败, 准备返回")
-        #     # input("验证失败，点击回车继续付款...")
-        #     self.adbModel.click_back()
-        #     self.adbModel.click_back()
-        #     return True
         self.click(pay_password[5], xml_path)
-        time.sleep(3)
+        time.sleep(1)
+        self.adbModel.click_button(78, 1174, timesleep=0.5)
         if self.pay_success(["飞猪旅行", "完成", "成功", "付款方式", "零钱通", "￥"]):
             self.error_num = 1
             status = 1
         else:
             status = 0
             send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
-            # cancel_order(self.device_id, order_id)
             set_not_effective_device(self.device_id, 0, 0)
-            # unlock(bg_order_id, self.device_id)
         logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
         self.adbModel.click_button(598, 1950)
         time.sleep(1)
-        # self.adbModel.click_button(280, 1380)
-        # self.adbModel.click_back()
         return True
-        # else:
-        #     self.adbModel.click_back()
-        #     return False
 
     def pay_success(self, click_text):
         """
@@ -324,13 +395,8 @@ class FliggyModel:
         检查立即支付
         :return:
         """
-        self.adbModel.click_button(170, 555)
-        time.sleep(1)
-        self.adbModel.click_button(170, 555)
-        time.sleep(3)
-        xml_path = self.adbModel.convert_to_xml(self.device_id)
 
-        coordinate = find_element_coordinates(xml_path, "微信支付")
+        coordinate = self.check_template("微信支付选择")
         if coordinate is not None and 1597 > coordinate[1] > 1534:
             self.adbModel.click_button(991, 1573)
         time.sleep(1)
