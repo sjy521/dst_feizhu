@@ -5,6 +5,7 @@ import os
 import sys
 import cv2
 import subprocess
+from typing import Optional
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from dynaconf import settings
 
