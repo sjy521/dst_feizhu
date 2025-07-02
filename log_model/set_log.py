@@ -6,7 +6,7 @@ from dynaconf import settings
 
 
 def setup_logging(default_path=settings.LOGGING, default_level=logging.DEBUG):
-    path = os.path.abspath(os.path.join(os.getcwd(), "..")) + default_path
+    path = os.getcwd() + default_path
     if os.path.exists(path):
         print("加载了日志文件")
         logging.info("加载了日志文件")
