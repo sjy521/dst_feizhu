@@ -56,6 +56,7 @@ class FliggyModel:
             return None
 
     def click_template(self, template_name: str, threshold: float = 0.8) -> bool:
+        print("当前工作目录:", os.getcwd())
         template_path = "../template_model/" + template_name + ".jpg"
         coords = self.find_template(template_path, threshold)
         if coords:
