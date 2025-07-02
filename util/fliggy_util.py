@@ -282,7 +282,7 @@ class FliggyModel:
             return False
         self.check_lijizhifu()
         self.adbModel.click_button(950, 2121)
-        time.sleep(random.randint(0, 1))
+        time.sleep(random.randint(2, 3))
         self.adbModel.click_button(950, 2151)
         return self.weixin_pay(pay_password, device_name, order_num, order_id)
 
