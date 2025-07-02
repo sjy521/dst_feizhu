@@ -60,21 +60,21 @@ class FliggyModel:
         coords = self.find_template(template_path, threshold)
         if coords:
             self.adb("shell", "input", "tap", str(coords[0]), str(coords[1]))
-            print(f"点击{template_name} Clicked at: {coords}")
+            logging.info(f"点击{template_name} Clicked at: {coords}")
             return True
         else:
-            print(f"没有找到 {template_name}")
+            logging.info(f"没有找到 {template_name}")
             return False
 
     def check_template(self, template_name: str, threshold: float = 0.8):
-        print("当前工作目录:", os.getcwd())
+        logging.info("当前工作目录:", os.getcwd())
         template_path = "../template_model/" + template_name + ".jpg"
         coords = self.find_template(template_path, threshold)
         if coords:
-            print(f"找到了{template_name}")
+            logging.info(f"找到了{template_name}")
             return coords
         else:
-            print(f"没有找到{template_name}")
+            logging.info(f"没有找到{template_name}")
             return False
 
     def click(self, click_text, xml_path=None, timesleep=0):
