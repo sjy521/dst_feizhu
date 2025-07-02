@@ -89,7 +89,6 @@ def run(device):
 if __name__ == '__main__':
     args = sys.argv
     tar_device_id = args[1]
-    print('=')
     setup_logging(default_path=settings.LOGGING)
     devices = select_device()
     tar_devices = []
