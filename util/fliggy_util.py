@@ -399,7 +399,7 @@ class FliggyModel:
         """
 
         coordinate = self.check_template("微信支付选择")
-        if coordinate is not None and 1597 > coordinate[1] > 1534:
+        if coordinate is not False and 1597 > coordinate[1] > 1534:
             self.adbModel.click_button(991, 1573)
         time.sleep(1)
 
