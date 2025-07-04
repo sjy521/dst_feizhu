@@ -261,8 +261,8 @@ class FliggyModel:
         if bgorder is False:
             cancel_order(device_id, order_id)
             logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
-            self.adbModel.click_back()
-            self.adbModel.click_back()
+            # self.adbModel.click_back()
+            # self.adbModel.click_back()
             return None, None
         return num, order_id
 
@@ -414,7 +414,7 @@ class FliggyModel:
                 res1 = self.check_template("订单按钮")
                 if res1 is False:
                     self.adbModel.click_back()
-                time.sleep(2)
+                time.sleep(5)
             else:
                 return True
 
