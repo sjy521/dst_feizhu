@@ -31,7 +31,7 @@ class FliggyModel:
 
     def adb(self, *args):
         cmd = ["adb", "-s", self.device_id] + list(args)
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         if result.returncode != 0:
             raise RuntimeError(f"ADB command failed: {' '.join(cmd)}\n{result.stderr}")
         return result.stdout.strip()
