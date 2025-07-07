@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import base64
 import hashlib
 from sched import scheduler
@@ -27,7 +28,7 @@ def send_pay_order_for_dingding(text, atphone=None):
     return res_json.get("errmsg")
 
 def orderstatic():
-    message = "当日订单统计：\n"
+    message = ""
     totalCount = 0
     confirm = 0
     totalProfit = 0.0
@@ -44,6 +45,31 @@ def orderstatic():
             print("Connected to MySQL Server version ", db_Info)
             cursor = connection.cursor(dictionary=True)
 
+            # Hourly Orders with Ring and YoY
+            cursor.execute("""
+                SELECT 
+                    COUNT(*) as hourOrder,
+                    (SELECT COUNT(*) 
+                     FROM db_bg_order 
+                     WHERE create_time > CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d %H:'), '00')
+                     AND create_time < CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d %H:'), '59')) as hourOrder_prev_day,
+                    (SELECT COUNT(*) 
+                     FROM db_bg_order 
+                     WHERE create_time > CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:'), '00')
+                     AND create_time < CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:'), '59')) as hourOrder_prev_week
+                FROM db_bg_order 
+                WHERE create_time > CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')
+                AND create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59')
+                AND distributor_id IN ('20001', '20002', '20003', '20004', '30004', '20007', '20008', '20009');
+            """)
+            record = cursor.fetchall()
+            for row in record:
+                hourOrder = row['hourOrder']
+                hourOrder_prev_day = row['hourOrder_prev_day'] or 0
+                hourOrder_prev_week = row['hourOrder_prev_week'] or 0
+                if hourOrder == 0 and hourOrder_prev_day == 0 and hourOrder_prev_week == 0:
+                    continue
+                message += f"一小时进单数：{hourOrder}，{hourOrder_prev_day}，{hourOrder_prev_week}\n\n"
             # Total Orders with Ring and YoY
             cursor.execute("""
                 SELECT 
@@ -349,31 +375,7 @@ def orderstatic():
             totalBrokerage_prev_week = sum([float(row['brokerage_prev_week'] or 0) / 100 for row in record])
             message += f"总佣金：{totalBrokerage:.2f}，{totalBrokerage_prev_day:.2f}，{totalBrokerage_prev_week:.2f}\n\n"
 
-            # Hourly Orders with Ring and YoY
-            cursor.execute("""
-                SELECT 
-                    COUNT(*) as hourOrder,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d %H:'), '00')
-                     AND create_time < CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 1 DAY), '%Y-%m-%d %H:'), '59')) as hourOrder_prev_day,
-                    (SELECT COUNT(*) 
-                     FROM db_bg_order 
-                     WHERE create_time > CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:'), '00')
-                     AND create_time < CONCAT(DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 7 DAY), '%Y-%m-%d %H:'), '59')) as hourOrder_prev_week
-                FROM db_bg_order 
-                WHERE create_time > CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '00')
-                AND create_time < CONCAT(DATE_FORMAT(NOW(), '%Y-%m-%d %H:'), '59')
-                AND distributor_id IN ('20001', '20002', '20003', '20004', '30004', '20007', '20008', '20009');
-            """)
-            record = cursor.fetchall()
-            for row in record:
-                hourOrder = row['hourOrder']
-                hourOrder_prev_day = row['hourOrder_prev_day'] or 0
-                hourOrder_prev_week = row['hourOrder_prev_week'] or 0
-                if hourOrder == 0 and hourOrder_prev_day == 0 and hourOrder_prev_week == 0:
-                    continue
-                message += f"一小时进单数：{hourOrder}，{hourOrder_prev_day}，{hourOrder_prev_week}\n\n"
+
 
             # Failure Rates
             connectionOrder = mysql.connector.connect(
