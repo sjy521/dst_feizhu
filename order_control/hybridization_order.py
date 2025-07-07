@@ -29,7 +29,7 @@ def fliggy_bulu(order_data, is_busy, bulu_device_id, bg_order_id, biz_order_id, 
         if supplier_id == '10002':
             is_busy += 1
             set_not_effective_device(bulu_device_id, 1, is_busy)
-        create_order_res = hybridization_create_order(order_data, bg_order_id, biz_order_id, price, bulu_device_id,
+        create_order_res = hybridization_create_order(order_data, bg_order_id, biz_order_id, price, device_name,
                                                       supplier_id)
         if create_order_res is False:
             if supplier_id == '10002':

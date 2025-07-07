@@ -26,7 +26,7 @@ def bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name):
     try:
         is_busy += 1
         set_not_effective_device(device_id, 1, is_busy)
-        create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_id)
+        create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_name)
         if create_order_res is False:
             cancel_order(device_id, biz_order_id)
             logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
