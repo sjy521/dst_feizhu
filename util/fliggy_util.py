@@ -411,7 +411,7 @@ class FliggyModel:
         for i in range(3):
             res = self.check_template("订单页")
             if res is False:
-                res1 = self.check_template("订单按钮")
+                res1 = self.click_template("订单按钮")
                 if res1 is False:
                     self.adbModel.click_back()
                 time.sleep(5)
