@@ -32,6 +32,6 @@ default:
   path: http://api.bingotravel.com.cn
 
   admin_url81: http://admin.bingotravel.com.cn
-  admin_url: http://10.18.50.2:8080
+  admin_url: http://order.bingotravel.com.cn
 
   spa_url: http://spa.bingotravel.com.cn
