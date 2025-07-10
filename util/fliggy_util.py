@@ -408,15 +408,16 @@ class FliggyModel:
         跳转到目标页面
         :return:
         """
+        res1 = True
         for i in range(3):
             res = self.check_template("订单页")
             if res is False:
                 res1 = self.click_template("订单按钮")
-                if res1 is False:
-                    self.adbModel.click_back()
-                time.sleep(5)
+                time.sleep(2)
             else:
                 return True
+        if res1 is False:
+            self.adbModel.click_back()
 
     def is_targat_device(self, device_name):
         if self.adbshakedown is None:

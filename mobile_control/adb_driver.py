@@ -11,7 +11,7 @@ from util.orders_util import set_not_effective_device
 from log_model.set_log import setup_logging
 from mobile_control.mitmproxy_driver import mitmproxy_run
 from util.fliggy_util import FliggyModel
-from util.interface_util import select_device
+from util.interface_util import select_device, update_device
 
 
 def run(device):
@@ -25,6 +25,7 @@ def run(device):
         # fliggy_model.open_mini_feizhu()
         click_type = 0
         if is_enable == '1' or is_enable == '2':
+            order_count = 0
             while True:
                 try:
                     # 判断手机是否连接
@@ -60,6 +61,10 @@ def run(device):
                     # time.sleep(3)
                     order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
                     if order_num == None:
+                        order_count += 1
+                        if order_count >= 5:
+                            update_device(device_id, 0)
+                            order_count = 0
                         continue
                     click_type = fliggy_model.refresh(click_type)
                     pay_status = fliggy_model.pay_order(pay_password, device_name, order_num, order_id)
