@@ -51,7 +51,7 @@ def update_device(device_id, state):
     url = settings.ADMIN_URL81 + "/library/update/library"
     data = {
         "deviceId": device_id,
-        "statue": state
+        "isEnable": state
     }
     res = requests.post(url, json=data)
     resjson = json.load(res.text)
