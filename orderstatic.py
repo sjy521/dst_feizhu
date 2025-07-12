@@ -35,7 +35,8 @@ def orderstatic():
     totalBrokerage = 0.0
     try:
         connection = mysql.connector.connect(
-            host='pc-2ze1l4f34v5ql1rsu.rwlb.rds.aliyuncs.com',
+            host='bj-cynosdbmysql-grp-e62gmp4o.sql.tencentcdb.com',
+            port='20350',
             database='hotel_order',
             user='order_db_user',
             password='i7Nbreoq%vMJYbX0b'
