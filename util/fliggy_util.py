@@ -284,7 +284,7 @@ class FliggyModel:
         self.adbModel.click_button(950, 2121)
         time.sleep(random.randint(2, 3))
         self.adbModel.click_button(950, 2151)
-        if ysf_money != 0 and price > ysf_money:
+        if ysf_money is not None and int(ysf_money) != 0 and int(price) > int(ysf_money):
             return self.yun_shan_fu_pay(pay_password, device_name, order_num, order_id)
         else:
             return self.weixin_pay(pay_password, device_name, order_num, order_id)
