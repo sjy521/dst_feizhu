@@ -336,7 +336,7 @@ class FliggyModel:
         time.sleep(1)
         self.adbModel.click_button(78, 1174, timesleep=0.5)
         time.sleep(3)
-        if self.check_template("支付成功"):
+        if self.check_template("云闪付支付成功"):
             self.error_num = 1
             status = 1
         else:
