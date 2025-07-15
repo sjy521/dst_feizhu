@@ -39,6 +39,7 @@ def run(device):
                                 # print(busy_device)
                                 is_busy = int(busy_device.get("isBusy"))
                                 get_cookie = busy_device.get("getCookie")
+                                ysf_money = busy_device.get("ysfMoney")
                                 if get_cookie == "1":
                                     print("准备刷新cookie")
                                     mitmproxy_run(busy_device, fliggy_model)
@@ -59,7 +60,7 @@ def run(device):
                         time.sleep(1)
                         continue
                     # time.sleep(3)
-                    order_num, order_id = fliggy_model.get_fukuan(device_id, device_name)
+                    order_num, order_id, price = fliggy_model.get_fukuan(device_id, device_name)
                     if order_num == None:
                         order_count += 1
                         if order_count >= 5:
@@ -67,7 +68,7 @@ def run(device):
                             order_count = 0
                         continue
                     click_type = fliggy_model.refresh(click_type)
-                    pay_status = fliggy_model.pay_order(pay_password, device_name, order_num, order_id)
+                    pay_status = fliggy_model.pay_order(pay_password, device_name, order_num, order_id, ysf_money, price)
                     if pay_status:
                         if is_busy > 0:
                             is_busy -= 1

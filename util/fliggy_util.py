@@ -263,10 +263,10 @@ class FliggyModel:
             logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
             # self.adbModel.click_back()
             # self.adbModel.click_back()
-            return None, None
-        return num, order_id
+            return None, None, None
+        return num, order_id, price
 
-    def pay_order(self, pay_password, device_name, order_num, order_id):
+    def pay_order(self, pay_password, device_name, order_num, order_id, ysf_money, price):
         """
         支付订单
         :return:
@@ -278,13 +278,16 @@ class FliggyModel:
         time.sleep(2)
         xml_path = self.click_template("去付款")
         time.sleep(random.randint(2, 3))
-        if xml_path == False:
+        if xml_path is False:
             return False
         self.check_lijizhifu()
         self.adbModel.click_button(950, 2121)
         time.sleep(random.randint(2, 3))
         self.adbModel.click_button(950, 2151)
-        return self.weixin_pay(pay_password, device_name, order_num, order_id)
+        if ysf_money > price:
+            return self.yun_shan_fu_pay(pay_password, device_name, order_num, order_id)
+        else:
+            return self.weixin_pay(pay_password, device_name, order_num, order_id)
 
     def weixin_pay(self, pay_password, device_name, order_num, order_id):
         self.adbModel.click_button(180, 1737, timesleep=0.1)
@@ -314,30 +317,23 @@ class FliggyModel:
         # 点击支付渠道
         self.adbModel.click_button(928, 1320, timesleep=0.5)
         # 选择云闪付
-        xml_path = self.click("云闪付")
+        xml_path = self.click_template("云闪付")
         if xml_path is False:
             return False
         # 确定支付
         self.adbModel.click_button(560, 2040, timesleep=0.5)
         # 点击允许跳转
-        self.adbModel.click_button(762, 1337, timesleep=0.5)
-        xml_path = self.click(pay_password[0])
-        if xml_path is False:
-            self.error_num += 1
-            send_pay_order_for_dingding("{}: 支付前异常, 请查看网络或是否有广告, 飞猪订单号: {}".format(device_name, order_id))
-            self.adbModel.click_back()
-            self.adbModel.click_back()
-            if self.error_num >= 6:
-                set_not_effective_device(self.device_id, 0, 0)
-            return False
-        self.click(pay_password[1], xml_path)
-        self.click(pay_password[2], xml_path)
-        self.click(pay_password[3], xml_path)
-        self.click(pay_password[4], xml_path)
-        self.click(pay_password[5], xml_path)
+        self.adbModel.click_button(762, 1337, timesleep=1)
+        self.adbModel.click_button(180, 1737, timesleep=0.1)
+        self.adbModel.click_button(180, 2047, timesleep=0.1)
+        self.adbModel.click_button(539, 1892, timesleep=0.1)
+        self.adbModel.click_button(899, 1737, timesleep=0.1)
+        self.adbModel.click_button(899, 1737, timesleep=0.1)
+        self.adbModel.click_button(539, 2047, timesleep=0.1)
         time.sleep(1)
         self.adbModel.click_button(78, 1174, timesleep=0.5)
-        if self.pay_success(["飞猪旅行", "完成", "成功", "付款方式", "零钱通", "￥"]):
+        time.sleep(3)
+        if self.check_template("支付成功"):
             self.error_num = 1
             status = 1
         else:
@@ -346,7 +342,7 @@ class FliggyModel:
             set_not_effective_device(self.device_id, 0, 0)
         logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
         self.adbModel.click_button(598, 1950)
-        time.sleep(1)
+        time.sleep(2)
         return True
 
     def pay_success(self, click_text):
