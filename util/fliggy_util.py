@@ -320,6 +320,7 @@ class FliggyModel:
         xml_path = self.click_template("云闪付")
         if xml_path is False:
             return False
+        time.sleep(2)
         # 确定支付
         self.adbModel.click_button(560, 2040, timesleep=0.5)
         # 点击允许跳转
