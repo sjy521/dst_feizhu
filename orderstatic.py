@@ -380,7 +380,8 @@ def orderstatic():
 
             # Failure Rates
             connectionOrder = mysql.connector.connect(
-                host='pc-2ze1l4f34v5ql1rsu.rwlb.rds.aliyuncs.com',
+                host='bj-cynosdbmysql-grp-e62gmp4o.sql.tencentcdb.com',
+                port='20350',
                 database='hotel_admin',
                 user='admin_db_user',
                 password='VvTUbbEp$D6uGiLDb'
