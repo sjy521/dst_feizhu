@@ -67,12 +67,12 @@ openlist = [
         "nuid": "99784",
         "name": "潘家园"
     },
-    # 华威北里
-    # {
-    #     "open_id": "oIiOx5ezlozlh-J0Y1ZTy6eXimK0",
-    #     "nuid": "110020",
-    #     "name": "华威北里"
-    # },
+    # 邢玉
+    {
+        "open_id": "oIiOx5aPDCohu2XRl1BG59jSkrik",
+        "nuid": "112615",
+        "name": "邢玉"
+    },
     # 什刹海
     {
         "open_id": "oIiOx5UQX8PG7YzOhKcNk5zO4KiM",
