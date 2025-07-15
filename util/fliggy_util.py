@@ -315,7 +315,8 @@ class FliggyModel:
         :return:
         """
         # 点击支付渠道
-        self.adbModel.click_button(928, 1210, timesleep=0.5)
+        self.adbModel.click_button(928, 1010, timesleep=0.5)
+        self.adbModel.click_button(928, 1410, timesleep=0.5)
         # 选择云闪付
         xml_path = self.click_template("云闪付")
         if xml_path is False:
