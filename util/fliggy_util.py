@@ -324,7 +324,8 @@ class FliggyModel:
         # 确定支付
         self.adbModel.click_button(560, 2040, timesleep=0.5)
         # 点击允许跳转
-        self.adbModel.click_button(762, 1337, timesleep=1)
+        self.adbModel.click_button(762, 1337, timesleep=3)
+
         self.adbModel.click_button(180, 1737, timesleep=0.1)
         self.adbModel.click_button(180, 2047, timesleep=0.1)
         self.adbModel.click_button(539, 1892, timesleep=0.1)
