@@ -56,24 +56,32 @@ class FliggyModel:
             return None
 
     def click_template(self, template_name: str, threshold: float = 0.8) -> bool:
-        template_path = os.getcwd() + "/template_model/" + template_name + ".jpg"
-        coords = self.find_template(template_path, threshold)
-        if coords:
-            self.adb("shell", "input", "tap", str(coords[0]), str(coords[1]))
-            logging.info(f"点击{template_name} Clicked at: {coords}")
-            return True
-        else:
+        try:
+            template_path = os.getcwd() + "/template_model/" + template_name + ".jpg"
+            coords = self.find_template(template_path, threshold)
+            if coords:
+                self.adb("shell", "input", "tap", str(coords[0]), str(coords[1]))
+                logging.info(f"点击{template_name} Clicked at: {coords}")
+                return True
+            else:
+                logging.info(f"没有找到 {template_name}")
+                return False
+        except Exception as f:
             logging.info(f"没有找到 {template_name}")
             return False
 
     def check_template(self, template_name: str, threshold: float = 0.8):
-        logging.info("当前工作目录: {}".format(os.getcwd()))
-        template_path = os.getcwd() + "/template_model/" + template_name + ".jpg"
-        coords = self.find_template(template_path, threshold)
-        if coords:
-            logging.info(f"找到了{template_name}")
-            return coords
-        else:
+        try:
+            logging.info("当前工作目录: {}".format(os.getcwd()))
+            template_path = os.getcwd() + "/template_model/" + template_name + ".jpg"
+            coords = self.find_template(template_path, threshold)
+            if coords:
+                logging.info(f"找到了{template_name}")
+                return coords
+            else:
+                logging.info(f"没有找到{template_name}")
+                return False
+        except Exception as f:
             logging.info(f"没有找到{template_name}")
             return False
 
@@ -409,12 +417,16 @@ class FliggyModel:
         """
         res1 = True
         for i in range(3):
-            res = self.check_template("订单页")
-            if res is False:
-                res1 = self.click_template("订单按钮")
+            try:
+                res = self.check_template("订单页")
+                if res is False:
+                    res1 = self.click_template("订单按钮")
+                    time.sleep(2)
+                else:
+                    return True
+            except Exception as f:
+                res1 = False
                 time.sleep(2)
-            else:
-                return True
         if res1 is False:
             self.adbModel.click_back()
 
