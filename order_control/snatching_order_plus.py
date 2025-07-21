@@ -62,8 +62,8 @@ def except_main(bg_order_id, error_list, device_id, device_name):
     time.sleep(1)
 
 
-def snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id):
-    build_order_res = get_effective_order(device_id, error_list, device_name, delay_num)
+def snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id, ysf_money=0):
+    build_order_res = get_effective_order(device_id, error_list, device_name, delay_num, ysf_money)
     if build_order_res is not None:
         d_ordr_id = build_order_res.get("d_ordr_id")
         bg_order_id = build_order_res.get("bg_order_id")
@@ -133,7 +133,8 @@ def run(tar_device_id):
                     devices_error_count[device_name] = 0
                 is_busy = int(device_info.get('isBusy'))
                 phone = device_info.get('accountNo')
-                snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id)
+                ysf_money = device_info.get('ysfMoney')
+                snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_count, error_list, device_id, ysf_money)
             else:
                 logging.info("当前无可用的设备")
                 time.sleep(5)

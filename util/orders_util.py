@@ -113,7 +113,7 @@ def set_not_effective_device(device_id, is_enable, is_busy):
 
 
 # 查询有效订单，并锁单
-def get_effective_order(device_id, error_list, device_name, delay_num):
+def get_effective_order(device_id, error_list, device_name, delay_num, ysf_money=0):
     """
     查询有效订单，并锁单
     :return: bgorderid
@@ -128,6 +128,8 @@ def get_effective_order(device_id, error_list, device_name, delay_num):
             for result in results.get("rows")[::-1]:
                 # result = random.choices(results.get("rows"))[0]
                 if result.get("source") != "10002":
+                    continue
+                if ysf_money != 0 and result.get("sellerPrice") < ysf_money:
                     continue
                 order_data = {
                     "bg_order_id": result.get("bgOrderId"),
@@ -347,7 +349,7 @@ def cancel_order(device_id, biz_order_id):
     :return:
     """
     # url = "http://192.168.52.112:8083/fliggy/cancelorder"
-    url = "http://build-order.bingotravel.com.cn/fliggy/cancelorder"
+    url = "http://127.0.0.1:8083/fliggy/cancelorder"
     payload = {
         "biz_order_id": biz_order_id,
         "device_id": device_id,
