@@ -129,7 +129,7 @@ def get_effective_order(device_id, error_list, device_name, delay_num, ysf_money
                 # result = random.choices(results.get("rows"))[0]
                 if result.get("source") != "10002":
                     continue
-                if ysf_money != 0 and result.get("sellerPrice") < ysf_money:
+                if int(ysf_money) != 0 and int(result.get("sellerPrice")) < int(ysf_money):
                     continue
                 order_data = {
                     "bg_order_id": result.get("bgOrderId"),
