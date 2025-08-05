@@ -259,7 +259,7 @@ class FliggyModel:
     def get_fukuan(self, device_id, device_name):
         num, order_info = adb_order_list(device_id)
         if num is None:
-            return None, None
+            return None, None, None
         order_id = order_info.get("biz_order_id")
         sr_name = order_info.get("sr_name")
         price = order_info.get("price")
