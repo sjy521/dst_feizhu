@@ -24,7 +24,7 @@ def bulu(is_busy, device_id, bg_order_id, biz_order_id, price, device_name):
     try:
         is_busy += 1
         set_not_effective_device(device_id, 1, is_busy)
-        create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_name)
+        create_order_res = order_create_order(bg_order_id, biz_order_id, price, device_name, "success")
         if create_order_res is False:
             cancel_order(device_id, biz_order_id)
             logging.info("[{}]补录失败, 取消订单号：[{}]".format(bg_order_id, biz_order_id))
@@ -70,6 +70,11 @@ def snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_
         start_time = 0
         try:
             tar_json = get_url_by_bgorderid(d_ordr_id, bg_order_id)
+            tar_json['check_in'] = build_order_res['check_in']
+            tar_json['check_out'] = build_order_res['check_out']
+            tar_json['price'] = build_order_res['price']
+            tar_json['sr_name'] = build_order_res['srName']
+            tar_json['concatName'] = build_order_res['concatName']
         except Exception as f:
             logging.error("获取地址异常：{}".format(str(traceback.format_exc())))
             fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
@@ -80,7 +85,6 @@ def snatching_start_order(device_name, delay_num, phone, is_busy, devices_error_
             if build_res is not None:
                 if build_res == "满房":
                     fail_order_unlock(0, 1, bg_order_id, device_id, device_name)
-                    handle_mt_full(build_order_res)
                     logging.info("[{}]下单完成, 满房".format(bg_order_id))
                 elif build_res == "变价":
                     fail_order_unlock(1, 0, bg_order_id, device_id, device_name)

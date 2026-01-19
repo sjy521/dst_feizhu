@@ -23,16 +23,13 @@ def kill_existing_process(key):
 def start_adb_driver(key):
     try:
         if key == "main.py":
-            log_file = "/root/bgProjects/fliggy-mobile-control/logs/main.log"
+            log_file = "/home/superadm/feizhu/dst_feizhu/logs/main.log"
             command = [
-                "venv/bin/python3",
+                "python3",
                 "main.py",
             ]
-            venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
-            with open(venv_activate) as f:
-                exec(f.read(), {'__file__': venv_activate})
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/superadm/feizhu/dst_feizhu")
         elif key == "fliggy-build-order-web-1.0.jar":
             log_file = "logs/appout.log"
             command = [
@@ -40,7 +37,7 @@ def start_adb_driver(key):
                 "fliggy-build-order-web-1.0.jar",
             ]
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-build-order")
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/superadm/feizhu/build_order")
     except Exception as e:
         print(f"Error starting adb_driver.py: {e}")
 

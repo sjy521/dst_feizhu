@@ -54,7 +54,7 @@ class AdbModel:
         :return:
         """
         # 服务器
-        command = "ip addr show enp2s0 | awk '/inet /{print $2}' | cut -d / -f1"
+        command = "ip addr show wlp3s0 | awk '/inet /{print $2}' | cut -d / -f1"
 
         # 本地
         # command = "ifconfig en0 | awk '/inet /{print $2}' | cut -d / -f1"

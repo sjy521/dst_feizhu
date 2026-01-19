@@ -1,22 +1,3 @@
-#default:
-prod:
-  is_debug: false
-#  mysql
-  mysql_host: 8.146.211.133
-  mysql_port: 3306
-  mysql_db: hotel_base_info
-  mysql_name: devices_library
-  mysql_username: bystest
-  mysql_password: bystest
-#  log_model
-  logging: /config/logging.yaml
-  path: http://api.bingotravel.com.cn
-
-  admin_url: http://10.18.99.2:8080
-  admin_url81: http://10.18.99.2:8081
-
-  spa_url: http://10.18.99.1:8081
-
 
 #prod:
 default:
@@ -29,9 +10,9 @@ default:
   mysql_password: bystest
   logging: /config/logging.yaml
 
-  path: http://api.bingotravel.com.cn
+  path: https://api.xlt-trip.com
 
-  admin_url81: http://admin.bingotravel.com.cn
-  admin_url: http://order.bingotravel.com.cn
+  admin_url81: https://api.xlt-trip.com
+  admin_url: https://api.xlt-trip.com
 
-  spa_url: http://spa.bingotravel.com.cn
+  spa_url: https://api.xlt-trip.com

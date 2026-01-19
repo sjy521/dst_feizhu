@@ -38,18 +38,16 @@ def get_my_ding_url():
 
 
 def get_ding_pay_url():
-    # timestamp = str(round(time.time() * 1000))
-    # secret = "SEC26b241f0640272d1d31dbcdff40fef0432a3be08606396230fb78dcc3794788b"
-    # access_token = "7369d4bbe26545da0c96ce4102c7b0101c7b9e316da46e22e747eb9e568df12f"
-    # secret_enc = secret.encode("utf-8")
-    # string_to_sign = "{}\n{}".format(timestamp, secret)
-    # string_to_sign_enc = string_to_sign.encode("utf-8")
-    # hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-    # sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
-    # url = "https://oapi.dingtalk.com/robot/send?access_token={}&timestamp={}&sign={}".format(access_token, timestamp,
-    #                                                                                          sign)
-    url = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=303013f2-3152-42b8-b5d6-0ca5c736d04e"
-    return url
+    timestamp = str(round(time.time()))
+    secret = "KdJFkV6tZdA8uGOxkFFxq"
+
+    string_to_sign = '{}\n{}'.format(timestamp, secret)
+    hmac_code = hmac.new(string_to_sign.encode("utf-8"), digestmod=hashlib.sha256).digest()
+    # 对结果进行base64处理
+    sign = base64.b64encode(hmac_code).decode('utf-8')
+
+    url = "https://open.feishu.cn/open-apis/bot/v2/hook/1911aee7-5690-4458-accc-6846da1d138c"
+    return url, sign, timestamp
 
 
 def send_abnormal_alarm_for_dingding(text):
@@ -71,7 +69,7 @@ def send_abnormal_alarm_for_dingding(text):
 
 def send_dingding(text):
     # 个人的，勿用
-    url = get_my_ding_url()
+    url = get_ding_pay_url()
     data = {
         "at": {
             "isAtAll": False
@@ -86,27 +84,23 @@ def send_dingding(text):
     return res_json.get("errmsg")
 
 
-def send_pay_order_for_dingding(text, atphone=None):
-    if atphone is not None:
-        atMobiles = atphone
-    else:
-        atMobiles = ["18518020709"]
-    url = get_ding_pay_url()
+def send_pay_order_for_dingding(text):
+    url, sign, timestamp = get_ding_pay_url()
     data = {
-        "at": {
-            "atMobiles": atMobiles,
-            "isAtAll": True
+        "content": {
+            "text": text
         },
-        "mentioned_mobile_list": atMobiles,
-        "text": {
-            "content": text
-        },
-        "msgtype": "text"
+        "sign": sign,
+        "timestamp":timestamp,
+        "msg_type": "text"
     }
+    print(data)
     res = requests.post(url, json=data, timeout=30)
     res_json = json.loads(res.text)
+    print(res_json)
     return res_json.get("errmsg")
 
 
 if __name__ == '__main__':
-    print(send_dingding("大家好!"))
+    print('==')
+    print(send_pay_order_for_dingding("大家好!"))

@@ -38,7 +38,7 @@ def payresult(orderId, status):
 
 
 def select_device():
-    url = settings.ADMIN_URL81 + "/library/all/libraries"
+    url = settings.ADMIN_URL81 + "/api/sht/library/all/libraries"
     res = requests.get(url)
     resjson = json.loads(res.text)
     if resjson['result']:
@@ -48,7 +48,7 @@ def select_device():
 
 
 def update_device(device_id, state):
-    url = settings.ADMIN_URL81 + "/library/update/library"
+    url = settings.ADMIN_URL81 + "/api/sht/library/update/library"
     data = {
         "deviceId": device_id,
         "isBusy": state
@@ -62,7 +62,7 @@ def update_device(device_id, state):
 
 
 def update_device_run_status(device_id, run_status):
-    url = settings.ADMIN_URL81 + "/library/update/library"
+    url = settings.ADMIN_URL81 + "/api/sht/library/update/library"
     data = {
         "deviceId": device_id,
         "runStatus": run_status

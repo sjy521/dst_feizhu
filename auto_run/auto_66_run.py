@@ -42,52 +42,26 @@ def kill_existing_process(device_id):
 # 启动adb_driver.py
 def start_adb_driver(device_id, process_id):
     try:
-        log_file = f"/root/bgProjects/fliggy-mobile-control/logs/adb_driver_{device_id}.log"
+        log_file = f"/home/superadm/feizhu/dst_feizhu/logs/adb_driver_{device_id}.log"
         command = [
-            "venv/bin/python3",
+            "python3",
             "mobile_control/adb_driver.py",
             device_id
         ]
-        venv_activate = "/root/bgProjects/fliggy-mobile-control/venv/bin/activate_this.py"
-        with open(venv_activate) as f:
-            exec(f.read(), {'__file__': venv_activate})
         with open(log_file, "a") as log:
-            subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
+            subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/superadm/feizhu/dst_feizhu")
         print(f"adb_driver.py started for device ID {device_id}.")
 
         if process_id == 0:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/snatching_order_plus_{device_id}.log"
+            log_file = f"/home/superadm/feizhu/dst_feizhu/logs/snatching_order_plus_{device_id}.log"
             command = [
-                "venv/bin/python3",
+                "python3",
                 "order_control/snatching_order_plus.py",
                 device_id
             ]
-            # subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
             with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
+                subprocess.Popen(command, stdout=log, stderr=log, cwd="/home/superadm/feizhu/dst_feizhu")
             print(f"snatching_order_plus.py started for device ID {device_id}.")
-        elif process_id == 1:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/abnormal_order_{device_id}.log"
-            command = [
-                "venv/bin/python3",
-                "order_control/abnormal_order.py",
-                device_id
-            ]
-            # subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
-            with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
-            print(f"abnormal_order.py started for device ID {device_id}.")
-        elif process_id == 2:
-            log_file = f"/root/bgProjects/fliggy-mobile-control/logs/comprehensive_order_{device_id}.log"
-            command = [
-                "venv/bin/python3",
-                "order_control/comprehensive_order.py",
-                device_id
-            ]
-            # subprocess.run([venv_activate], shell=True, check=True, cwd="/root/bgProjects/fliggy-mobile-control")
-            with open(log_file, "a") as log:
-                subprocess.Popen(command, stdout=log, stderr=log, cwd="/root/bgProjects/fliggy-mobile-control")
-            print(f"comprehensive_order.py started for device ID {device_id}.")
         update_device_run_status(device_id, 1)
     except Exception as e:
         print(f"Error starting adb_driver.py: {e}")
@@ -105,8 +79,8 @@ def main():
         if int(device.get("runStatus")) == 0:
             kill_existing_process(device.get("deviceId"))
             start_adb_driver(device.get("deviceId"), int(device.get("processList")))
-            if int(device.get("runStatus")) in [3,4]:
-                kill_existing_process(device.get("deviceId"))
+            # if int(device.get("runStatus")) in [3,4]:
+            #     kill_existing_process(device.get("deviceId"))
 
 
 if __name__ == "__main__":

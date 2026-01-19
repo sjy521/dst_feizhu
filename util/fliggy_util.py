@@ -13,7 +13,7 @@ from log_model.set_log import setup_logging
 from util.adb_util import AdbModel
 from util.order_list_util import get_bongo_order, adb_order_list
 from util.ding_util import send_abnormal_alarm_for_dingding, send_pay_order_for_dingding
-from util.orders_util import set_not_effective_device, cancel_order
+from util.orders_util import set_not_effective_device, cancel_order, order_create_order
 from util.xpath_util import find_current_element_text, find_element_text, find_element_coordinates, \
     find_current_element_coordinates, find_setting, find_current_element_num, find_all_current_element_text, \
     find_success_element_text
@@ -265,13 +265,13 @@ class FliggyModel:
         price = order_info.get("price")
         logging.info("{}: 当前订单号号是：{} {}".format(device_name, order_id, sr_name))
         time.sleep(1)
-        bgorder = get_bongo_order(order_id)
-        if bgorder is False:
-            cancel_order(device_id, order_id)
-            logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
+        # bgorder = get_bongo_order(order_id)
+        # if bgorder is False:
+        #     cancel_order(device_id, order_id)
+        #     logging.info("{}: 当前订单可能未粘贴订单号：{}，已取消该订单".format(device_name, order_id))
             # self.adbModel.click_back()
             # self.adbModel.click_back()
-            return None, None, None
+            # return None, None, None
         return num, order_id, price
 
     def pay_order(self, pay_password, device_name, order_num, order_id, ysf_money, price):
@@ -292,10 +292,10 @@ class FliggyModel:
         self.adbModel.click_button(950, 2121)
         time.sleep(random.randint(2, 3))
         self.adbModel.click_button(950, 2151)
-        if ysf_money is not None and int(ysf_money) != 0 and int(price) > int(ysf_money):
-            return self.yun_shan_fu_pay(pay_password, device_name, order_num, order_id)
-        else:
-            return self.weixin_pay(pay_password, device_name, order_num, order_id)
+        # if ysf_money is not None and int(ysf_money) != 0 and int(price) > int(ysf_money):
+        #     return self.yun_shan_fu_pay(pay_password, device_name, order_num, order_id)
+        # else:
+        return self.weixin_pay(pay_password, device_name, order_num, order_id)
 
     def weixin_pay(self, pay_password, device_name, order_num, order_id):
         self.adbModel.click_button(180, 1737, timesleep=0.1)
@@ -308,8 +308,10 @@ class FliggyModel:
         if self.check_template("支付成功"):
             self.error_num = 1
             status = 1
+            order_create_order(None, order_id, None, device_name, "paySuccess")
         else:
             status = 0
+            order_create_order(None, order_id, None, device_name, "payFail")
             send_pay_order_for_dingding("{}: 支付异常, 飞猪订单号: {}".format(device_name, order_id))
             set_not_effective_device(self.device_id, 0, 0)
         logging.info("{}: order_id:[{}] 支付完成, 状态：[{}]".format(device_name, order_id, status))
@@ -416,19 +418,23 @@ class FliggyModel:
         :return:
         """
         res1 = True
-        for i in range(3):
-            try:
-                res = self.check_template("订单页")
-                if res is False:
-                    res1 = self.click_template("订单按钮")
+        for j in range(2):
+            for i in range(3):
+                try:
+                    res = self.check_template("订单页")
+                    if res is False:
+                        res1 = self.click_template("订单按钮")
+                        time.sleep(2)
+                    else:
+                        return True
+                except Exception as f:
+                    res1 = False
                     time.sleep(2)
-                else:
-                    return True
-            except Exception as f:
-                res1 = False
-                time.sleep(2)
-        if res1 is False:
-            self.adbModel.click_back()
+            if res1 is False:
+                click_res = self.click_template("飞猪桌面")
+                if click_res is False:
+                    self.adbModel.click_back()
+        return res1
 
     def is_targat_device(self, device_name):
         if self.adbshakedown is None:

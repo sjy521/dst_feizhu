@@ -9,6 +9,7 @@ from dynaconf import settings
 
 sys.path.append(os.path.abspath(os.path.join(__file__, "..", "..")))
 from log_model.set_log import setup_logging
+from urllib.parse import urlparse, parse_qs, unquote
 from util.ding_util import send_pay_order_for_dingding, send_abnormal_alarm_for_dingding
 
 setup_logging(default_path=settings.LOGGING)
@@ -21,7 +22,7 @@ def get_effective_device(tar_device_id=None):
     :return: device_id
     """
     device_id_list = []
-    url = settings.ADMIN_URL81 + "/library/all/libraries"
+    url = settings.ADMIN_URL81 + "/api/sht/library/all/libraries"
     response = requests.request("GET", url)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -50,7 +51,7 @@ def get_all_device():
     从数据库查询所有
     :return: device_id
     """
-    url = settings.ADMIN_URL81 + "/library/all/libraries"
+    url = settings.ADMIN_URL81 + "/api/sht/library/all/libraries"
     response = requests.request("GET", url)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
@@ -66,7 +67,7 @@ def set_get_cookie_device(device_id, cookie=None, x5sec=None):
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
     """
-    url = settings.ADMIN_URL81 + "/library/update/library"
+    url = settings.ADMIN_URL81 + "/api/sht/library/update/library"
     if cookie is not None:
         payload = {"deviceId": device_id,
                    "cookie2": cookie,
@@ -93,7 +94,7 @@ def set_not_effective_device(device_id, is_enable, is_busy):
     从数据库更新的device_id为不可用或不空闲
     :return: device_id
     """
-    url = settings.ADMIN_URL81 + "/library/update/library"
+    url = settings.ADMIN_URL81 + "/api/sht/library/update/library"
     if is_enable == "":
         payload = {"deviceId": device_id,
                    "isBusy": is_busy
@@ -112,42 +113,61 @@ def set_not_effective_device(device_id, is_enable, is_busy):
     return False
 
 
+def get_bianjia_order(order_id):
+    url = settings.ADMIN_URL + "/api/sht/api/wx/select/order"
+    payload = {"orderId": order_id}
+    response = requests.request("GET", url, params=payload)
+    res_json = json.loads(response.text)
+    if res_json.get("code") == 200:
+        result = res_json.get("result")
+        autoRemarkList = result.get("autoRemarkList")
+        if autoRemarkList is not None:
+            for i in autoRemarkList:
+                if i['autoRemark'] in ['变价', '满房']:
+                    return False
+    return True
+
 # 查询有效订单，并锁单
 def get_effective_order(device_id, error_list, device_name, delay_num, ysf_money=0):
     """
     查询有效订单，并锁单
     :return: bgorderid
     """
-    url = settings.ADMIN_URL + "/hotel/bgorder/getNoReadyOrderByPage"
-    payload = {"pageNum": 1, "pageSize": 50, "param": {}}
+    url = settings.ADMIN_URL + "/api/sht/hotel/order/getNoReadyOrderByPage"
+    payload = {"pageNum": 1, "pageSize": 20, "param": {}}
     response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         results = res_json.get("result")
-        if len(results.get("rows")) > int(delay_num):
-            for result in results.get("rows")[::-1]:
+        if len(results.get("row")) > int(delay_num):
+            for result in results.get("row")[::-1]:
                 # result = random.choices(results.get("rows"))[0]
-                if result.get("source") != "10002":
-                    continue
-                if int(ysf_money) != 0 and int(result.get("sellerPrice")) < int(ysf_money):
+                # if result.get("source") != "10002":
+                #     continue
+                # if int(ysf_money) != 0 and int(result.get("sellerPrice")) < int(ysf_money):
+                #     continue
+                if get_bianjia_order(result.get("order_id")) is False:
                     continue
                 order_data = {
-                    "bg_order_id": result.get("bgOrderId"),
-                    "d_ordr_id": result.get("dorderId"),
-                    "hotel_id": result.get("hotelId"),
-                    "product_id": result.get("productId"),
-                    "check_in": result.get("checkInTime"),
-                    "check_out": result.get("checkOutTime")
+                    "bg_order_id": result.get("order_id"),
+                    "d_ordr_id": result.get("d_order_id"),
+                    "hotel_id": result.get("hotel_id"),
+                    "product_id": result.get("product_id"),
+                    "check_in": result.get("check_in"),
+                    "check_out": result.get("check_out"),
+                    "price": int(float(result.get("sellerPrice")) * 100),
+                    "srName": result.get("srName"),
+                    "concatName": result.get("concatName")
                 }
                 # 加锁
-                url = settings.ADMIN_URL + "/hotel/bgorder/lockBySystem"
-                querystring = {"orderId": order_data['bg_order_id'], "userName": device_name}
+                url = settings.ADMIN_URL + "/api/sht/hotel/order/lockOrder"
+                querystring = {"orderNo": order_data['bg_order_id'], "userName": device_name}
                 order_response = requests.request("GET", url, params=querystring)
                 order_res_json = json.loads(order_response.text)
-                if order_res_json['result']['islock'] is True:
+                if order_res_json['success'] is True:
                     return order_data
                 else:
-                    logging.info("bgorderid: {}, result: {}".format(order_data['bg_order_id'], str(order_res_json)))
+                    logging.info("orderInfo: {}, result: {}".format(querystring, str(order_res_json)))
     return None
 
 
@@ -194,29 +214,37 @@ def fail_order_unlock(change_status, full_status, bg_order_id, device_id, device
     :param device_id:
     :return: true，false
     """
+    url = settings.ADMIN_URL + "/api/sht/api/wx/update/orderAutoRemark"
     if full_status == 2:
-        url = settings.ADMIN_URL + "/hotel/bgorder/editTimeOutBySystem"
-        payload = {"timeOutStatus": 1, "bgOrderId": bg_order_id}
+        payload = {"autoRemark": "满房", "orderId": bg_order_id, "deviceName": device_name, "status": "orderFail"}
     else:
-        url = settings.ADMIN_URL + "/hotel/bgorder/editChangePrieOrFullBySystem"
-        payload = {"changeStatus": change_status, "fullStatus": full_status, "bgOrderId": bg_order_id}
-    response = requests.request("POST", url, json=payload)
+        payload = {"autoRemark": "变价", "orderId": bg_order_id, "deviceName": device_name, "status": "orderFail"}
+    response = requests.request("GET", url, params=payload)
     res_json = json.loads(response.text)
     logging.info('[{}]更新了变价满房状态, res: {}'.format(bg_order_id, str(res_json)))
+
+    order_create_order(bg_order_id, None, None, device_name, "orderFail")
     unlock(bg_order_id, device_name)
 
 
 # 订单解锁
 def unlock(bg_order_id, device_name):
-    url = settings.ADMIN_URL + "/hotel/bgorder/unlockBySystem"
-    querystring = {"orderId": bg_order_id, "userName": device_name}
+    url = settings.ADMIN_URL + "/api/sht/hotel/order/unlockOrder"
+    querystring = {"orderNo": bg_order_id, "userName": device_name}
     response = requests.request("GET", url, params=querystring)
     order_res_json = json.loads(response.text)
-    if order_res_json['result'] is True:
+    if order_res_json['success'] is True:
         logging.info("bgorderid: {}，通知解锁result: {}".format(bg_order_id, str(order_res_json)))
     else:
         logging.info("bgorderid: {}，解锁失败result: {}".format(bg_order_id, str(order_res_json)))
 
+
+def extract_real_url(proxy_url):
+    qs = parse_qs(urlparse(proxy_url).query)
+    encoded = qs.get("query", [""])[0]
+    decoded_once = unquote(encoded)
+    # decoded_twice = unquote(decoded_once)
+    return decoded_once.replace("url=", "", 1)
 
 # 根据bgOrderId 获取供应商下单地址
 def get_url_by_bgorderid(d_order_id, bg_order_id):
@@ -224,33 +252,14 @@ def get_url_by_bgorderid(d_order_id, bg_order_id):
     根据bgOrderId 获取供应商下单地址
     :return: json
     """
-    url = settings.ADMIN_URL + "/hotel/dorder/selectDOrderItem"
-    payload = {"dOrderId": d_order_id, "bgOrderId": bg_order_id}
-    response = requests.request("GET", url, params=payload)
+    url = settings.ADMIN_URL + "/api/sht/hotel/order/info"
+    payload = {"orderId": bg_order_id}
+    response = requests.request("POST", url, json=payload)
     res_json = json.loads(response.text)
     if res_json.get("code") == 200:
         results = res_json.get("result")
-        order_item = results['orderItem']
-        d_order = results['dOrder']
-        tar_json = {
-            "contact_phone": order_item.get("consumerPhone"),
-            "guest_list": [order_item.get("consumerName")],
-            "check_in": d_order.get("checkInTime").split(" ")[0],
-            "check_out": d_order.get("checkOutTime").split(" ")[0],
-            "sr_name": order_item.get("productName"),
-            "price": d_order.get("price")
-        }
-        supplier_product_id = json.loads(d_order['productItem'])['supplierProductId']
-        supplier_hotel_id = json.loads(d_order['productItem'])['supplierHotelId']
-
-        url = settings.SPA_URL + "/client/spa/check"
-
-        payload = {"checkIn": tar_json['check_in'], "checkOut": tar_json['check_out'], "roomNum": 1, "totalPrice": -999,
-                   "supplierId": 10002, "sHotelId": supplier_hotel_id,
-                   "sproductId": supplier_product_id}
-        response = requests.request("POST", url, json=payload)
-        res_json1 = json.loads(response.text)
-        tar_json['wx_link'] = res_json1['result']['message']
+        wx_link = extract_real_url(results['wx_link'])
+        tar_json = {'wx_link': wx_link + "&_fm_real_host_=outfliggys.m.taobao.com"}
         return tar_json
 
 
@@ -301,12 +310,14 @@ def build_order(device_id, tar_json, phone):
         "wx_link": tar_json['wx_link'],
         "sr_name": tar_json['sr_name'],
         "contact_phone": phone,
-        "guest_list": tar_json['guest_list'],
+        "guest_list": [tar_json['concatName']],
         "check_in": tar_json['check_in'],
         "check_out": tar_json['check_out'],
         "price": tar_json['price'],
         "device_id": device_id,
     }
+    # payload['sr_name'] = "舒适大床房"
+    logging.info("入住信息：{}".format(payload))
     response = requests.request("POST", url, json=payload, timeout=120)
     res_json = json.loads(response.text)
     if res_json['status'] is True:
@@ -381,75 +392,34 @@ def edit_change_full(change_status, full_status, bg_order_id):
 
 
 # order创建订单
-def order_create_order(bg_order_id, sorder_id, price, device_id):
+# status: success, paySuccess, orderFail
+def order_create_order(bg_order_id, sorder_id, price, device_id, status):
     """
     order 补录订单
     :return: 成功，失败
     """
-    url = settings.ADMIN_URL + "/hotel/bgorder/deleteFlagBySystem"
+    url = settings.ADMIN_URL + "/api/sht/api/wx/update/order"
+
     payload = {
-        "bgOrderId": bg_order_id,
+        "supplierOrderId": sorder_id,
+        "orderId": bg_order_id,
+        "deviceName": device_id,
+        "status": status,
+        "supplierPrice": price
+        # "payTime": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     }
-    response = requests.request("POST", url, json=payload)
-    res_json = json.loads(response.text)
-    if res_json.get("code") == 200:
-        pass
-    else:
-        send_abnormal_alarm_for_dingding("状态更新失败：{}".format(sorder_id))
-    url = settings.ADMIN_URL + "/hotel/bgorder/getOrderItemAndSnapshoot"
-    payload = {
-        "bgOrderId": bg_order_id,
-    }
+    # payload["id"] = None
     response = requests.request("GET", url, params=payload)
     res_json = json.loads(response.text)
+    logging.info("[{}]补录: [{}]".format(bg_order_id, str(res_json)))
     if res_json.get("code") == 200:
-        payload = res_json['result']
-        order_item = payload['orderItemVO']
-        url = settings.ADMIN_URL + "/hotel/sorder/createSOrderBySystem"
-        payload["sOrderId"] = sorder_id
-        payload["bgOrderId"] = bg_order_id
-        payload["supplierId"] = 10002
-        payload["orderStatus"] = 10
-        payload["remark"] = "机器下单"
-        payload["operator"] = device_id
-        payload["productItem"] = "机器补录"
-        payload["payType"] = 1
-        payload["brokerage"] = 0
-        payload["price"] = price
-        payload["orderItemVO"] = {
-            "hotelName": order_item.get("hotelName"),
-            "productId": 0,
-            "orderId": None,
-            "source": None,
-            "roomCount": order_item.get("roomCount"),
-            "productName": order_item.get("productName"),
-            "consumerName": order_item.get("consumerName"),
-            "consumerPhone": order_item.get("consumerPhone"),
-            "idCard": None,
-            "contact": order_item.get("contact"),
-            "refundRule": order_item.get("refundRule"),
-            "operator": None,
-            "createTime": None,
-            "updateTime": None
-        }
-        payload["paymentTransactionVO"] = {
-            "sOrderId": sorder_id,
-            "bgOrderId": bg_order_id,
-            "orderStatus": 10,
-            "payType": 1,
-            "payTime": str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        }
-        payload["id"] = None
-        response = requests.request("POST", url, json=payload)
-        res_json = json.loads(response.text)
-        logging.info("[{}]补录: [{}]".format(bg_order_id, str(res_json)))
-        if res_json.get("code") == 200:
-            if res_json['success'] is True:
-                return True
-            else:
-                return False
+        if res_json['success'] is True:
+            return True
         else:
             return False
+    else:
+        send_pay_order_for_dingding("补录订单异常 orderId:{}, 异常:{}".format(bg_order_id, res_json))
+        return False
 
 
 def build_error_warn(devices_error_count, device_name, device_id):
